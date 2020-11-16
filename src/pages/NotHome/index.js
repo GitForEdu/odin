@@ -1,1 +1,1 @@
-export const NotHome = () => <h1>Dette er ikke hjem</h1>
+export { NotHome } from "./NotHome"

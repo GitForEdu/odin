@@ -1,20 +1,27 @@
-import { BrowserRouter as Router,
+import {
+  Router,
   Switch,
   Route
 } from "react-router-dom"
-import { Home, NotHome } from "./pages"
+import { Home, NotHome, Login } from "./pages"
+import PrivateRoute from "./components/PrivateRoute"
+import history from "./utils/history"
+
 
 const App = () => {
   return (
     <div className="App">
-      <Router>
+      <Router history={history}>
         <Switch>
+          <Route exact path="/">
+            <Login />
+          </Route>
+
           <Route path="/nothome">
             <NotHome />
           </Route>
-          <Route path="/">
-            <Home />
-          </Route>
+
+          <PrivateRoute path="/home" render={Home} />
         </Switch>
       </Router>
     </div>
