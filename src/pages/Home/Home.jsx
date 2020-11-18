@@ -1,6 +1,6 @@
 import React from "react"
-import Tile from "../../components/Tile"
-import Link from "../../components/Link"
+import Tile from "components/Tile"
+import Link from "components/Link"
 
 const Home = () => (
   <Tile>

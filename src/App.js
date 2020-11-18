@@ -21,7 +21,7 @@ const App = () => {
             <NotHome />
           </Route>
 
-          <PrivateRoute path="/home" render={Home} />
+          <PrivateRoute path="/home" component={Home} />
         </Switch>
       </Router>
     </div>
