@@ -1,13 +1,15 @@
 import React from "react"
 import ReactDOM from "react-dom"
-import "./index.css"
 import App from "./App"
+import "./App.css"
 import reportWebVitals from "./reportWebVitals"
+import { ThemeProvider } from "@material-ui/core"
 import { Auth0Provider } from "./utils/authentication"
 import history from "./utils/history"
+import { theme } from "utils"
 
 
-const onRedirectCallback = appState => {
+const onRedirectCallback = (appState) => {
   history.push(
     appState && appState.targetUrl
       ? appState.targetUrl
@@ -15,19 +17,20 @@ const onRedirectCallback = appState => {
   )
 }
 
-
 ReactDOM.render(
   <React.StrictMode>
-    <Auth0Provider
-      domain={process.env.REACT_APP_AUTH0_DOMAIN}
-      client_id={process.env.REACT_APP_AUTH0_CLIENT_ID}
-      redirect_uri={`${window.location.origin}`}
-      onRedirectCallback={onRedirectCallback}
-      useRefreshTokens={false}
-      authorizeTimeoutInSeconds={15}
-    >
-      <App />
-    </Auth0Provider>
+    <ThemeProvider theme={theme}>
+      <Auth0Provider
+        domain={process.env.REACT_APP_AUTH0_DOMAIN}
+        client_id={process.env.REACT_APP_AUTH0_CLIENT_ID}
+        redirect_uri={`${window.location.origin}`}
+        onRedirectCallback={onRedirectCallback}
+        useRefreshTokens={false}
+        authorizeTimeoutInSeconds={15}
+      >
+        <App />
+      </Auth0Provider>
+    </ThemeProvider>
   </React.StrictMode>,
   document.getElementById("root")
 )
