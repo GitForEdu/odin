@@ -25,8 +25,9 @@ ReactDOM.render(
         client_id={process.env.REACT_APP_AUTH0_CLIENT_ID}
         redirect_uri={`${window.location.origin}`}
         onRedirectCallback={onRedirectCallback}
-        useRefreshTokens={false}
+        useRefreshToken={true}
         authorizeTimeoutInSeconds={15}
+        scope={"aud userid-feide userid userid-social groups"}
       >
         <App />
       </Auth0Provider>

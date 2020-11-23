@@ -1,13 +1,26 @@
 import { useStyles } from "hooks"
+import logo from "./ntnu.svg"
 
 export const Navbar = props => {
   const classes = useStyles()
-  const { courseCode } = props
+  const { courseCode, pageTitle } = props
 
   return (
     <nav className={classes.navbar}>
-      <h1>Velkommen til Gitlab For Edu</h1>
-      {courseCode && <h2>Emne: {courseCode}</h2>}
+      <div className={classes.logo}>
+        <button>
+          <img src={logo} className={classes.logoimage} alt="NTNU-logo" />
+          {courseCode && <span className={classes.courseCodeText}>{courseCode} </span>}
+        </button>
+      </div>
+      <div className={classes.middle}>
+        <p>{pageTitle}</p>
+      </div>
+      <div className={classes.hamburger}>
+        <button>
+          <i className={`material-icons ${classes.hamburgerButton}`}>menu</i>
+        </button>
+      </div>
     </nav>
   )
 }
