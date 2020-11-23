@@ -21,13 +21,12 @@ ReactDOM.render(
   <React.StrictMode>
     <ThemeProvider theme={theme}>
       <Auth0Provider
-        domain={process.env.REACT_APP_AUTH0_DOMAIN}
-        client_id={process.env.REACT_APP_AUTH0_CLIENT_ID}
+        domain={process.env.REACT_APP_AUTH_DOMAIN}
+        client_id={process.env.REACT_APP_AUTH_CLIENT_ID}
         redirect_uri={`${window.location.origin}`}
         onRedirectCallback={onRedirectCallback}
-        useRefreshToken={true}
         authorizeTimeoutInSeconds={15}
-        scope={"aud userid-feide userid userid-social groups"}
+        scope={"aud userid-feide groups"}
       >
         <App />
       </Auth0Provider>
