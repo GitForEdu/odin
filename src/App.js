@@ -1,12 +1,7 @@
-import {
-  Router,
-  Switch,
-  Route
-} from "react-router-dom"
+import { Router, Switch, Route } from "react-router-dom"
 import { Home, NotHome, Login } from "./pages"
-import PrivateRoute from "./components/PrivateRoute"
-import history from "./utils/history"
-
+import PrivateRoute from "components/PrivateRoute"
+import history from "utils/history"
 
 const App = () => {
   return (
