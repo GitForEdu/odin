@@ -38,4 +38,7 @@ export const useStyles = makeStyles(theme => ({
   hamburgerButton: {
     color: "white",
   },
+  linkWithoutStyling: {
+    textDecoration: "none",
+  },
 }))
