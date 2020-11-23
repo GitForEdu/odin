@@ -1,4 +1,5 @@
 import { useStyles } from "hooks"
+import { Link } from "react-router-dom"
 import logo from "./ntnu.svg"
 
 export const Navbar = props => {
@@ -8,18 +9,18 @@ export const Navbar = props => {
   return (
     <nav className={classes.navbar}>
       <div className={classes.logo}>
-        <button>
+        <Link to={{ pathname: "/home" }}>
           <img src={logo} className={classes.logoimage} alt="NTNU-logo" />
           {courseCode && <span className={classes.courseCodeText}>{courseCode} </span>}
-        </button>
+        </Link>
       </div>
       <div className={classes.middle}>
         <p>{pageTitle}</p>
       </div>
       <div className={classes.hamburger}>
-        <button>
+        <Link to={{ pathname: "/logout" }}>
           <i className={`material-icons ${classes.hamburgerButton}`}>menu</i>
-        </button>
+        </Link>
       </div>
     </nav>
   )

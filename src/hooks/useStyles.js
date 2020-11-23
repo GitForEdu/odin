@@ -6,7 +6,7 @@ export const useStyles = makeStyles(theme => ({
     gridTemplateAreas: "\"logo middle hamburger\"",
     gridTemplateColumns: "4em 1fr 4em",
     backgroundColor: theme.palette.primary.ntnublue,
-    minHeight: "4.0em",
+    minHeight: "4em",
   },
   logo: {
     gridArea: "logo",
@@ -28,7 +28,7 @@ export const useStyles = makeStyles(theme => ({
     justifyContent: "center",
   },
   logoimage: {
-    height: "3em",
+    height: "2em",
   },
   courseCodeText: {
     margin: "0.25em",
