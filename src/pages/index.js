@@ -1,3 +1,3 @@
-export { Home } from "./Home"
-export { NotHome } from "./NotHome"
-export { Login } from "./Login"
+export { Dashboard } from "./Dashboard"
+export { LandingPage } from "./LandingPage"
+export { CourseDashboard } from "./CourseDashboard"

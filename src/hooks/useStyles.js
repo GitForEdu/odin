@@ -5,7 +5,7 @@ export const useStyles = makeStyles(theme => ({
     display: "grid",
     gridTemplateAreas: "\"logo middle hamburger\"",
     gridTemplateColumns: "4em 1fr 4em",
-    backgroundColor: theme.palette.primary.ntnublue,
+    backgroundColor: theme.palette.primary.main,
     minHeight: "4em",
   },
   logo: {

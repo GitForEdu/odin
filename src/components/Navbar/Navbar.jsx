@@ -9,7 +9,7 @@ export const Navbar = props => {
   return (
     <nav className={classes.navbar}>
       <div className={classes.logo}>
-        <Link to={{ pathname: "/home" }} className={classes.linkWithoutStyling}>
+        <Link to={{ pathname: "/dashboard" }} className={classes.linkWithoutStyling}>
           <img src={logo} className={classes.logoimage} alt="NTNU-logo" />
           {courseCode && <span className={classes.courseCodeText}>{courseCode} </span>}
         </Link>

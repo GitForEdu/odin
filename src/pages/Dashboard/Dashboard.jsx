@@ -6,7 +6,7 @@ import { UserInfo } from "API/UserService"
 import { useAuth0 } from "utils/authentication"
 import { Button } from "@material-ui/core"
 
-const Home = () => {
+const Dashboard = () => {
   const [userInfo, setUserInfo] = useState()
   const [availableCourses, setAvailableCourses] = useState({
     loading: false,
@@ -39,7 +39,7 @@ const Home = () => {
   return (
     userInfo
       ? <>
-        <Navbar pageTitle={"Dashboard"} courseCode="TDT6969" />
+        <Navbar pageTitle={"Dashboard"} />
         <Tile>
           <h1>Hey, {userInfo.name} ({userInfo.username})!</h1>
           <h2>Please select a course:</h2>
@@ -47,7 +47,7 @@ const Home = () => {
             <Button
               variant="contained"
               key={course.code + course.term}
-              color="ntnublue"
+              color="primary"
               component={Link}
               to={`/courses/${course.code}`}
             >
@@ -60,4 +60,4 @@ const Home = () => {
   )
 }
 
-export default Home
+export default Dashboard
