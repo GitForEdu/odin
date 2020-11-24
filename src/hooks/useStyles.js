@@ -27,6 +27,11 @@ export const useStyles = makeStyles(theme => ({
     alignItems: "center",
     justifyContent: "center",
   },
+  flexTile: {
+    display: "flex",
+    flexDirection: "column",
+    gap: "1em",
+  },
   logoimage: {
     height: "2em",
   },

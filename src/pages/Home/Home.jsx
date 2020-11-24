@@ -1,13 +1,29 @@
 import React, { useEffect, useState } from "react"
 import Tile from "components/Tile"
-import Link from "components/Link"
 import Navbar from "components/Navbar"
-
+import { Link } from "react-router-dom"
 import { UserInfo } from "API/UserService"
-import { useAuth0 } from "../../utils/authentication"
+import { useAuth0 } from "utils/authentication"
+import { Button } from "@material-ui/core"
 
 const Home = () => {
   const [userInfo, setUserInfo] = useState()
+  const [availableCourses, setAvailableCourses] = useState({
+    loading: false,
+    courses: [
+      {
+        code: "TDT6969",
+        name: "Elementary Front end development",
+        term: "Spring 2021",
+      },
+      {
+        code: "TDT9999",
+        name: "Introduction to Back end development",
+        term: "Spring 2021",
+      },
+    ],
+    error: null,
+  })
   const { getTokenSilently, getIdTokenClaims } = useAuth0()
 
   useEffect(() => {
@@ -25,9 +41,19 @@ const Home = () => {
       ? <>
         <Navbar pageTitle={"Dashboard"} courseCode="TDT6969" />
         <Tile>
-          <h1>Velkommen hjem, {userInfo.name}</h1>
-          <h2>Username: {userInfo.username}</h2>
-          <Link link={"nothome"} text={"link to nothome"}/>
+          <h1>Hey, {userInfo.name} ({userInfo.username})!</h1>
+          <h2>Please select a course:</h2>
+          {availableCourses.courses.map((course) => (
+            <Button
+              variant="contained"
+              key={course.code + course.term}
+              color="ntnublue"
+              component={Link}
+              to={`/courses/${course.code}`}
+            >
+              {course.code} - {course.name} - {course.term}
+            </Button>
+          ))}
         </Tile>
       </>
       : null
