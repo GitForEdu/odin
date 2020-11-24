@@ -1,5 +1,5 @@
 import { Router, Switch, Route } from "react-router-dom"
-import { Home, NotHome, Login } from "./pages"
+import { Dashboard, LandingPage, CourseDashboard } from "./pages"
 import PrivateRoute from "components/PrivateRoute"
 import history from "utils/history"
 
@@ -8,15 +8,11 @@ const App = () => {
     <div className="App">
       <Router history={history}>
         <Switch>
-          <Route exact path="/">
-            <Login />
+          <PrivateRoute path="/courses/:courseCode" component={CourseDashboard}/>
+          <PrivateRoute path="/dashboard" component={Dashboard} />
+          <Route path="/">
+            <LandingPage />
           </Route>
-
-          <Route path="/nothome">
-            <NotHome />
-          </Route>
-
-          <PrivateRoute path="/home" component={Home} />
         </Switch>
       </Router>
     </div>

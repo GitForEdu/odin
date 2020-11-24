@@ -1,7 +1,10 @@
+import { useStyles } from "hooks"
+
 const Tile = (props) => {
+  const classes = useStyles()
   const { children } = props
   return (
-    <section className="title">
+    <section className={classes.flexTile}>
       {children}
     </section>
   )
