@@ -45,7 +45,7 @@ const CourseDashboard = location => {
               <h2>{courseCode}</h2>
               <Button
                 variant="contained"
-                color="secondary"
+                color="primary"
                 component={Link}
                 to={`${url}/students`}
               >
@@ -53,7 +53,7 @@ const CourseDashboard = location => {
               </Button>
               <Button
                 variant="contained"
-                color="secondary"
+                color="primary"
                 component={Link}
                 to={`${url}/groups`}
               >
