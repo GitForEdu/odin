@@ -10,6 +10,10 @@ export default function withAuth(Component) {
       unauthorized && signIn("dataporten")
     }, [unauthorized])
 
+    if(loading || !session) {
+      return null
+    }
+
     return <Component {...props} session={session}/>
   }
 }

@@ -9,14 +9,13 @@ export default function LandingPage() {
     <>
       <Navbar />
       <Tile>
-        <Link href="/dashboard">Hei</Link>
         <h1>Welcome!</h1>
         <p>This a teaching tool for staff at the Norwegian University of Science and Technology (NTNU)</p>
         <Button
           variant="contained"
           color="primary"
           onClick={() => signIn("dataporten", {
-            callbackUrl: "/dashboard",
+            callbackUrl: "/courses",
           })}
         >
           Log in with Feide

@@ -27,7 +27,7 @@ const auth = (req, res) => NextAuth(req, res, {
         // const blackBoardId = await getBlackBoardId()
         return {
           accessToken: account.accessToken,
-          accessTokenExpires: Date.now() + 20000,
+          accessTokenExpires: Date.now() + 287000000,
           name: user.name,
           // blackBoardId,
           username,
@@ -36,7 +36,7 @@ const auth = (req, res) => NextAuth(req, res, {
 
       console.log(prevToken)
 
-      if (prevToken.accessTokenExpires - Date.now() < 1000) {
+      if (prevToken.accessTokenExpires - Date.now() < 5000) {
         return { error: "AccessTokenExpired" }
       }
 
