@@ -1,6 +1,4 @@
-const List = props => {
-  const { type } = props
-
+const List = ({ type }) => {
   if (type === "students") return (
     <h1>Student list</h1>
   )

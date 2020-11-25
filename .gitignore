@@ -34,3 +34,7 @@ yarn-error.log*
 .vercel
 
 .prettierrc
+
+.dccache
+
+.vscode/

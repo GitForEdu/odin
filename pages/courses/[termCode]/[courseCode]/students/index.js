@@ -5,11 +5,11 @@ import { useRouter } from "next/router"
 
 export const Students = () => {
   const router = useRouter()
-  const { courseCode } = router.query
+  const { courseCode, termCode } = router.query
 
   return (
     <>
-      <Navbar pageTitle={"All students"} courseCode={courseCode} />
+      <Navbar pageTitle={"All students"} courseCode={courseCode} termCode={termCode} />
       <List type="students" />
     </>
   )

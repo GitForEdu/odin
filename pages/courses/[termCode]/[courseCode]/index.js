@@ -8,15 +8,15 @@ import Link from "next/link"
 
 const CourseDashboard = ({ session }) => {
   const router = useRouter()
-  const { courseCode } = router.query
+  const { termCode, courseCode } = router.query
 
   return (
     <>
-      <Navbar pageTitle={"Dashboard"} courseCode={courseCode} />
+      <Navbar pageTitle={"Dashboard"} courseCode={courseCode} termCode={termCode} />
       <Tile>
         <h1>Hey, {session.name}, {session.username}!</h1>
-        <h2>{courseCode}</h2>
-        <Link href={`${courseCode}/students`} passHref>
+        <h2>{`${courseCode} ${termCode}`}</h2>
+        <Link href={`/courses/${termCode}/${courseCode}/students`} passHref>
           <Button
             variant="contained"
             color="primary"
@@ -24,7 +24,7 @@ const CourseDashboard = ({ session }) => {
               Show students
           </Button>
         </Link>
-        <Link href={`${courseCode}/groups`} passHref>
+        <Link href={`/courses/${termCode}/${courseCode}/groups`} passHref>
           <Button
             variant="contained"
             color="primary"

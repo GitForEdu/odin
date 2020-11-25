@@ -4,7 +4,7 @@ export const useStyles = makeStyles(theme => ({
   navbar: {
     display: "grid",
     gridTemplateAreas: "\"logo middle hamburger\"",
-    gridTemplateColumns: "4em 1fr 4em",
+    gridTemplateColumns: "8em 1fr 8em",
     backgroundColor: theme.palette.primary.main,
     minHeight: "4em",
   },
