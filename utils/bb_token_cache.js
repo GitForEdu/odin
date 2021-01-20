@@ -36,17 +36,17 @@ export default async function getAccessToken() {
 
 
 async function getServerSideAccessToken() {
-  const url = `https://${process.env.BB_URL}/learn/api/public/v1/oauth2/token`
+  const url = `${process.env.BB_API}/learn/api/public/v1/oauth2/token`
+
+  const credentialsBase64 = Buffer.from(`${process.env.BB_CLIENT_ID}:${process.env.BB_CLIENT_SECRET}`, "binary").toString("base64")
 
   const response = await fetch(url, {
     body: encodeToUrl({
-      client_id: process.env.BB_CLIENT_ID,
-      client_secret: process.env.BB_CLIENT_SECRET,
       grant_type: "client_credentials",
-      scope: "",
     }),
     headers: {
       "Content-Type": "application/x-www-form-urlencoded",
+      "Authorization": `Basic ${credentialsBase64}`,
     },
     method: "post",
   })
