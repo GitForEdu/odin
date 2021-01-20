@@ -5,7 +5,7 @@ import { Button } from "@material-ui/core"
 import withAuth from "components/withAuth"
 import Link from "next/link"
 
-import { getCourses } from "pages/api/courses"
+import courses from "pages/api/courses"
 
 const Dashboard = ({ session, courseList }) => {
 
@@ -32,10 +32,13 @@ const Dashboard = ({ session, courseList }) => {
   )
 }
 
-export const getServerSideProps = (async () => {
-  const courseList = await getCourses()
+export default withAuth(Dashboard)
 
-  if (!courseList) {
+export async function getStaticProps(context) {
+  const res = courses()
+  const data = await res.json()
+
+  if (!data) {
     return {
       redirect: {
         destination: "/",
@@ -45,8 +48,6 @@ export const getServerSideProps = (async () => {
   }
 
   return {
-    props: { courseList },
+    props: { courseList: data }, // will be passed to the page component as props
   }
-})
-
-export default withAuth(Dashboard)
+}
