@@ -52,6 +52,7 @@ const getbbUserInfo = async (username) => {
               description: course.description,
               name: course.name,
               courseId: course.courseId,
+              term: "V21",
             })
           }
         })

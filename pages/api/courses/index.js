@@ -15,9 +15,16 @@ export async function getCourses() {
   return (await response.json()).results
 }
 
-async function courses(req, res) {
-  const bbCourses = getCourses()
-  res.json([ ...bbCourses ])
+async function courses(req, res, session) {
+  const bbCourses = await getCourses()
+  let filteredCourses = []
+  session.bbUserCourses.forEach(userCourse => {
+    const indexCourse = bbCourses.findIndex(course => course.id === userCourse.id)
+    if (indexCourse !== -1) {
+      filteredCourses.push(bbCourses[indexCourse])
+    }
+  })
+  res.json(filteredCourses)
 }
 
 //https://github.com/vercel/next.js/tree/canary/examples/api-routes-middleware

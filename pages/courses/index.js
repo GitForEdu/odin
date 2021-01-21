@@ -5,7 +5,7 @@ import { Button } from "@material-ui/core"
 import withAuth from "components/withAuth"
 import Link from "next/link"
 
-import { getCourses } from "pages/api/courses"
+// import { getCourses } from "pages/api/courses"
 
 const Dashboard = ({ session }) => {
 
@@ -18,12 +18,12 @@ const Dashboard = ({ session }) => {
         {session.bbUserCourses.map((course) => (
           <Link
             key={course.code + course.term}
-            href={`/courses/${course.term}/${course.code}`} passHref>
+            href={`/courses/${course.term}/${course.id}`} passHref>
             <Button
               variant="contained"
               color="primary"
             >
-              {course.code} - {course.name} - {course.term}
+              {course.id} - {course.name} - {course.term}
             </Button>
           </Link>)
         )}
@@ -32,21 +32,21 @@ const Dashboard = ({ session }) => {
   )
 }
 
-export const getServerSideProps = (async () => {
-  const courseList = await getCourses()
+// export const getServerSideProps = (async () => {
+//   const courseList = await getCourses()
 
-  if (!courseList) {
-    return {
-      redirect: {
-        destination: "/",
-        permanent: false,
-      },
-    }
-  }
+//   if (!courseList) {
+//     return {
+//       redirect: {
+//         destination: "/",
+//         permanent: false,
+//       },
+//     }
+//   }
 
-  return {
-    props: { courseList },
-  }
-})
+//   return {
+//     props: { courseList },
+//   }
+// })
 
 export default withAuth(Dashboard)

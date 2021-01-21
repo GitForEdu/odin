@@ -3,14 +3,14 @@ import Link from "next/link"
 
 export const Navbar = props => {
   const classes = useStyles()
-  const { pageTitle, courseCode, termCode } = props
+  const { pageTitle, courseId, term } = props
 
   return (
     <nav className={classes.navbar}>
-      <Link href={courseCode ? `/courses/${termCode}/${courseCode}` : "/courses"} passHref>
+      <Link href={courseId ? `/courses/${term}/${courseId}` : "/courses"} passHref>
         <div className={classes.logo}>
           <img src="/ntnu.svg" className={classes.logoimage} alt="NTNU-logo" />
-          {courseCode && <span className={classes.courseCodeText}>{courseCode} {termCode}</span>}
+          {courseId && <span className={classes.courseIdText}>{courseId} {term}</span>}
         </div>
       </Link>
       <div className={classes.middle}>
