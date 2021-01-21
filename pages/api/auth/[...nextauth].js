@@ -1,4 +1,5 @@
 import NextAuth from "next-auth"
+import getbbUserInfo from "./bbInfo"
 
 
 const auth = (req, res) => NextAuth(req, res, {
@@ -24,6 +25,9 @@ const auth = (req, res) => NextAuth(req, res, {
         const userId = profile["dataporten-userid_sec"][0]
         const regex = /(?<=:)(\w+)(?=@)/g
         const username = userId.match(regex)[0]
+
+        const bbUserInfo = await getbbUserInfo(username)
+
         // const blackBoardId = await getBlackBoardId()
         return {
           accessToken: account.accessToken,
@@ -31,10 +35,10 @@ const auth = (req, res) => NextAuth(req, res, {
           name: user.name,
           // blackBoardId,
           username,
+          bbUserId: bbUserInfo.bbUserId,
+          bbUserCourses: bbUserInfo.bbUserCourses,
         }
       }
-
-      console.log(prevToken)
 
       if (prevToken.accessTokenExpires - Date.now() < 5000) {
         return { error: "AccessTokenExpired" }
@@ -59,7 +63,6 @@ const auth = (req, res) => NextAuth(req, res, {
       authorizationUrl: `${process.env.ISSUER}/oauth/authorization?response_type=code`,
       profileUrl: `${process.env.ISSUER}/openid/userinfo`,
       profile(profile) {
-        console.log("profile", profile)
         return {
           id: profile.sub,
           name: profile.name,

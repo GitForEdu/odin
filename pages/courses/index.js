@@ -7,7 +7,7 @@ import Link from "next/link"
 
 import { getCourses } from "pages/api/courses"
 
-const Dashboard = ({ session, courseList }) => {
+const Dashboard = ({ session }) => {
 
   return (
     <>
@@ -15,7 +15,7 @@ const Dashboard = ({ session, courseList }) => {
       <Tile>
         <h1>Hey, {session.name} ({session.username})!</h1>
         <h2>Please select a course:</h2>
-        {courseList.map((course) => (
+        {session.bbUserCourses.map((course) => (
           <Link
             key={course.code + course.term}
             href={`/courses/${course.term}/${course.code}`} passHref>
