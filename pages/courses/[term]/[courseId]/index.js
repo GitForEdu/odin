@@ -5,8 +5,10 @@ import withAuth from "components/withAuth"
 import { Button } from "@material-ui/core"
 import { useRouter } from "next/router"
 import Link from "next/link"
+import { getBBGitConnection } from "pages/api/courses/[term]/[courseId]/git"
+import GitConnection from "components/GitConnection"
 
-const CourseDashboard = ({ session }) => {
+const CourseDashboard = ({ session, bbGitConnection }) => {
   const router = useRouter()
   const { term, courseId } = router.query
 
@@ -32,9 +34,23 @@ const CourseDashboard = ({ session }) => {
               Show groups
           </Button>
         </Link>
+        {Object.keys(bbGitConnection).length === 0 && bbGitConnection.constructor === Object
+        && <GitConnection />
+        }
       </Tile>
     </>
   )
 }
+
+export const getServerSideProps = (async (context) => {
+  const params = context.params
+
+  const bbGitConnection = await getBBGitConnection(context.req, params)
+
+  return {
+    props: { bbGitConnection },
+  }
+})
+
 
 export default withAuth(CourseDashboard)
