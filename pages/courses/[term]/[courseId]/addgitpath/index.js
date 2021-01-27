@@ -1,33 +1,27 @@
 import withAuth from "components/withAuth"
 import { useRouter } from "next/router"
-import { Button } from "@material-ui/core"
+import StyledButton from "components/Button"
 import { StyledInputField } from "components/TextField"
 import { useState } from "react"
 import fetcher from "utils/fetcher"
 
 
-const CreateGit = () => {
+const AddGitPat = () => {
   const router = useRouter()
   const { term, courseId } = router.query
-  const [gitURL, setGitURL] = useState("")
   const [pat, setPat] = useState("")
   const [loading, setLoading] = useState(false)
 
-
-  const handleChangeGitURL = event => {
-    setGitURL(event.target.value)
-  }
 
   const handleChangePat = event => {
     setPat(event.target.value)
   }
 
-  const createConnection = async () => {
+  const addPath = async () => {
     setLoading(true)
     const data = await fetcher(
-      `/api/courses/${term}/${courseId}/creategit`,
+      `/api/courses/${term}/${courseId}/addgitpath`,
       {
-        gitURL: gitURL,
         pat: pat,
       }
     )
@@ -42,27 +36,19 @@ const CreateGit = () => {
   return (
     <>
       <StyledInputField
-        id="GitURL"
-        label="GitURL"
-        value={gitURL}
-        onChange={handleChangeGitURL}
-      />
-      <StyledInputField
         id="pat"
         label="pat"
         value={pat}
         onChange={handleChangePat}
       />
-      <Button
-        variant="contained"
-        color="primary"
-        onClick={createConnection}
-        disabled={gitURL === "" || pat === "" || loading}
+      <StyledButton
+        onClick={addPath}
+        disabled={pat === "" || loading}
       >
-              Create GitConnection
-      </Button>
+              Add Git PAT
+      </StyledButton>
     </>
   )
 }
 
-export default withAuth(CreateGit)
+export default withAuth(AddGitPat)

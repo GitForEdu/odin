@@ -5,8 +5,8 @@ import withAuth from "components/withAuth"
 import { Button } from "@material-ui/core"
 import { useRouter } from "next/router"
 import Link from "next/link"
-import { getBBGitConnection } from "pages/api/courses/[term]/[courseId]/git"
-import GitConnection from "components/GitConnection"
+import { getBBGitConnection } from "pages/api/courses/[term]/[courseId]/creategit"
+import { CreateGitConnectionLink, CreatePatConnectionLink } from "components/GitConnection"
 
 const CourseDashboard = ({ session, bbGitConnection }) => {
   const router = useRouter()
@@ -34,8 +34,11 @@ const CourseDashboard = ({ session, bbGitConnection }) => {
               Show groups
           </Button>
         </Link>
-        {Object.keys(bbGitConnection).length === 0 && bbGitConnection.constructor === Object
-        && <GitConnection />
+        {bbGitConnection.error
+          ? <CreateGitConnectionLink />
+          : !bbGitConnection.pat
+            ? <CreatePatConnectionLink />
+            : undefined
         }
       </Tile>
     </>

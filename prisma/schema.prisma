@@ -11,8 +11,13 @@ generator client {
 }
 
 model bbGitConnection {
-  id    Int     @id @default(autoincrement())
-  courseid String  @unique
+  courseId String @id
   gitURL  String
+}
+
+model userGitConnection {
+  userName String
+  gitURL String
   pat String
+  @@id([ userName, gitURL ])
 }
