@@ -7,7 +7,7 @@ const CreateGitConnectionLink = () => {
   const { term, courseId } = router.query
 
   return (
-    <Link href={`/courses/${term}/${courseId}/addgitpath`} passHref>
+    <Link href={`/courses/${term}/${courseId}/git/addPAT`} passHref>
       <Button
         variant="contained"
         color="primary"

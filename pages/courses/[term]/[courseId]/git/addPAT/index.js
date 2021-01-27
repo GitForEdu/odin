@@ -20,7 +20,7 @@ const AddGitPat = () => {
   const addPath = async () => {
     setLoading(true)
     const data = await fetcher(
-      `/api/courses/${term}/${courseId}/addgitpath`,
+      `/api/courses/${term}/${courseId}/git/addPAT`,
       {
         pat: pat,
       }
@@ -28,6 +28,11 @@ const AddGitPat = () => {
     setLoading(false)
 
     if (data.courseId) {
+      router.push(`/courses/${term}/${courseId}`)
+    }
+
+    if (data.error) {
+      console.log(data.error)
       router.push(`/courses/${term}/${courseId}`)
     }
   }

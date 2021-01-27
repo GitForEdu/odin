@@ -25,7 +25,7 @@ const CreateGit = () => {
   const createConnection = async () => {
     setLoading(true)
     const data = await fetcher(
-      `/api/courses/${term}/${courseId}/creategit`,
+      `/api/courses/${term}/${courseId}/git/createConnection`,
       {
         gitURL: gitURL,
         pat: pat,
@@ -34,6 +34,27 @@ const CreateGit = () => {
     setLoading(false)
 
     if (data.courseId) {
+      router.push(`/courses/${term}/${courseId}`)
+    }
+  }
+
+  const createConnectionAndrepo = async () => {
+    setLoading(true)
+    const data = await fetcher(
+      `/api/courses/${term}/${courseId}/git/createConnectionAndRepo`,
+      {
+        gitURL: gitURL,
+        pat: pat,
+      }
+    )
+    setLoading(false)
+
+    if (data.courseId) {
+      router.push(`/courses/${term}/${courseId}`)
+    }
+
+    if (data.error) {
+      console.log(data.error)
       router.push(`/courses/${term}/${courseId}`)
     }
   }
@@ -60,6 +81,14 @@ const CreateGit = () => {
         disabled={gitURL === "" || pat === "" || loading}
       >
               Create GitConnection
+      </Button>
+      <Button
+        variant="contained"
+        color="primary"
+        onClick={createConnectionAndrepo}
+        disabled={gitURL === "" || pat === "" || loading}
+      >
+              Create GitConnection And create Git Repo
       </Button>
     </>
   )

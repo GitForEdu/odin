@@ -11,10 +11,14 @@ export async function createGitPat(req, params) {
 
   const courseId = params.courseId
 
+  const term = params.term
+
+  const courseFull = `${courseId}-${term}`
+
   const body = req.body
 
   const connection = await prisma.bbGitConnection.findUnique({
-    where: { courseId: courseId },
+    where: { courseId: courseFull },
   })
 
   if (connection) {

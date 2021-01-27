@@ -5,7 +5,7 @@ import withAuth from "components/withAuth"
 import { Button } from "@material-ui/core"
 import { useRouter } from "next/router"
 import Link from "next/link"
-import { getBBGitConnection } from "pages/api/courses/[term]/[courseId]/creategit"
+import { getBBGitConnection } from "pages/api/courses/[term]/[courseId]/git/createConnection"
 import { CreateGitConnectionLink, CreatePatConnectionLink } from "components/GitConnection"
 
 const CourseDashboard = ({ session, bbGitConnection }) => {
