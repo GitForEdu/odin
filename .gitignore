@@ -40,3 +40,7 @@ yarn-error.log*
 .vscode/
 
 mock-blockboard-api/node_modules/
+
+prisma/dev.db
+
+*.Identifier
