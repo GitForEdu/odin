@@ -76,7 +76,7 @@ export const Group = ({ courseGroups }) => {
   return (
     <>
       <Navbar pageTitle={"All students"} courseId={courseId} term={term} />
-      <List type="groups" elements={courseGroups}/>
+      {courseGroups.length === 0 ? <h1>No groups found on Blackboard</h1> : <List type="groups" elements={courseGroups}/>}
       <CSVReader
         onDrop={handleGroups}
         noDrag
