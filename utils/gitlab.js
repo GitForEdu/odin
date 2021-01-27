@@ -33,17 +33,45 @@ const createGroup = async (path, name, pat, parentId) => {
   return await response.json()
 }
 
-const getGroupInfo = async (path, name, pat) => {
-  const response = await fetch(`${path}/api/v4/groups/${name}`, {
+const getGroupInfo = async (path, groupID, pat) => {
+  const response = await fetch(`${path}/api/v4/groups/${groupID}`, {
     method: "GET",
     headers: {
       "Content-Type": "application/json",
       "PRIVATE-TOKEN": pat,
     },
   })
+  return await response.json()
+}
+
+const getUserInfo = async (path, pat, userName) => {
+  const response = await fetch(`${path}/api/v4/users?username=${userName}`, {
+    method: "GET",
+    headers: {
+      "Content-Type": "application/json",
+      "PRIVATE-TOKEN": pat,
+    },
+  })
+  return await response.json()
+}
+
+const addUserToGroup = async (path, groupID, pat, userName, access_level) => {
+  let payload = {
+    user_id: userName,
+    access_level: access_level,
+  }
+
+  const response = await fetch(`${path}/api/v4/groups/${groupID}/members`, {
+    method: "POST",
+    headers: {
+      "Content-Type": "application/json",
+      "PRIVATE-TOKEN": pat,
+    },
+    body: JSON.stringify(payload),
+  })
 
   return await response.json()
 }
 
 
-export { createGroup, getGroupInfo }
+export { createGroup, getGroupInfo, addUserToGroup, getUserInfo }

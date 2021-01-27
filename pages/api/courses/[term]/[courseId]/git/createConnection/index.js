@@ -42,10 +42,16 @@ export async function createBBGitConnection(req, params) {
 
   const courseId = params.courseId
 
+  const term = params.term
+
+  const courseFull = `${courseId}-${term}`
+
   const body = req.body
 
+  const legalGitName = courseFull.replace(/^-|((\.|\.atom|\.git)$)/, "")
+
   const connection = await prisma.bbGitConnection.create({
-    data: { courseId: courseId, gitURL: body.gitURL },
+    data: { courseId: courseId, gitURL: body.gitURL, repoName: legalGitName },
   })
 
   if (connection) {

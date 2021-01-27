@@ -28,12 +28,12 @@ export async function createBBGitRepoConnection(req, params) {
   }
   if (group.id) {
     const connection = await prisma.bbGitConnection.create({
-      data: { courseId: courseFull, gitURL: `${body.gitURL}/${legalGitName}` },
+      data: { courseId: courseFull, gitURL: body.gitURL, repoName: legalGitName },
     })
 
     if (connection) {
       const userConnection = await prisma.userGitConnection.create({
-        data: { pat: body.pat, userName: userName, gitURL: `${body.gitURL}/${legalGitName}` },
+        data: { pat: body.pat, userName: userName, gitURL: body.gitURL },
       })
       if (userConnection) {
         return connection

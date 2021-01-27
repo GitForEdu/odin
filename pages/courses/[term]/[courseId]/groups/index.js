@@ -3,8 +3,12 @@ import List from "components/List"
 import withAuth from "components/withAuth"
 import { useRouter } from "next/router"
 import { getCourseGroups } from "pages/api/courses/[term]/[courseId]/groups"
+import { getBBGitConnection } from "pages/api/courses/[term]/[courseId]/git/createConnection"
 import { useState, useEffect } from "react"
 import { CSVReader } from "react-papaparse"
+import fetcher from "utils/fetcher"
+import StyledButton from "components/Button"
+
 
 export const Group = ({ courseGroups }) => {
   const router = useRouter()
@@ -17,6 +21,7 @@ export const Group = ({ courseGroups }) => {
     loading: true,
     groups: null,
   })
+  const [loadingCreateSubGroups, setLoadingCreateSubGroups] = useState(false)
 
   const handleGroups = filedata => {
     setFiles({
@@ -30,6 +35,27 @@ export const Group = ({ courseGroups }) => {
       ...files,
       groupMembers: filedata,
     })
+  }
+
+  const createSubGroups = async () => {
+    let groups = courseGroups
+    if (groupData.groups && groupData.groups.length !== 0) {
+      groups = groupData.groups
+    }
+    if (groups && groups.length !== 0) {
+      setLoadingCreateSubGroups(true)
+      const data = await fetcher(
+        `/api/courses/${term}/${courseId}/git/createSubGroups`,
+        {
+          groups: groups,
+        }
+      )
+      setLoadingCreateSubGroups(false)
+      console.log(data)
+      if (data.courseId) {
+        router.push(`/courses/${term}/${courseId}`)
+      }
+    }
   }
 
   useEffect(() => {
@@ -96,7 +122,12 @@ export const Group = ({ courseGroups }) => {
       >
         <span>Click to upload group members CSV with data headers</span>
       </CSVReader>
-
+      {((courseGroups && courseGroups.length !== 0) || groupData.groups && groupData.groups.length !== 0) &&<StyledButton
+        onClick={createSubGroups}
+        disabled={loadingCreateSubGroups}
+      >
+        Create groups on GitLab
+      </StyledButton>}
       {groupData.loading && <h1>Please upload CSV files from Blackboard to see groups</h1>}
 
       {groupData.groups && (
@@ -141,7 +172,9 @@ export const getServerSideProps = (async (context) => {
 
   const courseGroups = await getCourseGroups(context.req, params)
 
-  if (!courseGroups) {
+  const bbGitConnection = await getBBGitConnection(context.req, params)
+
+  if (!courseGroups || !bbGitConnection) {
     return {
       redirect: {
         destination: "/",
@@ -151,7 +184,7 @@ export const getServerSideProps = (async (context) => {
   }
 
   return {
-    props: { courseGroups },
+    props: { courseGroups, bbGitConnection },
   }
 })
 

@@ -13,6 +13,7 @@ generator client {
 model bbGitConnection {
   courseId String @id
   gitURL  String
+  repoName String
 }
 
 model userGitConnection {
