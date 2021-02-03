@@ -7,7 +7,13 @@ const List = ({ type, elements }) => {
     return (
       <ListItemLink key={elem.id}>
         <ListItemText primary={"Stian Student Studentsen"} secondary={elem.id} />
-        <ListItemText primary="Activity" secondary={<Activity />} />
+        <ListItemText
+          primary="Activity"
+          secondary={
+            <Activity
+              data={[0, 1, 2, 3, 2, 2, 3, 2, 3, 1, 1, 3, 3, 2, 1, 0, 0, 2, 2, 1, 0, 3, 2, 1, 0, 1, 3, 2]}
+            />}
+        />
         <ListItemText primary="Commits" secondary={"294"} />
         <ListItemText primary="Pull requests" secondary={"50"} />
         <ListItemText primary="Wiki edits"secondary={"17"} />
