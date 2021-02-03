@@ -1,6 +1,7 @@
 import isAuthorized from "middelwares/authorized"
 import getAccessToken from "utils/bb_token_cache"
 import { getSession } from "next-auth/client"
+import { getCourseUsersBB } from "utils/blackboard"
 
 
 // function createFullCourseId(courseid, term) {
@@ -20,14 +21,7 @@ export async function getCourseUsers(req, params) {
   const indexCourse = userCourses.findIndex(course => course.id === courseId)
 
   if (indexCourse !== -1 && userCourses[indexCourse].role === "Instructor") {
-    const response = await fetch(`${process.env.BB_API}/learn/api/public/v1/courses/${courseId}/users`, {
-      method: "GET",
-      headers: new Headers({
-        "Authorization" : `Bearer ${bbToken}`,
-        "Content-Type": "application/x-www-form-urlencoded",
-      }),
-    })
-    return (await response.json()).results
+    return getCourseUsersBB(courseId, bbToken)
   }
   else {
     return {}
