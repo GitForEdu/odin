@@ -27,14 +27,10 @@ export async function createSubGroups(req, params) {
     where: { courseId: courseFull },
   })
   if (connection) {
-    console.log(connection)
-    console.log("bb git conn found")
     const userConnection = await prisma.userGitConnection.findUnique({
       where: { userName_gitURL: { userName: userName, gitURL: connection.gitURL } },
     })
     if (userConnection) {
-      console.log(userConnection)
-      console.log("bb git user conn found")
       if (platform === "GitLab") {
         const parentGroupInfo = await getGroupInfo(connection.gitURL, connection.repoName, userConnection.pat)
         if (parentGroupInfo.id) {

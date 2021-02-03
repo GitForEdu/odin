@@ -1,18 +1,12 @@
 import isAuthorized from "middelwares/authorized"
 import getAccessToken from "utils/bb_token_cache"
+import { getCoursesBB } from "utils/blackboard"
 
 
 export async function getCourses() {
   const bbToken = await getAccessToken()
-  const response = await fetch(`${process.env.BB_API}/learn/api/public/v3/courses`, {
-    method: "GET",
-    headers: new Headers({
-      "Authorization" : `Bearer ${bbToken}`,
-      "Content-Type": "application/x-www-form-urlencoded",
-    }),
-  })
-
-  return (await response.json()).results
+  const courses = getCoursesBB(bbToken)
+  return courses
 }
 
 async function courses(req, res, session) {

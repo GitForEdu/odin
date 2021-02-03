@@ -1,6 +1,6 @@
 import isAuthorized from "middelwares/authorized"
 import getAccessToken from "utils/bb_token_cache"
-
+import { getCourseBB } from "utils/blackboard"
 // function createFullCourseId(courseid, term) {
 //   const year = "20" + term.substring(1,3)
 //   const academicTerm = term.substring(0,1)
@@ -14,14 +14,9 @@ async function course(req, res, session) {
   // const courseId = createFullCourseId(query.courseid, query.term)
   const courseId = query.courseid
   const bbToken = await getAccessToken()
-  const response = await fetch(`${process.env.BB_API}/learn/api/public/v3/courses/${courseId}`, {
-    method: "GET",
-    headers: new Headers({
-      "Authorization" : `Bearer ${bbToken}`,
-      "Content-Type": "application/x-www-form-urlencoded",
-    }),
-  })
-  const bbCourse = await response.json()
+
+  const bbCourse = await getCourseBB(courseId, bbToken)
+
   const userCourses = session.bbUserCourses
   if (userCourses.findIndex(userCourse => userCourse.id === bbCourse.id) !== -1) {
     res.json({ ...bbCourse })
