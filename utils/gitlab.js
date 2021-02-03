@@ -53,12 +53,12 @@ const getUserInfo = async (path, pat, userName) => {
       "PRIVATE-TOKEN": pat,
     },
   }).then(r => r.json()).then(data => {
-    if (data.length === 1) {
-      return data[0]
-    }
-    else {
-      return { message: "Cannot find exact user with GitLab search" }
-    }
+    data.forEach(usersFoundInSearch => {
+      if (usersFoundInSearch.userName === userName) {
+        return usersFoundInSearch
+      }
+    })
+    return { message: "Cannot find exact user with GitLab search" }
   })
   return response
 }
