@@ -22,10 +22,19 @@ export async function createGitPat(req, params) {
   })
 
   if (connection) {
-    const userConnection = await prisma.userGitConnection.create({
-      data: { pat: body.pat, userName: userName, gitURL: connection.gitURL },
+    const userConnection = await prisma.userGitConnection.findUnique({
+      where: { userName_gitURL: { userName: userName, gitURL: connection.gitURL } },
     })
-    if (userConnection) {
+    if (!userConnection) {
+      const userConnection = await prisma.userGitConnection.create({
+        data: { pat: body.pat, userName: userName, gitURL: connection.gitURL },
+      })
+      if (userConnection) {
+        return connection
+      }
+    }
+    else {
+      // userConnection was allready in db for some reason
       return connection
     }
   }

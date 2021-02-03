@@ -7,7 +7,12 @@ const getCourseGroupsBB = (courseId, bbToken) => {
       "Authorization" : `Bearer ${bbToken}`,
       "Content-Type": "application/x-www-form-urlencoded",
     }),
-  }).then(r => r.json()).then(data => data.results)
+  }).then(r => r.json()).then(data => {
+    if(data.results) {
+      return data.results
+    }
+    return data
+  })
   return response
 }
 
@@ -40,7 +45,12 @@ const getCoursesBB = (bbToken) => {
       "Authorization" : `Bearer ${bbToken}`,
       "Content-Type": "application/x-www-form-urlencoded",
     }),
-  }).then(r => r.json()).then(data => data.results)
+  }).then(r => r.json()).then(data => {
+    if(data.results) {
+      return data.results
+    }
+    return data
+  })
 
   return response
 }
