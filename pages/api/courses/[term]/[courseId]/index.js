@@ -17,12 +17,17 @@ async function course(req, res, session) {
 
   const bbCourse = await getCourseBB(courseId, bbToken)
 
-  const userCourses = session.bbUserCourses
-  if (userCourses.findIndex(userCourse => userCourse.id === bbCourse.id) !== -1) {
-    res.json({ ...bbCourse })
+  if (bbCourse.message) {
+    res.json(bbCourse)
   }
   else {
-    res.json({})
+    const userCourses = session.bbUserCourses
+    if (userCourses.findIndex(userCourse => userCourse.id === bbCourse.id) !== -1) {
+      res.json({ ...bbCourse })
+    }
+    else {
+      res.json({})
+    }
   }
 }
 

@@ -50,20 +50,42 @@ export async function createBBGitConnection(req, params) {
 
   const legalGitName = courseFull.replace(/^-|((\.|\.atom|\.git)$)/, "")
 
-  const connection = await prisma.bbGitConnection.create({
-    data: { courseId: courseId, gitURL: body.gitURL, repoName: legalGitName },
+  const checkIfConnExsitsAllready = await prisma.bbGitConnection.findUnique({
+    where: { courseId: courseFull },
   })
 
-  if (connection) {
-    const userConnection = await prisma.userGitConnection.create({
-      data: { pat: body.pat, userName: userName, gitURL: body.gitURL },
+  if (!checkIfConnExsitsAllready) {
+    const connection = await prisma.bbGitConnection.create({
+      data: { courseId: courseFull, gitURL: body.gitURL, repoName: legalGitName },
     })
-    if (userConnection) {
-      return connection
+
+    if (connection) {
+      const userConnection = await prisma.userGitConnection.findUnique({
+        where: { userName_gitURL: { userName: userName, gitURL: connection.gitURL } },
+      })
+      if(!userConnection) {
+        const userConnection = await prisma.userGitConnection.create({
+          data: { pat: body.pat, userName: userName, gitURL: body.gitURL },
+        })
+        if (userConnection) {
+          return connection
+        }
+        else {
+          return { ...connection, pat: false }
+        }
+      }
+      else {
+        // userConnection was found, no need to create
+        return connection
+      }
+    }
+    else {
+      // Cannot create connection in db for some reason
+      return { error: "errorCreateBBBGitConn" }
     }
   }
   else {
-    return { error: "errorCreateBBBGitConn" }
+    return { error: "connection allready exsist in db" }
   }
 }
 

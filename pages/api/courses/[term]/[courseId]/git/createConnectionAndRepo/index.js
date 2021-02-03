@@ -23,28 +23,51 @@ export async function createBBGitRepoConnection(req, params) {
 
   const legalGitName = courseFull.replace(/^-|((\.|\.atom|\.git)$)/, "")
 
-  if (platform === "GitLab") {
-    group = await createGroup(body.gitURL, legalGitName, body.pat, undefined)
-  }
-  if (group.id) {
-    const connection = await prisma.bbGitConnection.create({
-      data: { courseId: courseFull, gitURL: body.gitURL, repoName: legalGitName },
-    })
+  const checkIfConnExsitsAllready = await prisma.bbGitConnection.findUnique({
+    where: { courseId: courseFull },
+  })
 
-    if (connection) {
-      const userConnection = await prisma.userGitConnection.create({
-        data: { pat: body.pat, userName: userName, gitURL: body.gitURL },
+  if(!checkIfConnExsitsAllready) {
+    if (platform === "GitLab") {
+      group = await createGroup(body.gitURL, legalGitName, body.pat, undefined)
+    }
+    if (group.id) {
+      // Create conn if not exsists allready and the group was created on Gitlab
+      const connection = await prisma.bbGitConnection.create({
+        data: { courseId: courseFull, gitURL: body.gitURL, repoName: legalGitName },
       })
-      if (userConnection) {
-        return connection
+
+      if (connection) {
+        const userConnection = await prisma.userGitConnection.findUnique({
+          where: { userName_gitURL: { userName: userName, gitURL: connection.gitURL } },
+        })
+        if(!userConnection) {
+          // Also save userconnection now, if it not allready was there
+          const newUserConnection = await prisma.userGitConnection.create({
+            data: { pat: body.pat, userName: userName, gitURL: body.gitURL },
+          })
+          if (newUserConnection) {
+            return connection
+          }
+        }
+        else {
+          // userConnection was found, no need to create
+          return connection
+        }
+      }
+      else {
+        // Cannot create connection in db for some reason
+        return { error: "errorCreateBBBGitConn" }
       }
     }
-    else {
-      return { error: "errorCreateBBBGitConn" }
+    if (group.message) {
+      // TODO: Check if it was because group allready exsits, and maybe we have access to it and we still can create conn?
+      // Cannot create parent group on GitLab
+      return group
     }
   }
-  if(group.message === "Failed to save group {:path=>[\"has already been taken\"]}") {
-    return { error: "group allready exsist" }
+  else {
+    return { error: "connection allready exsist in db" }
   }
 }
 

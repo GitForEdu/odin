@@ -28,31 +28,39 @@ const createGroup = async (path, name, pat, parentId) => {
       "PRIVATE-TOKEN": pat,
     },
     body: JSON.stringify(payload),
-  })
+  }).then(r => r.json())
 
-  return await response.json()
+  return response
 }
 
 const getGroupInfo = async (path, groupID, pat) => {
-  const response = await fetch(`${path}/api/v4/groups/${groupID}`, {
+  const response = fetch(`${path}/api/v4/groups/${groupID}`, {
     method: "GET",
     headers: {
       "Content-Type": "application/json",
       "PRIVATE-TOKEN": pat,
     },
-  })
-  return await response.json()
+  }).then(r => r.json())
+
+  return response
 }
 
 const getUserInfo = async (path, pat, userName) => {
-  const response = await fetch(`${path}/api/v4/users?username=${userName}`, {
+  const response = fetch(`${path}/api/v4/users?username=${userName}`, {
     method: "GET",
     headers: {
       "Content-Type": "application/json",
       "PRIVATE-TOKEN": pat,
     },
+  }).then(r => r.json()).then(data => {
+    if (data.length === 1) {
+      return data[0]
+    }
+    else {
+      return { message: "Cannot find exact user with GitLab search" }
+    }
   })
-  return await response.json()
+  return response
 }
 
 const addUserToGroup = async (path, groupID, pat, userName, access_level) => {
@@ -61,16 +69,16 @@ const addUserToGroup = async (path, groupID, pat, userName, access_level) => {
     access_level: access_level,
   }
 
-  const response = await fetch(`${path}/api/v4/groups/${groupID}/members`, {
+  const response = fetch(`${path}/api/v4/groups/${groupID}/members`, {
     method: "POST",
     headers: {
       "Content-Type": "application/json",
       "PRIVATE-TOKEN": pat,
     },
     body: JSON.stringify(payload),
-  })
+  }).then(r => r.json())
 
-  return await response.json()
+  return response
 }
 
 
