@@ -119,4 +119,19 @@ const addUsersToGroup = async (path, groupID, pat, userNames, access_level) => {
 }
 
 
-export { createGroup, getGroupInfo, addUserToGroup, getUserInfo, addUsersToGroup }
+const getCourseMembersGitlab = async (path, groupID, pat) => {
+  console.log("getCourseMembersGitlab called with path", path, "groupID", groupID, "PAT", pat)
+  const response = fetch(`${path}/api/v4/groups/${groupID}/members`, {
+    method: "GET",
+    headers: {
+      "Content-Type": "application/json",
+      "PRIVATE-TOKEN": pat,
+    },
+  }).then(r => r.json())
+
+  console.log("CourseMembers Gitlab", response)
+
+  return response
+}
+
+export { createGroup, getGroupInfo, addUserToGroup, getUserInfo, getCourseMembersGitlab, addUsersToGroup }

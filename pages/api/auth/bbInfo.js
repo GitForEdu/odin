@@ -30,7 +30,7 @@ const getbbUserInfo = async (username) => {
       const courseUsers = await getCourseUsersBB(course.id, bbToken)
 
       if(courseUsers.status !== 403) {
-        (courseUsers.results).forEach(user => {
+        (courseUsers).forEach(user => {
           if(user.userId === bbUserId) {
             bbUserCourses.push( {
               id: course.id,

@@ -27,6 +27,7 @@ const getCourseUsersBB = (courseId, bbToken) => {
     if (data.results) {
       return data.results
     }
+    return data
   })
   return response
 }
