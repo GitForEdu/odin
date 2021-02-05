@@ -22,7 +22,12 @@ const List = ({ type, elements }) => {
   const itemList = elements.map(elem => {
     return (
       <ListItemLink key={elem.id} alignItems="center" >
-        <ListItemText primary={"Stian Student Studentsen"} secondary={elem.id} />
+        <ListItemText
+          primary={"Stian Student Studentsen"}
+          secondary={elem.id}
+          primaryTypographyProps={primaryTextStyling}
+          secondaryTypographyProps={primaryTextStyling}
+        />
 
         <ListItem alignItems="flex-start">
           <Activity
