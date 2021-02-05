@@ -1,9 +1,50 @@
 import { PrismaClient } from "@prisma/client"
 import isAuthorized from "middelwares/authorized"
 import { getSession } from "next-auth/client"
-import { createGroup, getGroupInfo, addUserToGroup, getUserInfo } from "utils/gitlab"
+import { createGroup, getGroupInfo, addUsersToGroup, getUserInfo } from "utils/gitlab"
+
 
 const prisma = new PrismaClient()
+
+const createSubGroupsFunc = async (connection, userConnection, groupsToCreate, parentGroupInfo) => {
+  const createdGroups = await Promise.all(groupsToCreate.map(groupToCreate => {
+    const newGitGroup = createGroup(connection.gitURL, groupToCreate.code, userConnection.pat, parentGroupInfo.id)
+    return newGitGroup
+  }))
+  const filledGroups = Promise.all(createdGroups.map(newleyCreatedGroup => {
+    if (!newleyCreatedGroup.message) {
+      const groupToAddMembers = groupsToCreate.find(groupToCreate => groupToCreate.code === newleyCreatedGroup.name)
+      if(groupToAddMembers && groupToAddMembers.members) {
+        const members = groupToAddMembers.members
+        let membersNotFoundGitLab = []
+        let membersFoundGitLab = []
+        const statusSubGroup = Promise.all(members.map(member => {
+          const memeberFoundOnGitlab = getUserInfo(connection.gitURL, userConnection.pat, member.userName).then(userInfo => {
+            if(userInfo.id) {
+              membersFoundGitLab.push(userInfo.id)
+            }
+            else {
+              membersNotFoundGitLab.push(member.userName)
+            }
+          })
+          return memeberFoundOnGitlab
+        })).then(() => {
+          const statusAddMembersToGroup = addUsersToGroup(connection.gitURL, newleyCreatedGroup.id, userConnection.pat, membersFoundGitLab, 30).then((status) => ({ group: groupToAddMembers, usersNotFoundGitLab: membersNotFoundGitLab, status: status }))
+          return statusAddMembersToGroup
+        })
+        return statusSubGroup
+      }
+      else {
+        // no members info on group
+        return { error: "failed to get info about group members" }
+      }
+    }
+    else {
+      return { error: "failed to create subGroup", message: newleyCreatedGroup.message }
+    }
+  }))
+  return filledGroups
+}
 
 export async function createSubGroups(req, params) {
   const session = await getSession({ req })
@@ -15,6 +56,8 @@ export async function createSubGroups(req, params) {
   const term = params.term
 
   const courseFull = `${courseId}-${term}`
+
+  const legalGitName = courseFull.replace(/^-|((\.|\.atom|\.git)$)/, "")
 
   const body = req.body
 
@@ -35,44 +78,16 @@ export async function createSubGroups(req, params) {
       if (platform === "GitLab") {
         const parentGroupInfo = await getGroupInfo(connection.gitURL, connection.repoName, userConnection.pat)
         if (parentGroupInfo.id) {
-          const createdGroups = await Promise.all(groupsToCreate.map(groupToCreate => {
-            const newGitGroup = createGroup(connection.gitURL, groupToCreate.code, userConnection.pat, parentGroupInfo.id)
-            return newGitGroup
-          }))
-          const filledGroups = Promise.all(createdGroups.map(newleyCreatedGroup => {
-            if (!newleyCreatedGroup.message) {
-              const groupToAddMembers = groupsToCreate.find(groupToCreate => groupToCreate.code === newleyCreatedGroup.name)
-              if(groupToAddMembers && groupToAddMembers.members) {
-                const members = groupToAddMembers.members
-                const newMembers = Promise.all(members.map(member => {
-                  const newMemberInGroup = getUserInfo(connection.gitURL, userConnection.pat, member.userName).then(userInfo => {
-                    if(userInfo.id) {
-                      return addUserToGroup(connection.gitURL, newleyCreatedGroup.id, userConnection.pat, userInfo.id, 30)
-                    }
-                    else {
-                      // failed to get userInfo from gitlab
-                      return userInfo
-                    }
-                  })
-                  return newMemberInGroup
-                }))
-                return newMembers
-              }
-              else {
-                // no members info on group
-                return { error: "failed to get info about group members" }
-              }
-            }
-            else {
-              return { error: "failed to create subGroup" }
-            }
-          }))
-          return filledGroups
+          return createSubGroupsFunc(connection, userConnection, groupsToCreate, parentGroupInfo)
         }
         else {
-          // TODO: it is possible that the parent group is not created yet. If not use info from bbConn to create parent Repo
-          // Failed to get parent group info from Git
-          return parentGroupInfo
+          // Parent group for course was not found for some reason, try to create it
+          const parentGroupNew = await createGroup(connection.gitURL, legalGitName, userConnection.pat, undefined)
+          if (parentGroupNew.id) {
+            return createSubGroupsFunc(connection, userConnection, groupsToCreate, parentGroupNew)
+          }
+          // Failed to create parent group on Git
+          return parentGroupNew
         }
       }
     }
@@ -87,9 +102,9 @@ export async function createSubGroups(req, params) {
 
 async function git(req, res) {
   if (req.method === "POST") {
-    const connection = await createSubGroups(req, req.query)
+    const infoCreationGroups = await createSubGroups(req, req.query)
 
-    res.json(connection)
+    res.json(infoCreationGroups)
   }
 }
 
