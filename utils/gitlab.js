@@ -52,17 +52,31 @@ const getUserInfo = async (path, pat, userName) => {
       "Content-Type": "application/json",
       "PRIVATE-TOKEN": pat,
     },
-  }).then(r => r.json()).then(data => {
-    data.forEach(usersFoundInSearch => {
-      if (usersFoundInSearch.userName === userName) {
-        return usersFoundInSearch
+  }).then(r => r.json()).then(searchResultUser => {
+    let user = undefined
+    searchResultUser.forEach(usersFoundInSearch => {
+      if (usersFoundInSearch.username === userName) {
+        user = usersFoundInSearch
       }
     })
+    if (user) {
+      return user
+    }
     return { message: "Cannot find exact user with GitLab search" }
   })
   return response
 }
 
+/*
+  Access_Level:
+  - No access: 0
+  - Minimanl access: 5
+  - Guest: 10
+  - Reporter: 20
+  - Developer: 30
+  - Maintainer: 40
+  - Owner: 50 (Valid only for groups)
+*/
 const addUserToGroup = async (path, groupID, pat, userName, access_level) => {
   let payload = {
     user_id: userName,
@@ -81,5 +95,28 @@ const addUserToGroup = async (path, groupID, pat, userName, access_level) => {
   return response
 }
 
+const addUsersToGroup = async (path, groupID, pat, userNames, access_level) => {
+  if (userNames.length > 0) {
+    let payload = {
+      user_id: userNames.toString(),
+      access_level: access_level,
+    }
 
-export { createGroup, getGroupInfo, addUserToGroup, getUserInfo }
+    const response = fetch(`${path}/api/v4/groups/${groupID}/members`, {
+      method: "POST",
+      headers: {
+        "Content-Type": "application/json",
+        "PRIVATE-TOKEN": pat,
+      },
+      body: JSON.stringify(payload),
+    }).then(r => r.json())
+
+    return response
+  }
+  else {
+    return { message: "no members / no members found, none added to group", status: "success" }
+  }
+}
+
+
+export { createGroup, getGroupInfo, addUserToGroup, getUserInfo, addUsersToGroup }
