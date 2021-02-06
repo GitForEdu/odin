@@ -1,5 +1,12 @@
 {
   "compilerOptions": {
-    "baseUrl": "."
+    "baseUrl": ".",
+    "jsx": "react-jsx",
+    "target": "ES6",
+    "checkJs": true,
+    "moduleResolution": "node",
   },
+  "exclude": [
+    "node_modules"
+  ],
 }
