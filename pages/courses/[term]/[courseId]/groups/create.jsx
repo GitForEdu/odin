@@ -28,7 +28,7 @@ const getListStyle = isDraggingOver => ({
 })
 
 const makeRandomGroups = (students, numberOfGroups, studentsPerGroup, mode = "overflowGroups") => {
-  console.log(numberOfGroups, studentsPerGroup, mode)
+  console.log(numberOfGroups, studentsPerGroup, mode, "sutdets", students)
   let studentList = [...students]
   let numberOfStudents = students.length
   let groups = numberOfGroups
@@ -119,6 +119,7 @@ const Dropable = (id, students) => {
               )}
             </Draggable>
           ))}
+          {provided.placeholder}
         </div>
       )}
     </Droppable>
@@ -126,17 +127,17 @@ const Dropable = (id, students) => {
 }
 
 export const Group = ({ courseGroups, courseUsers }) => {
-
+  console.log("coursesusers:", courseUsers)
   const router = useRouter()
   const { courseId, term } = router.query
   const [numberOfStudentsPerGroup, setNumberOfStudentsPerGroup] = useState(5)
   const [groupMode, setGroupMode] = useState("overflowStudentsPerGroup")
-  const [numberOfGroups, setNumberOfGroups] = useState(groupMode === "overflowGroups" ? Math.ceil(courseUsers.results.length / numberOfStudentsPerGroup) : Math.floor(courseUsers.results.length / numberOfStudentsPerGroup))
+  const [numberOfGroups, setNumberOfGroups] = useState(groupMode === "overflowGroups" ? Math.ceil(courseUsers.length / numberOfStudentsPerGroup) : Math.floor(courseUsers.length / numberOfStudentsPerGroup))
   const [loading, setLoading] = useState(true)
 
   const handleChangeNumberOfGroups = (event) => {
     const newNumberOfGroups = parseInt(event.target.value)
-    const tmpNumber = Math.floor(courseUsers.results.length / newNumberOfGroups)
+    const tmpNumber = Math.floor(courseUsers.length / newNumberOfGroups)
     const newNumberOfStudentsPerGroup = tmpNumber ? tmpNumber : 1
     setGroupMode("overflowStudentsPerGroup")
     setNumberOfStudentsPerGroup(newNumberOfStudentsPerGroup)
@@ -145,7 +146,7 @@ export const Group = ({ courseGroups, courseUsers }) => {
 
   const handleChangeNumberOfStudentsPerGroup = (event) => {
     const newNumberOfStudentsPerGroup = parseInt(event.target.value)
-    const newNumberOfGroups = Math.ceil(courseUsers.results.length / newNumberOfStudentsPerGroup)
+    const newNumberOfGroups = Math.ceil(courseUsers.length / newNumberOfStudentsPerGroup)
     setGroupMode("overflowGroups")
     setNumberOfStudentsPerGroup(newNumberOfStudentsPerGroup)
     setNumberOfGroups(newNumberOfGroups)
@@ -188,9 +189,9 @@ export const Group = ({ courseGroups, courseUsers }) => {
   }
 
   useEffect(() => {
-    setRandomGroups(makeRandomGroups(courseUsers.results, numberOfGroups, numberOfStudentsPerGroup, groupMode))
+    setRandomGroups(makeRandomGroups(courseUsers, numberOfGroups, numberOfStudentsPerGroup, groupMode))
     setLoading(false)
-  }, [courseUsers.results, groupMode, numberOfGroups, numberOfStudentsPerGroup])
+  }, [courseUsers, groupMode, numberOfGroups, numberOfStudentsPerGroup])
 
 
   return (
