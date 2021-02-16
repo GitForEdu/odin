@@ -1,4 +1,3 @@
-import List from "components/List"
 import withAuth from "components/withAuth"
 import { useRouter } from "next/router"
 import { getCourseGroups } from "pages/api/courses/[term]/[courseId]/groups"
@@ -6,6 +5,27 @@ import { getBBGitConnection } from "pages/api/courses/[term]/[courseId]/git/crea
 import { useState, useEffect } from "react"
 import { getCourseUsers } from "pages/api/courses/[term]/[courseId]/users"
 import { StyledInputField } from "components/TextField"
+import { DragDropContext, Droppable, Draggable } from "react-beautiful-dnd"
+
+
+const getItemStyle = (isDragging, draggableStyle) => ({
+  // some basic styles to make the items look a bit nicer
+  userSelect: "none",
+  padding: 8 * 2,
+  margin: "0 0 8px 0",
+
+  // change background colour if dragging
+  background: isDragging ? "lightgreen" : "grey",
+
+  // styles we need to apply on draggables
+  ...draggableStyle,
+})
+
+const getListStyle = isDraggingOver => ({
+  background: isDraggingOver ? "lightblue" : "lightgrey",
+  padding: 8,
+  width: 250,
+})
 
 const makeRandomGroups = (students, numberOfGroups, studentsPerGroup, mode = "overflowGroups") => {
   console.log(numberOfGroups, studentsPerGroup, mode)
@@ -17,12 +37,15 @@ const makeRandomGroups = (students, numberOfGroups, studentsPerGroup, mode = "ov
   const groupsOfStudents = []
 
   for (let i = 0; i < groups; i++) {
-    const localGroup = []
+    const localGroup = {
+      id: i,
+      members: [],
+    }
     for (let j = 0; j < studentsPerGroup; j++) {
       if (studentList.length > 0) {
         const indexStudent = Math.floor(Math.random() * studentList.length)
         const randomStudent = studentList[indexStudent]
-        localGroup.push(randomStudent)
+        localGroup.members.push(randomStudent)
         studentList.splice(indexStudent, 1)
       }
     }
@@ -33,7 +56,7 @@ const makeRandomGroups = (students, numberOfGroups, studentsPerGroup, mode = "ov
     if (studentList.length !== 0) {
       console.log(studentList.length)
       for (let i = 0; i < studentList.length; i++) {
-        groupsOfStudents[i].push(studentList[i])
+        groupsOfStudents[i].members.push(studentList[i])
       }
       studentList.splice(0, studentList.length)
     }
@@ -44,12 +67,72 @@ const makeRandomGroups = (students, numberOfGroups, studentsPerGroup, mode = "ov
   return groupsOfStudents
 }
 
+const reorderSubList = (list, startIndex, endIndex, listOfList) => {
+  const listTemp = Array.from(list.members)
+  const [removed] = listTemp.splice(startIndex, 1)
+  listTemp.splice(endIndex, 0, removed)
+
+  listOfList[list.id].members = listTemp
+
+  return listOfList
+}
+
+const moveElementToOtherSubList = (source, destination, droppableSource, droppableDestination, listOfList) => {
+  const sourceClone = Array.from(source)
+  const destClone = Array.from(destination)
+  const [removed] = sourceClone.splice(droppableSource.index, 1)
+
+  destClone.splice(droppableDestination.index, 0, removed)
+
+  listOfList[droppableSource.droppableId].members = sourceClone
+  listOfList[droppableDestination.droppableId].members = destClone
+
+  return listOfList
+}
+
+const Dropable = (id, students) => {
+  const stringId = id.toString()
+  return(
+    <Droppable droppableId={stringId}>
+      {(provided, snapshot) => (
+        <div
+          style={getListStyle(snapshot.isDraggingOver)}
+          ref={provided.innerRef}>
+          {id}
+          {students.map((item, index) => (
+            <Draggable
+              key={item.id}
+              draggableId={item.id}
+              index={index}>
+              {(provided, snapshot) => (
+                <div
+                  ref={provided.innerRef}
+                  {...provided.draggableProps}
+                  {...provided.dragHandleProps}
+
+                  style={getItemStyle(
+                    snapshot.isDragging,
+                    provided.draggableProps.style
+                  )}>
+                  {item.id}
+                </div>
+              )}
+            </Draggable>
+          ))}
+        </div>
+      )}
+    </Droppable>
+  )
+}
+
 export const Group = ({ courseGroups, courseUsers }) => {
+
   const router = useRouter()
   const { courseId, term } = router.query
   const [numberOfStudentsPerGroup, setNumberOfStudentsPerGroup] = useState(5)
   const [groupMode, setGroupMode] = useState("overflowStudentsPerGroup")
   const [numberOfGroups, setNumberOfGroups] = useState(groupMode === "overflowGroups" ? Math.ceil(courseUsers.results.length / numberOfStudentsPerGroup) : Math.floor(courseUsers.results.length / numberOfStudentsPerGroup))
+  const [loading, setLoading] = useState(true)
 
   const handleChangeNumberOfGroups = (event) => {
     const newNumberOfGroups = parseInt(event.target.value)
@@ -68,8 +151,47 @@ export const Group = ({ courseGroups, courseUsers }) => {
     setNumberOfGroups(newNumberOfGroups)
   }
 
+  const [randomGroups, setRandomGroups] = useState([])
 
-  console.log(makeRandomGroups(courseUsers.results, numberOfGroups, numberOfStudentsPerGroup, groupMode))
+  const onDragEnd = result => {
+    const { source, destination } = result
+
+    // dropped outside the list
+    if (!destination) {
+      return
+    }
+
+    // interal moved element
+    if (source.droppableId === destination.droppableId) {
+      const listOfList = reorderSubList(
+        randomGroups[source.droppableId],
+        source.index,
+        destination.index,
+        randomGroups
+      )
+
+      setRandomGroups([...listOfList])
+
+    }
+    // moved into new sublist
+    else {
+      const listOfList = moveElementToOtherSubList(
+        randomGroups[source.droppableId].members,
+        randomGroups[destination.droppableId].members,
+        source,
+        destination,
+        randomGroups
+      )
+
+      setRandomGroups([...listOfList])
+    }
+  }
+
+  useEffect(() => {
+    setRandomGroups(makeRandomGroups(courseUsers.results, numberOfGroups, numberOfStudentsPerGroup, groupMode))
+    setLoading(false)
+  }, [courseUsers.results, groupMode, numberOfGroups, numberOfStudentsPerGroup])
+
 
   return (
     <>
@@ -97,9 +219,14 @@ export const Group = ({ courseGroups, courseUsers }) => {
           },
         }}
       />
+      {!loading
+      && <DragDropContext onDragEnd={onDragEnd}>
+        {randomGroups.map(group => Dropable(group.id, group.members))}
+      </DragDropContext>}
     </>
   )
 }
+
 
 export const getServerSideProps = (async (context) => {
   const params = context.params
