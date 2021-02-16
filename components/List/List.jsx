@@ -20,10 +20,15 @@ const List = ({ type, elements }) => {
   }
 
   const itemList = elements.map(elem => {
+    const fullName = elem.name ? elem.name : "Stian Student Studentsen"
+    const data1 = { title: "Commits", amount: elem.commits ? elem.commits : 294 }
+    const data2 = { title: "Pull requests", amount: elem.pullRequests ? elem.pullRequests : 50 }
+    const data3 = { title: "Wiki edits", amount: elem.wikiEdits ? elem.wikiEdits : 17 }
+
     return (
       <ListItemLink key={elem.id} alignItems="center" >
         <ListItemText
-          primary={"Stian Student Studentsen"}
+          primary={fullName}
           secondary={elem.id}
           primaryTypographyProps={primaryTextStyling}
           secondaryTypographyProps={primaryTextStyling}
@@ -37,20 +42,20 @@ const List = ({ type, elements }) => {
 
         <ListItem>
           <ListItemText
-            primary="Commits"
-            secondary={"294"}
+            primary={data1.title}
+            secondary={data1.amount}
             primaryTypographyProps={primaryTextStyling}
             secondaryTypographyProps={secondaryTextStyling}
           />
           <ListItemText
-            primary="Pull requests"
-            secondary={"50"}
+            primary={data2.title}
+            secondary={data2.amount}
             primaryTypographyProps={primaryTextStyling}
             secondaryTypographyProps={secondaryTextStyling}
           />
           <ListItemText
-            primary="Wiki edits"
-            secondary={"17"}
+            primary={data3.title}
+            secondary={data3.amount}
             primaryTypographyProps={primaryTextStyling}
             secondaryTypographyProps={secondaryTextStyling}
           />

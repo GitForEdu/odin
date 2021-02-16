@@ -6,13 +6,16 @@ import { getCourseUsers } from "pages/api/courses/[term]/[courseId]/users"
 import { getGroupMembersFromGitlab } from "pages/api/courses/[term]/[courseId]/git/getGroupMembers"
 
 
-export const Students = ({ courseUsers }) => {
+export const Students = ({ courseUsers, groupMembers }) => {
   const router = useRouter()
   const { courseId, term } = router.query
 
   return (
     <>
       <Navbar pageTitle={"All students"} courseId={courseId} term={term} />
+      <h1>Student list from Gitlab</h1>
+      <List type="students" elements={groupMembers}/>
+      <h1>Mock student list</h1>
       <List type="students" elements={courseUsers}/>
     </>
   )
@@ -36,7 +39,7 @@ export const getServerSideProps = (async (context) => {
   }
 
   return {
-    props: { courseUsers },
+    props: { courseUsers, groupMembers },
   }
 })
 
