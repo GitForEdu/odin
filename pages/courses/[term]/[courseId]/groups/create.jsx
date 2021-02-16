@@ -6,6 +6,8 @@ import { useState, useEffect } from "react"
 import { getCourseUsers } from "pages/api/courses/[term]/[courseId]/users"
 import { StyledInputField } from "components/TextField"
 import { DragDropContext, Droppable, Draggable } from "react-beautiful-dnd"
+import fetcher from "utils/fetcher"
+import StyledButton from "components/Button"
 
 
 const getItemStyle = (isDragging, draggableStyle) => ({
@@ -134,6 +136,7 @@ export const Group = ({ courseGroups, courseUsers }) => {
   const [groupMode, setGroupMode] = useState("overflowStudentsPerGroup")
   const [numberOfGroups, setNumberOfGroups] = useState(groupMode === "overflowGroups" ? Math.ceil(courseUsers.length / numberOfStudentsPerGroup) : Math.floor(courseUsers.length / numberOfStudentsPerGroup))
   const [loading, setLoading] = useState(true)
+  const [loadingCreateGroups, setLoadingCreateGroups] = useState(false)
 
   const handleChangeNumberOfGroups = (event) => {
     const newNumberOfGroups = parseInt(event.target.value)
@@ -188,6 +191,23 @@ export const Group = ({ courseGroups, courseUsers }) => {
     }
   }
 
+  const createSubGroups = async () => {
+    if (randomGroups && randomGroups.length !== 0) {
+      setLoadingCreateGroups(true)
+      const data = await fetcher(
+        `/api/courses/${term}/${courseId}/blackboard/createGroups`,
+        {
+          groups: randomGroups,
+        }
+      )
+      setLoadingCreateGroups(false)
+      console.log(data)
+      if (data.courseId) {
+        router.push(`/courses/${term}/${courseId}/groups`)
+      }
+    }
+  }
+
   useEffect(() => {
     setRandomGroups(makeRandomGroups(courseUsers, numberOfGroups, numberOfStudentsPerGroup, groupMode))
     setLoading(false)
@@ -224,6 +244,12 @@ export const Group = ({ courseGroups, courseUsers }) => {
       && <DragDropContext onDragEnd={onDragEnd}>
         {randomGroups.map(group => Dropable(group.id, group.members))}
       </DragDropContext>}
+      {(!loading && randomGroups && randomGroups.length !== 0) && <StyledButton
+        onClick={createSubGroups}
+        disabled={loadingCreateGroups}
+      >
+        Create groups on GitLab
+      </StyledButton>}
     </>
   )
 }
