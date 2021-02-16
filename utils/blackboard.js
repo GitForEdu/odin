@@ -23,7 +23,12 @@ const getCourseUsersBB = (courseId, bbToken) => {
       "Authorization" : `Bearer ${bbToken}`,
       "Content-Type": "application/x-www-form-urlencoded",
     }),
-  }).then(r => r.json())
+  }).then(r => r.json()).then(data => {
+    if (data.results) {
+      return data.results
+    }
+    return data
+  })
   return response
 }
 
