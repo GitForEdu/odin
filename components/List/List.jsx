@@ -29,7 +29,7 @@ const List = ({ type, elements }) => {
       <ListItemLink key={elem.id} alignItems="center" >
         <ListItemText
           primary={fullName}
-          secondary={elem.id}
+          secondary={elem.username ? elem.username : elem.id}
           primaryTypographyProps={primaryTextStyling}
           secondaryTypographyProps={primaryTextStyling}
         />
