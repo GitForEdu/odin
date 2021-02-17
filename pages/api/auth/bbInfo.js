@@ -1,10 +1,10 @@
 import getAccessToken from "utils/bb_token_cache"
-import { getCoursesBB, getCourseUsersBB, getUserBB } from "utils/blackboard"
+import { getCoursesBB, getCourseUsersBB, getUserWithUserNameBB } from "utils/blackboard"
 
 const getbbUserInfo = async (username) => {
   const bbToken = await getAccessToken()
   const tempUsernameDevelopment = username === "pettegre" ? "underviser1" : (username === "torestef" ? "underviser0" : username)
-  const bbUser = await getUserBB(tempUsernameDevelopment, bbToken)
+  const bbUser = await getUserWithUserNameBB(tempUsernameDevelopment, bbToken)
   let bbUserCourses = []
   let bbUserId = undefined
   let bbInstitutionRoleIds = undefined
