@@ -183,7 +183,7 @@ const deleteGroupBB = async (courseId, groupId, bbToken) => {
       "Authorization" : `Bearer ${bbToken}`,
       "Content-Type": "application/json",
     }),
-  }).then(r => r)
+  }).then(r => r.status)
 
   return response
 }
@@ -196,7 +196,7 @@ const deleteGroupSetBB = async (courseId, groupId, bbToken) => {
       "Authorization" : `Bearer ${bbToken}`,
       "Content-Type": "application/json",
     }),
-  }).then(r => r)
+  }).then(r => r.status)
 
   return response
 }

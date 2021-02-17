@@ -20,7 +20,8 @@ export const Group = ({ courseGroups }) => {
       }
     )
     setLoading(false)
-    if (data) {
+    console.log("delete group bb", data)
+    if (data === 204) {
       router.push(`/courses/${term}/${courseId}/groups/delete`)
     }
   }

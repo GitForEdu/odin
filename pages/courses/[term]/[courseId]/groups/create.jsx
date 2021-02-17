@@ -201,8 +201,8 @@ export const Group = ({ courseGroups, courseUsers }) => {
         }
       )
       setLoadingCreateGroups(false)
-      console.log(data)
-      if (data.courseId) {
+      console.log("create groups bb", data)
+      if (!data.error) {
         router.push(`/courses/${term}/${courseId}/groups`)
       }
     }
