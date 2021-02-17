@@ -174,4 +174,31 @@ const getCourseGroupUsersBB = (courseId, groupId, bbToken) => {
   })
   return response
 }
-export { getCourseGroupsBB, getCourseUsersBB, getCourseBB, getCoursesBB, getUserWithUserNameBB, createGroupSet, createGroupInGroupSet, addStudentToGroup, getUserWithUserIdBB, getCourseGroupUsersBB }
+
+const deleteGroupBB = async (courseId, groupId, bbToken) => {
+
+  const response = await fetch(`${process.env.BB_API}/learn/api/public/v2/courses/${courseId}/groups/${groupId}`, {
+    method: "DELETE",
+    headers: new Headers({
+      "Authorization" : `Bearer ${bbToken}`,
+      "Content-Type": "application/json",
+    }),
+  }).then(r => r)
+
+  return response
+}
+
+const deleteGroupSetBB = async (courseId, groupId, bbToken) => {
+
+  const response = await fetch(`${process.env.BB_API}/learn/api/public/v2/courses/${courseId}/groups/sets/${groupId}`, {
+    method: "DELETE",
+    headers: new Headers({
+      "Authorization" : `Bearer ${bbToken}`,
+      "Content-Type": "application/json",
+    }),
+  }).then(r => r)
+
+  return response
+}
+
+export { getCourseGroupsBB, getCourseUsersBB, getCourseBB, getCoursesBB, getUserWithUserNameBB, createGroupSet, createGroupInGroupSet, addStudentToGroup, getUserWithUserIdBB, getCourseGroupUsersBB, deleteGroupBB, deleteGroupSetBB }
