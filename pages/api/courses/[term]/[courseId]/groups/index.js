@@ -1,7 +1,7 @@
 import isAuthorized from "middelwares/authorized"
 import getAccessToken from "utils/bb_token_cache"
 import { getSession } from "next-auth/client"
-import { getCourseGroupsBB } from "utils/blackboard"
+import { getCourseGroupsBB, getCourseGroupUsersBB, getUserWithUserIdBB } from "utils/blackboard"
 
 // function createFullCourseId(courseid, term) {
 //   const year = "20" + term.substring(1,3)
@@ -20,7 +20,20 @@ export async function getCourseGroups(req, params) {
   const indexCourse = userCourses.findIndex(course => course.id === courseId)
 
   if (indexCourse !== -1 && userCourses[indexCourse].role === "Instructor") {
-    return getCourseGroupsBB(courseId, bbToken)
+    const courseGroups = await getCourseGroupsBB(courseId, bbToken)
+    const courseGroupsWithUsers = Promise.all(courseGroups.map(courseGroup => {
+      return getCourseGroupUsersBB(courseId, courseGroup.id, bbToken).then(courseGroupUsers => {
+        return Promise.all(courseGroupUsers.map(user => {
+          return getUserWithUserIdBB(user.userId, bbToken).then(r => {
+            return r})
+        })).then(r => {
+          return { ...courseGroup, members: r }
+        })
+      })
+    })).then(r => {
+      return r
+    })
+    return courseGroupsWithUsers
   }
   else {
     return []

@@ -159,4 +159,19 @@ const addStudentToGroup = async (courseId, groupId, userId, bbToken) => {
   return response
 }
 
-export { getCourseGroupsBB, getCourseUsersBB, getCourseBB, getCoursesBB, getUserWithUserNameBB, createGroupSet, createGroupInGroupSet, addStudentToGroup, getUserWithUserIdBB }
+const getCourseGroupUsersBB = (courseId, groupId, bbToken) => {
+  const response = fetch(`${process.env.BB_API}/learn/api/public/v1/courses/${courseId}/groups/${groupId}/users`, {
+    method: "GET",
+    headers: new Headers({
+      "Authorization" : `Bearer ${bbToken}`,
+      "Content-Type": "application/x-www-form-urlencoded",
+    }),
+  }).then(r => r.json()).then(data => {
+    if(data.results) {
+      return data.results
+    }
+    return data
+  })
+  return response
+}
+export { getCourseGroupsBB, getCourseUsersBB, getCourseBB, getCoursesBB, getUserWithUserNameBB, createGroupSet, createGroupInGroupSet, addStudentToGroup, getUserWithUserIdBB, getCourseGroupUsersBB }
