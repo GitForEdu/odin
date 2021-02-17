@@ -21,19 +21,26 @@ export async function getCourseGroups(req, params) {
 
   if (indexCourse !== -1 && userCourses[indexCourse].role === "Instructor") {
     const courseGroups = await getCourseGroupsBB(courseId, bbToken)
-    const courseGroupsWithUsers = Promise.all(courseGroups.map(courseGroup => {
-      return getCourseGroupUsersBB(courseId, courseGroup.id, bbToken).then(courseGroupUsers => {
-        return Promise.all(courseGroupUsers.map(user => {
-          return getUserWithUserIdBB(user.userId, bbToken).then(r => {
-            return r})
-        })).then(r => {
-          return { ...courseGroup, members: r }
+    if (!courseGroups.message) {
+      const courseGroupsWithUsers = Promise.all(courseGroups.map(courseGroup => {
+        return getCourseGroupUsersBB(courseId, courseGroup.id, bbToken).then(courseGroupUsers => {
+          return Promise.all(courseGroupUsers.map(user => {
+            return getUserWithUserIdBB(user.userId, bbToken).then(r => {
+              return r})
+          })).then(r => {
+            return { ...courseGroup, members: r }
+          })
         })
+      })).then(r => {
+        return r
       })
-    })).then(r => {
-      return r
-    })
-    return courseGroupsWithUsers
+      return courseGroupsWithUsers
+    }
+    else {
+      console.log(courseGroups)
+      // TODO: Fix error handling here
+      return []
+    }
   }
   else {
     return []

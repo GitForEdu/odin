@@ -10,6 +10,7 @@ export const Group = ({ courseGroups }) => {
   const router = useRouter()
   const { courseId, term } = router.query
   const [loading, setLoading] = useState(false)
+  const [groups, setGroups] = useState(courseGroups)
 
   const deleteElm = async (elm) => {
     setLoading(true)
@@ -22,13 +23,15 @@ export const Group = ({ courseGroups }) => {
     setLoading(false)
     console.log("delete group bb", data)
     if (data === 204) {
-      router.push(`/courses/${term}/${courseId}/groups/delete`)
+      const index = groups.findIndex(group => group.id === elm.id)
+      groups.splice(index, 1)
+      setGroups([ ...groups])
     }
   }
 
 
   return (
-    <ListDelete elements={courseGroups} deleteFunc={deleteElm} disabled={loading}>
+    <ListDelete elements={groups} deleteFunc={deleteElm} disabled={loading}>
 
     </ListDelete>
   )
