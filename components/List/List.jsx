@@ -66,18 +66,8 @@ const List = ({ type, elements }) => {
       </ListItemLink>
     )
   })
-  if (type === "students") return (
-    <>
-      <h1>Student list</h1>
-      { itemList }
-    </>
-  )
-  if (type === "groups") return (
-    <>
-      <h1>Group list</h1>
-      { itemList }
-    </>
-  )
+
+  if (type === "students" || type === "groups") return itemList
 }
 
 const ListItemLink = (props) => {
