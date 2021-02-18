@@ -15,7 +15,7 @@ export const Students = ({ initialUsers }) => {
   return (
     <Fragment>
       <Navbar pageTitle={"All students"} courseId={courseId} term={term} />
-      <h1>students only in GitLab (should be empty)</h1>
+      <h1>Students only in GitLab (should be empty)</h1>
       {users.gitlab && <List type="students" elements={users.gitlab} />}
       <h1>Students both in Blackboard and Gitlab</h1>
       {users.both && <List type="students" elements={users.both} />}
