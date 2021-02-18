@@ -22,7 +22,8 @@ const List = ({ type, elements }) => {
   }
 
   const itemList = elements.map(elem => {
-    const fullName = elem.name ? elem.name : "Stian Student Studentsen"
+    // Gitlab provides full name as elem.name, Blackboard provides name.given and name.family
+    const fullName = elem.name.given ? `${elem.name.given} ${elem.name.family}` : elem.name
     const data1 = { title: "Commits", amount: elem.commits ? elem.commits : 294 }
     const data2 = { title: "Pull requests", amount: elem.pullRequests ? elem.pullRequests : 50 }
     const data3 = { title: "Wiki edits", amount: elem.wikiEdits ? elem.wikiEdits : 17 }
@@ -31,7 +32,7 @@ const List = ({ type, elements }) => {
       <ListItemLink key={elem.id} alignItems="center" >
         <ListItemText
           primary={fullName}
-          secondary={elem.username ? elem.username : elem.id}
+          secondary={elem.userName ? elem.userName : elem.id}
           primaryTypographyProps={primaryTextStyling}
           secondaryTypographyProps={primaryTextStyling}
         />

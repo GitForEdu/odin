@@ -127,7 +127,12 @@ const getCourseMembersGitlab = async (path, groupID, pat) => {
       "Content-Type": "application/json",
       "PRIVATE-TOKEN": pat,
     },
-  }).then(r => r.json())
+  })
+  const jsonList = (await response.json()).map(member => {
+    const { username, ...memberObject } = member
+    memberObject.userName = username
+    return memberObject
+  })
 
   const subGroups = await fetch(`${path}/api/v4/groups/${groupID}/subgroups`, {
     method: "GET",
@@ -156,7 +161,7 @@ const getCourseMembersGitlab = async (path, groupID, pat) => {
   // console.log("Called for subgroups", subGroups)
   // console.log("Subgroupmembers", subGroupMembers)
 
-  return response
+  return jsonList
 }
 
 export { createGroup, getGroupInfo, addUserToGroup, getUserInfo, getCourseMembersGitlab, addUsersToGroup }
