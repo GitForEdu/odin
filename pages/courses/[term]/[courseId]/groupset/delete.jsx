@@ -6,11 +6,11 @@ import { useState } from "react"
 import { useRouter } from "next/router"
 
 
-export const Group = ({ courseGroups }) => {
+export const GroupSet = ({ courseGroupSet }) => {
   const router = useRouter()
   const { courseId, term } = router.query
   const [loading, setLoading] = useState(false)
-  const [groups, setGroups] = useState(courseGroups)
+  const [groups, setGroups] = useState(courseGroupSet)
 
   const deleteElm = async (elm) => {
     setLoading(true)
@@ -21,7 +21,7 @@ export const Group = ({ courseGroups }) => {
       }
     )
     setLoading(false)
-    console.log("delete group bb", data)
+    console.log("delete groupset bb", data)
     if (data === 204) {
       const index = groups.findIndex(group => group.id === elm.id)
       groups.splice(index, 1)
@@ -41,10 +41,10 @@ export const Group = ({ courseGroups }) => {
 export const getServerSideProps = (async (context) => {
   const params = context.params
 
-  const courseGroups = (await getCourseGroups(context.req, params)).filter(group => !group.isGroupSet)
+  const courseGroupSet = (await getCourseGroups(context.req, params)).filter(group => group.isGroupSet)
 
 
-  if (!courseGroups) {
+  if (!courseGroupSet) {
     return {
       redirect: {
         destination: "/",
@@ -54,9 +54,9 @@ export const getServerSideProps = (async (context) => {
   }
 
   return {
-    props: { courseGroups },
+    props: { courseGroupSet },
   }
 })
 
 
-export default withAuth(Group)
+export default withAuth(GroupSet)
