@@ -25,10 +25,10 @@ export const getServerSideProps = (async (context) => {
   const params = context.params
 
   const courseUsers = await getCourseUsers(context.req, params)
-  console.log("getserversideprops students", courseUsers)
+  // console.log("getserversideprops students", courseUsers)
 
   const groupMembers = await getGroupMembersFromGitlab(context.req, params)
-  console.log("getserversideprops groupmembers", groupMembers)
+  // console.log("getserversideprops groupmembers", groupMembers)
 
   if (!courseUsers) {
     return {

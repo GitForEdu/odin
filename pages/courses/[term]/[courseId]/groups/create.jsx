@@ -28,7 +28,7 @@ const getListStyle = isDraggingOver => ({
 })
 
 const makeRandomGroups = (students, numberOfGroups, studentsPerGroup, mode = "overflowGroups") => {
-  console.log(numberOfGroups, studentsPerGroup, mode, "sutdets", students)
+  // console.log(numberOfGroups, studentsPerGroup, mode, "sutdets", students)
   let studentList = [...students]
   let numberOfStudents = students.length
   let groups = numberOfGroups
@@ -54,7 +54,7 @@ const makeRandomGroups = (students, numberOfGroups, studentsPerGroup, mode = "ov
 
   if(!perfectFit && mode === "overflowStudentsPerGroup") {
     if (studentList.length !== 0) {
-      console.log(studentList.length)
+      // console.log(studentList.length)
       for (let i = 0; i < studentList.length; i++) {
         groupsOfStudents[i].members.push(studentList[i])
       }
@@ -127,7 +127,7 @@ const Dropable = (id, students) => {
 }
 
 export const Group = ({ courseGroups, courseUsers }) => {
-  console.log("coursesusers:", courseUsers)
+  // console.log("coursesusers:", courseUsers)
   const router = useRouter()
   const { courseId, term } = router.query
   const [numberOfStudentsPerGroup, setNumberOfStudentsPerGroup] = useState(5)

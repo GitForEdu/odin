@@ -51,7 +51,7 @@ export const Group = ({ courseGroups }) => {
         }
       )
       setLoadingCreateSubGroups(false)
-      console.log(data)
+      // console.log(data)
       if (data.courseId) {
         router.push(`/courses/${term}/${courseId}`)
       }
@@ -59,7 +59,7 @@ export const Group = ({ courseGroups }) => {
   }
 
   useEffect(() => {
-    console.log("Filendring:", files)
+    // console.log("Filendring:", files)
     if (!files.groups || !files.groupMembers) {
       console.log("Mangler groups eller groupMembers")
       return
@@ -92,7 +92,7 @@ export const Group = ({ courseGroups }) => {
       }
     })
 
-    console.log("Finished groups ", newGroups)
+    // console.log("Finished groups ", newGroups)
     setGroupData({
       groups: newGroups,
       loading: false,

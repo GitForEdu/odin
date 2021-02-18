@@ -4,6 +4,8 @@ import Activity from "components/Activity"
 
 const List = ({ type, elements }) => {
 
+  console.log("List elements", elements)
+
   const primaryTextStyling = { style:
     {
       color: "white",

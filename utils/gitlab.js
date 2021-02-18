@@ -120,7 +120,7 @@ const addUsersToGroup = async (path, groupID, pat, userNames, access_level) => {
 
 
 const getCourseMembersGitlab = async (path, groupID, pat) => {
-  console.log("getCourseMembersGitlab called with path", path, "groupID", groupID, "PAT", pat)
+  // console.log("getCourseMembersGitlab called with path", path, "groupID", groupID, "PAT", pat)
   const response = await fetch(`${path}/api/v4/groups/${groupID}/members`, {
     method: "GET",
     headers: {
@@ -152,9 +152,9 @@ const getCourseMembersGitlab = async (path, groupID, pat) => {
     })
   }))
 
-  console.log("CourseMembers Gitlab", response)
-  console.log("Called for subgroups", subGroups)
-  console.log("Subgroupmembers", subGroupMembers)
+  // console.log("CourseMembers Gitlab", courseMembers)
+  // console.log("Called for subgroups", subGroups)
+  // console.log("Subgroupmembers", subGroupMembers)
 
   return response
 }

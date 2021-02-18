@@ -4,10 +4,10 @@ import { getCourseMembersGitlab } from "utils/gitlab"
 
 
 export async function getGroupMembers(req, res) {
-  console.log("getGroupMembers called with query", req.query)
+  // console.log("getGroupMembers called with query", req.query)
   const groupMembersFromGitlab = await getGroupMembersFromGitlab(req, req.query)
 
-  console.log("getGroupMembers called: ", groupMembersFromGitlab)
+  // console.log("getGroupMembers called: ", groupMembersFromGitlab)
   res.json(groupMembersFromGitlab)
 }
 
@@ -25,7 +25,7 @@ export async function getGroupMembersFromGitlab (req, params) {
     where: { courseId: courseFull },
   })
 
-  console.log("connection? ", connection)
+  // console.log("connection? ", connection)
 
   if (connection) {
     const userConnection = await prisma.userGitConnection.findUnique({
@@ -33,7 +33,7 @@ export async function getGroupMembersFromGitlab (req, params) {
     })
     if (userConnection) {
       const courseMembers = await getCourseMembersGitlab(connection.gitURL, connection.repoName, userConnection.pat)
-      console.log(courseMembers)
+      // console.log(courseMembers)
       return courseMembers
     }
   }
