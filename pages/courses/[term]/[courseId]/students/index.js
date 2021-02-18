@@ -4,20 +4,24 @@ import withAuth from "components/withAuth"
 import { useRouter } from "next/router"
 import { getCourseUsers } from "pages/api/courses/[term]/[courseId]/users"
 import { getGroupMembersFromGitlab } from "pages/api/courses/[term]/[courseId]/git/getGroupMembers"
+import { useState, Fragment } from "react"
 
 
-export const Students = ({ courseUsers, groupMembers }) => {
+export const Students = ({ initialUsers }) => {
   const router = useRouter()
   const { courseId, term } = router.query
+  const [users, setUsers] = useState(initialUsers)
 
   return (
-    <>
+    <Fragment>
       <Navbar pageTitle={"All students"} courseId={courseId} term={term} />
-      <h1>Student list from Gitlab</h1>
-      <List type="students" elements={groupMembers}/>
-      <h1>Mock student list</h1>
-      <List type="students" elements={courseUsers}/>
-    </>
+      <h1>students only in GitLab (should be empty)</h1>
+      {users.gitlab && <List type="students" elements={users.gitlab} />}
+      <h1>Students both in Blackboard and Gitlab</h1>
+      {users.both && <List type="students" elements={users.both} />}
+      <h1>Students only in Blackboard student list</h1>
+      {users.blackboard && <List type="students" elements={users.blackboard} />}
+    </Fragment>
   )
 }
 
@@ -48,6 +52,20 @@ export const getServerSideProps = (async (context) => {
   const groupMembers = await getGroupMembersFromGitlab(context.req, params)
   // console.log("getserversideprops groupmembers", groupMembers)
 
+  const initialUsers = {
+    blackboard: courseUsers,
+    gitlab: groupMembers,
+    both: [],
+  }
+
+  // The code below should probably be refactored
+  // Add users present in both Gitlab and Blackboard to bothlist
+  const usersPresentInBoth = initialUsers.gitlab.filter(gitlabUser => initialUsers.blackboard.find(blackboardUser => blackboardUser.userName === gitlabUser.userName))
+  initialUsers.both = usersPresentInBoth
+  // Remove users in both from GitLab list
+  initialUsers.gitlab = initialUsers.gitlab.filter(gitlabUser => usersPresentInBoth.find(bothUser => (gitlabUser.userName === bothUser.userName) === false))
+  initialUsers.blackboard = initialUsers.blackboard.filter(blackboardUser => usersPresentInBoth.find(bothUser => (blackboardUser.userName === bothUser.userName) === false))
+
   if (!courseUsers) {
     return {
       redirect: {
@@ -58,7 +76,7 @@ export const getServerSideProps = (async (context) => {
   }
 
   return {
-    props: { courseUsers, groupMembers },
+    props: { initialUsers },
   }
 })
 
