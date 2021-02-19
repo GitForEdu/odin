@@ -32,6 +32,22 @@ const getCourseUsersBB = (courseId, bbToken) => {
   return response
 }
 
+const getCourseUsersExpandedBB = (courseId, bbToken) => {
+  const response = fetch(`${process.env.BB_API}/learn/api/public/v1/courses/${courseId}/users?expand=user`, {
+    method: "GET",
+    headers: new Headers({
+      "Authorization" : `Bearer ${bbToken}`,
+      "Content-Type": "application/x-www-form-urlencoded",
+    }),
+  }).then(r => r.json()).then(data => {
+    if (data.results) {
+      return data.results
+    }
+    return data
+  })
+  return response
+}
+
 const getCourseBB = (courseId, bbToken) => {
   const response = fetch(`${process.env.BB_API}/learn/api/public/v3/courses/${courseId}`, {
     method: "GET",
@@ -159,4 +175,46 @@ const addStudentToGroup = async (courseId, groupId, userId, bbToken) => {
   return response
 }
 
-export { getCourseGroupsBB, getCourseUsersBB, getCourseBB, getCoursesBB, getUserWithUserNameBB, createGroupSet, createGroupInGroupSet, addStudentToGroup, getUserWithUserIdBB }
+const getCourseGroupUsersBB = (courseId, groupId, bbToken) => {
+  const response = fetch(`${process.env.BB_API}/learn/api/public/v1/courses/${courseId}/groups/${groupId}/users`, {
+    method: "GET",
+    headers: new Headers({
+      "Authorization" : `Bearer ${bbToken}`,
+      "Content-Type": "application/x-www-form-urlencoded",
+    }),
+  }).then(r => r.json()).then(data => {
+    if(data.results) {
+      return data.results
+    }
+    return data
+  })
+  return response
+}
+
+const deleteGroupBB = async (courseId, groupId, bbToken) => {
+
+  const response = await fetch(`${process.env.BB_API}/learn/api/public/v2/courses/${courseId}/groups/${groupId}`, {
+    method: "DELETE",
+    headers: new Headers({
+      "Authorization" : `Bearer ${bbToken}`,
+      "Content-Type": "application/json",
+    }),
+  }).then(r => r.status)
+
+  return response
+}
+
+const deleteGroupSetBB = async (courseId, groupId, bbToken) => {
+
+  const response = await fetch(`${process.env.BB_API}/learn/api/public/v2/courses/${courseId}/groups/sets/${groupId}`, {
+    method: "DELETE",
+    headers: new Headers({
+      "Authorization" : `Bearer ${bbToken}`,
+      "Content-Type": "application/json",
+    }),
+  }).then(r => r.status)
+
+  return response
+}
+
+export { getCourseGroupsBB, getCourseUsersBB, getCourseBB, getCoursesBB, getUserWithUserNameBB, createGroupSet, createGroupInGroupSet, addStudentToGroup, getUserWithUserIdBB, getCourseGroupUsersBB, deleteGroupBB, deleteGroupSetBB, getCourseUsersExpandedBB }

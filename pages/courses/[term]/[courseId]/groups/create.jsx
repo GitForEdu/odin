@@ -6,6 +6,9 @@ import { useState, useEffect } from "react"
 import { getCourseUsers } from "pages/api/courses/[term]/[courseId]/users"
 import { StyledInputField } from "components/TextField"
 import { DragDropContext, Droppable, Draggable } from "react-beautiful-dnd"
+import fetcher from "utils/fetcher"
+import StyledButton from "components/Button"
+import { CSVReader } from "react-papaparse"
 
 
 const getItemStyle = (isDragging, draggableStyle) => ({
@@ -28,7 +31,7 @@ const getListStyle = isDraggingOver => ({
 })
 
 const makeRandomGroups = (students, numberOfGroups, studentsPerGroup, mode = "overflowGroups") => {
-  // console.log(numberOfGroups, studentsPerGroup, mode, "sutdets", students)
+  console.log(numberOfGroups, studentsPerGroup, mode)
   let studentList = [...students]
   let numberOfStudents = students.length
   let groups = numberOfGroups
@@ -126,14 +129,33 @@ const Dropable = (id, students) => {
   )
 }
 
-export const Group = ({ courseGroups, courseUsers }) => {
+export const Group = ({ courseUsers }) => {
   // console.log("coursesusers:", courseUsers)
   const router = useRouter()
   const { courseId, term } = router.query
   const [numberOfStudentsPerGroup, setNumberOfStudentsPerGroup] = useState(5)
   const [groupMode, setGroupMode] = useState("overflowStudentsPerGroup")
   const [numberOfGroups, setNumberOfGroups] = useState(groupMode === "overflowGroups" ? Math.ceil(courseUsers.length / numberOfStudentsPerGroup) : Math.floor(courseUsers.length / numberOfStudentsPerGroup))
-  const [loading, setLoading] = useState(true)
+  const [loadingCreateGroups, setLoadingCreateGroups] = useState(false)
+  const [groups, setGroups] = useState([])
+  const [files, setFiles] = useState({
+    groups: null,
+    groupMembers: null,
+  })
+
+  const handleGroups = filedata => {
+    setFiles({
+      ...files,
+      groups: filedata,
+    })
+  }
+
+  const handleGroupMembers = filedata => {
+    setFiles({
+      ...files,
+      groupMembers: filedata,
+    })
+  }
 
   const handleChangeNumberOfGroups = (event) => {
     const newNumberOfGroups = parseInt(event.target.value)
@@ -152,8 +174,6 @@ export const Group = ({ courseGroups, courseUsers }) => {
     setNumberOfGroups(newNumberOfGroups)
   }
 
-  const [randomGroups, setRandomGroups] = useState([])
-
   const onDragEnd = result => {
     const { source, destination } = result
 
@@ -165,37 +185,113 @@ export const Group = ({ courseGroups, courseUsers }) => {
     // interal moved element
     if (source.droppableId === destination.droppableId) {
       const listOfList = reorderSubList(
-        randomGroups[source.droppableId],
+        groups[source.droppableId],
         source.index,
         destination.index,
-        randomGroups
+        groups
       )
 
-      setRandomGroups([...listOfList])
+      setGroups([...listOfList])
 
     }
     // moved into new sublist
     else {
       const listOfList = moveElementToOtherSubList(
-        randomGroups[source.droppableId].members,
-        randomGroups[destination.droppableId].members,
+        groups[source.droppableId].members,
+        groups[destination.droppableId].members,
         source,
         destination,
-        randomGroups
+        groups
       )
 
-      setRandomGroups([...listOfList])
+      setGroups([...listOfList])
+    }
+  }
+
+  const createSubGroups = async () => {
+    if (groups && groups.length !== 0) {
+      setLoadingCreateGroups(true)
+      const data = await fetcher(
+        `/api/courses/${term}/${courseId}/blackboard/createGroups`,
+        {
+          groups: groups,
+        }
+      )
+      setLoadingCreateGroups(false)
+      console.log("create groups bb", data)
+      if (!data.error) {
+        router.push(`/courses/${term}/${courseId}/groups`)
+      }
     }
   }
 
   useEffect(() => {
-    setRandomGroups(makeRandomGroups(courseUsers, numberOfGroups, numberOfStudentsPerGroup, groupMode))
-    setLoading(false)
-  }, [courseUsers, groupMode, numberOfGroups, numberOfStudentsPerGroup])
+    // console.log("Filendring:", files)
+    if (!files.groups || !files.groupMembers) {
+      console.log("Mangler groups eller groupMembers")
+      return
+    }
+
+    const newGroups = []
+    files.groups.forEach(group => {
+      group.data["Group Code"]
+        ? newGroups.push({
+          id: group.data["Group Code"],
+          title: group.data["Title"],
+          description: group.data["Description"],
+          groupSet: group.data["Group Set"],
+          available: group.data["Available"] === "J" ? true : false,
+          selfEnroll: (group.data["Self Enroll"] === "J" ? true : false),
+          maxEnrollment: group.data["Max Enrollment"],
+          members: [],
+        })
+        : console.log("Fant ugyldig gruppe:", group.data)
+    })
+
+    files.groupMembers.forEach(user => {
+      if (user.data["Group Code"]) {
+        const foundGroup = newGroups.find(group => group.id === user.data["Group Code"])
+        foundGroup.members.push({
+          userName: user.data["User Name"],
+          userId: user.data["User Name"],
+          firstName: user.data["First Name"],
+          lastName: user.data["Last Name"],
+        })
+      }
+    })
+
+    // console.log("Finished groups ", newGroups)
+    setGroups(newGroups)
+  }, [files])
+
+  const handleClickCreateRandomGroups = () => {
+    const randomGroups = makeRandomGroups(courseUsers, numberOfGroups, numberOfStudentsPerGroup, groupMode)
+    setGroups(randomGroups)
+  }
 
 
   return (
     <>
+      <h1>Upload CSV with groups or make randomgroups from studentlist from Blackboard</h1>
+      <CSVReader
+        onDrop={handleGroups}
+        noDrag
+        style={{}}
+        config={{ header: true }}
+        addRemoveButton
+      >
+        <span>Click to upload group info CSV with data headers</span>
+      </CSVReader>
+
+      <CSVReader
+        onDrop={handleGroupMembers}
+        noDrag
+        style={{}}
+        config={{ header: true }}
+        addRemoveButton
+      >
+        <span>Click to upload group members CSV with data headers</span>
+      </CSVReader>
       <StyledInputField
         id="numberOfStudentsPerGroup"
         label="numberOfStudentsPerGroup"
@@ -220,10 +316,23 @@ export const Group = ({ courseGroups, courseUsers }) => {
           },
         }}
       />
-      {!loading
-      && <DragDropContext onDragEnd={onDragEnd}>
-        {randomGroups.map(group => Dropable(group.id, group.members))}
-      </DragDropContext>}
+      <StyledButton
+        onClick={() => handleClickCreateRandomGroups()}
+      >
+        Create random groups
+      </StyledButton>
+      {groups && groups.length !== 0
+      && <>
+        <DragDropContext onDragEnd={onDragEnd}>
+          {groups.map(group => Dropable(group.id, group.members))}
+        </DragDropContext>
+        <StyledButton
+          onClick={createSubGroups}
+          disabled={loadingCreateGroups}
+        >
+        Create groups on Blackboard
+        </StyledButton>
+      </>}
     </>
   )
 }
@@ -232,13 +341,11 @@ export const Group = ({ courseGroups, courseUsers }) => {
 export const getServerSideProps = (async (context) => {
   const params = context.params
 
-  const courseGroups = await getCourseGroups(context.req, params)
-
   const courseUsers = await getCourseUsers(context.req, params)
 
   const bbGitConnection = await getBBGitConnection(context.req, params)
 
-  if (!courseGroups || !bbGitConnection || !courseUsers) {
+  if (!bbGitConnection || !courseUsers) {
     return {
       redirect: {
         destination: "/",
@@ -248,7 +355,7 @@ export const getServerSideProps = (async (context) => {
   }
 
   return {
-    props: { courseGroups, bbGitConnection, courseUsers },
+    props: { bbGitConnection, courseUsers },
   }
 })
 
