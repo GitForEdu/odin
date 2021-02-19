@@ -60,7 +60,11 @@ const List = ({ type, elements }) => {
             primaryTypographyProps={primaryTextStyling}
             secondaryTypographyProps={secondaryTextStyling}
           />
-          {(type === "students" && elem.notInGitlab) && <Button>Attempt GitLab add</Button>}
+          {(type === "students" && elem.notInGitlab) && (
+            <Button onClick={() => handleAddUserToGitlab(elem.userName)}>
+              Attempt GitLab add
+            </Button>
+          )}
         </ListItem>
       </ListItemLink>
     )
@@ -71,6 +75,10 @@ const List = ({ type, elements }) => {
 
 const ListItemLink = (props) => {
   return <ListItem button component="a" {...props} />
+}
+
+const handleAddUserToGitlab = (userName) => {
+  console.log(userName, "should have been added to GitLab, not implemented yet")
 }
 
 export default List
