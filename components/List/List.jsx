@@ -1,6 +1,7 @@
 import ListItem from "@material-ui/core/ListItem"
 import ListItemText from "@material-ui/core/ListItemText"
 import Activity from "components/Activity"
+import Button from "components/Button"
 
 const List = ({ type, elements }) => {
   const primaryTextStyling = { style:
@@ -59,6 +60,7 @@ const List = ({ type, elements }) => {
             primaryTypographyProps={primaryTextStyling}
             secondaryTypographyProps={secondaryTextStyling}
           />
+          {(type === "students" && elem.notInGitlab) && <Button>Attempt GitLab add</Button>}
         </ListItem>
       </ListItemLink>
     )

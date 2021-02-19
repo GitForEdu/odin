@@ -77,6 +77,8 @@ export const getServerSideProps = (async (context) => {
     }
   }
 
+  initialUsers.blackboard.forEach(student => student.notInGitlab = true)
+
   return {
     props: { initialUsers },
   }
