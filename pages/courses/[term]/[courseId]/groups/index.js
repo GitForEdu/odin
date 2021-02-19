@@ -4,50 +4,26 @@ import withAuth from "components/withAuth"
 import { useRouter } from "next/router"
 import { getCourseGroups } from "pages/api/courses/[term]/[courseId]/groups"
 import { getBBGitConnection } from "pages/api/courses/[term]/[courseId]/git/createConnection"
-import { useState, useEffect } from "react"
-import { CSVReader } from "react-papaparse"
+import { useState } from "react"
 import fetcher from "utils/fetcher"
 import StyledButton from "components/Button"
+import Link from "next/link"
 
 
 export const Group = ({ courseGroups }) => {
   const router = useRouter()
   const { courseId, term } = router.query
-  const [files, setFiles] = useState({
-    groups: null,
-    groupMembers: null,
-  })
-  const [groupData, setGroupData] = useState({
-    loading: true,
-    groups: null,
-  })
+
   const [loadingCreateSubGroups, setLoadingCreateSubGroups] = useState(false)
 
-  const handleGroups = filedata => {
-    setFiles({
-      ...files,
-      groups: filedata,
-    })
-  }
-
-  const handleGroupMembers = filedata => {
-    setFiles({
-      ...files,
-      groupMembers: filedata,
-    })
-  }
 
   const createSubGroups = async () => {
-    let groups = courseGroups
-    if (groupData.groups && groupData.groups.length !== 0) {
-      groups = groupData.groups
-    }
-    if (groups && groups.length !== 0) {
+    if (courseGroups && courseGroups.length !== 0) {
       setLoadingCreateSubGroups(true)
       const data = await fetcher(
         `/api/courses/${term}/${courseId}/git/createSubGroups`,
         {
-          groups: groups,
+          groups: courseGroups,
         }
       )
       setLoadingCreateSubGroups(false)
@@ -58,83 +34,52 @@ export const Group = ({ courseGroups }) => {
     }
   }
 
-  useEffect(() => {
-    // console.log("Filendring:", files)
-    if (!files.groups || !files.groupMembers) {
-      console.log("Mangler groups eller groupMembers")
-      return
-    }
-
-    const newGroups = []
-    files.groups.forEach(group => {
-      group.data["Group Code"]
-        ? newGroups.push({
-          code: group.data["Group Code"],
-          title: group.data["Title"],
-          description: group.data["Description"],
-          groupSet: group.data["Group Set"],
-          available: group.data["Available"] === "J" ? true : false,
-          selfEnroll: (group.data["Self Enroll"] === "J" ? true : false),
-          maxEnrollment: group.data["Max Enrollment"],
-          members: [],
-        })
-        : console.log("Fant ugyldig gruppe:", group.data)
-    })
-
-    files.groupMembers.forEach(user => {
-      if (user.data["Group Code"]) {
-        const foundGroup = newGroups.find(group => group.code === user.data["Group Code"])
-        foundGroup.members.push({
-          userName: user.data["User Name"],
-          firstName: user.data["First Name"],
-          lastName: user.data["Last Name"],
-        })
-      }
-    })
-
-    // console.log("Finished groups ", newGroups)
-    setGroupData({
-      groups: newGroups,
-      loading: false,
-    })
-  }, [files])
-
   return (
     <>
       <Navbar pageTitle={"All students"} courseId={courseId} term={term} />
-      {courseGroups.length === 0 ? <h1>No groups found on Blackboard</h1> : <List type="groups" elements={courseGroups}/>}
-      <CSVReader
-        onDrop={handleGroups}
-        noDrag
-        style={{}}
-        config={{ header: true }}
-        addRemoveButton
-      >
-        <span>Click to upload group info CSV with data headers</span>
-      </CSVReader>
-
-      <CSVReader
-        onDrop={handleGroupMembers}
-        noDrag
-        style={{}}
-        config={{ header: true }}
-        addRemoveButton
-      >
-        <span>Click to upload group members CSV with data headers</span>
-      </CSVReader>
-      {((courseGroups && courseGroups.length !== 0) || groupData.groups && groupData.groups.length !== 0) &&<StyledButton
-        onClick={createSubGroups}
-        disabled={loadingCreateSubGroups}
-      >
+      {courseGroups.length === 0
+        ? <>
+          <h1>No groups found on Blackboard</h1>
+          <Link href={`/courses/${term}/${courseId}/groups/create`} passHref>
+            <StyledButton
+              variant="contained"
+              color="primary"
+            >
+              Go to group creation page
+            </StyledButton>
+          </Link></>
+        : <List type="groups" elements={courseGroups}/>}
+      {(courseGroups && courseGroups.length !== 0)
+      && <>
+        <Link href={`/courses/${term}/${courseId}/groups/delete`} passHref>
+          <StyledButton
+            onClick={createSubGroups}
+            disabled={loadingCreateSubGroups}
+          >
+        Delete groups on Blackboard
+          </StyledButton>
+        </Link>
+        <Link href={`/courses/${term}/${courseId}/groupset/delete`} passHref>
+          <StyledButton
+            onClick={createSubGroups}
+            disabled={loadingCreateSubGroups}
+          >
+        Delete groupset on Blackboard
+          </StyledButton>
+        </Link>
+        <StyledButton
+          onClick={createSubGroups}
+          disabled={loadingCreateSubGroups}
+        >
         Create groups on GitLab
-      </StyledButton>}
-      {groupData.loading && <h1>Please upload CSV files from Blackboard to see groups</h1>}
+        </StyledButton>
+      </>}
 
-      {groupData.groups && (
+      {courseGroups && (
         <section>
           <h1>Groups</h1>
           <ul>
-            {groupData.groups.map(group =>
+            {courseGroups.map(group =>
               <li key={group.code}>
                 <h1>Group {group.code} - {group.title}</h1>
                 {(group.members.length)
