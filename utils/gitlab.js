@@ -120,14 +120,19 @@ const addUsersToGroup = async (path, groupID, pat, userNames, access_level) => {
 
 
 const getCourseMembersGitlab = async (path, groupID, pat) => {
-  console.log("getCourseMembersGitlab called with path", path, "groupID", groupID, "PAT", pat)
+  // console.log("getCourseMembersGitlab called with path", path, "groupID", groupID, "PAT", pat)
   const response = await fetch(`${path}/api/v4/groups/${groupID}/members`, {
     method: "GET",
     headers: {
       "Content-Type": "application/json",
       "PRIVATE-TOKEN": pat,
     },
-  }).then(r => r.json())
+  })
+  const jsonList = (await response.json()).map(member => {
+    const { username, ...memberObject } = member
+    memberObject.userName = username
+    return memberObject
+  })
 
   const subGroups = await fetch(`${path}/api/v4/groups/${groupID}/subgroups`, {
     method: "GET",
@@ -152,11 +157,11 @@ const getCourseMembersGitlab = async (path, groupID, pat) => {
     })
   }))
 
-  console.log("CourseMembers Gitlab", response)
-  console.log("Called for subgroups", subGroups)
-  console.log("Subgroupmembers", subGroupMembers)
+  // console.log("CourseMembers Gitlab", courseMembers)
+  // console.log("Called for subgroups", subGroups)
+  // console.log("Subgroupmembers", subGroupMembers)
 
-  return response
+  return jsonList
 }
 
 export { createGroup, getGroupInfo, addUserToGroup, getUserInfo, getCourseMembersGitlab, addUsersToGroup }

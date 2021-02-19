@@ -1,9 +1,9 @@
 import ListItem from "@material-ui/core/ListItem"
 import ListItemText from "@material-ui/core/ListItemText"
 import Activity from "components/Activity"
+import Button from "components/Button"
 
 const List = ({ type, elements }) => {
-
   const primaryTextStyling = { style:
     {
       color: "white",
@@ -20,11 +20,17 @@ const List = ({ type, elements }) => {
   }
 
   const itemList = elements.map(elem => {
+    // Gitlab provides full name as elem.name, Blackboard provides name.given and name.family
+    const fullName = elem.name.given ? `${elem.name.given} ${elem.name.family}` : elem.name
+    const data1 = { title: "Commits", amount: elem.commits ? elem.commits : 294 }
+    const data2 = { title: "Pull requests", amount: elem.pullRequests ? elem.pullRequests : 50 }
+    const data3 = { title: "Wiki edits", amount: elem.wikiEdits ? elem.wikiEdits : 17 }
+
     return (
       <ListItemLink key={elem.id} alignItems="center" >
         <ListItemText
-          primary={"Stian Student Studentsen"}
-          secondary={elem.id}
+          primary={fullName}
+          secondary={elem.userName ? elem.userName : elem.id}
           primaryTypographyProps={primaryTextStyling}
           secondaryTypographyProps={primaryTextStyling}
         />
@@ -37,43 +43,42 @@ const List = ({ type, elements }) => {
 
         <ListItem>
           <ListItemText
-            primary="Commits"
-            secondary={"294"}
+            primary={data1.title}
+            secondary={data1.amount}
             primaryTypographyProps={primaryTextStyling}
             secondaryTypographyProps={secondaryTextStyling}
           />
           <ListItemText
-            primary="Pull requests"
-            secondary={"50"}
+            primary={data2.title}
+            secondary={data2.amount}
             primaryTypographyProps={primaryTextStyling}
             secondaryTypographyProps={secondaryTextStyling}
           />
           <ListItemText
-            primary="Wiki edits"
-            secondary={"17"}
+            primary={data3.title}
+            secondary={data3.amount}
             primaryTypographyProps={primaryTextStyling}
             secondaryTypographyProps={secondaryTextStyling}
           />
+          {(type === "students" && elem.notInGitlab) && (
+            <Button onClick={() => handleAddUserToGitlab(elem.userName)}>
+              Attempt GitLab add
+            </Button>
+          )}
         </ListItem>
       </ListItemLink>
     )
   })
-  if (type === "students") return (
-    <>
-      <h1>Student list</h1>
-      { itemList }
-    </>
-  )
-  if (type === "groups") return (
-    <>
-      <h1>Group list</h1>
-      { itemList }
-    </>
-  )
+
+  if (type === "students" || type === "groups") return itemList
 }
 
 const ListItemLink = (props) => {
   return <ListItem button component="a" {...props} />
+}
+
+const handleAddUserToGitlab = (userName) => {
+  console.log(userName, "should have been added to GitLab, not implemented yet")
 }
 
 export default List
