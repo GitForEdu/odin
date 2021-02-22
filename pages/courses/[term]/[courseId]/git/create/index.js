@@ -1,7 +1,6 @@
 import withAuth from "components/withAuth"
 import { useRouter } from "next/router"
-import { Button } from "@material-ui/core"
-import { StyledInputField } from "components/TextField"
+import { Button, TextField } from "@material-ui/core"
 import { useState } from "react"
 import fetcher from "utils/fetcher"
 
@@ -62,13 +61,17 @@ const CreateGit = () => {
 
   return (
     <>
-      <StyledInputField
+      <TextField
+        variant="outlined"
+        color="primary"
         id="GitURL"
         label="GitURL"
         value={gitURL}
         onChange={handleChangeGitURL}
       />
-      <StyledInputField
+      <TextField
+        variant="outlined"
+        color="primary"
         id="pat"
         label="pat"
         value={pat}

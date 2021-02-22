@@ -1,6 +1,7 @@
 import ListItem from "@material-ui/core/ListItem"
 import ListItemText from "@material-ui/core/ListItemText"
-import StyledButton from "components/Button"
+import { Button } from "@material-ui/core"
+
 
 const primaryTextStyling = { style:
   {
@@ -27,7 +28,14 @@ const ListDelete = ({ elements, deleteFunc, disabled }) => {
           primaryTypographyProps={primaryTextStyling}
           secondaryTypographyProps={primaryTextStyling}
         />
-        <StyledButton disabled={disabled} onClick={() => deleteFunc(elem)}>Delete</StyledButton>
+        <Button
+          variant="contained"
+          color="primary"
+          disabled={disabled}
+          onClick={() => deleteFunc(elem)}
+        >
+            Delete
+        </Button>
 
       </ListItemLink>
     )

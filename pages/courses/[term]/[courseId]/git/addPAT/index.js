@@ -1,9 +1,8 @@
 import withAuth from "components/withAuth"
 import { useRouter } from "next/router"
-import StyledButton from "components/Button"
-import { StyledInputField } from "components/TextField"
 import { useState } from "react"
 import fetcher from "utils/fetcher"
+import { Button, TextField } from "@material-ui/core"
 
 
 const AddGitPat = () => {
@@ -40,18 +39,22 @@ const AddGitPat = () => {
 
   return (
     <>
-      <StyledInputField
+      <TextField
+        variant="outlined"
+        color="primary"
         id="pat"
         label="pat"
         value={pat}
         onChange={handleChangePat}
       />
-      <StyledButton
+      <Button
+        variant="contained"
+        color="primary"
         onClick={addPath}
         disabled={pat === "" || loading}
       >
               Add Git PAT
-      </StyledButton>
+      </Button>
     </>
   )
 }

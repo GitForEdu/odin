@@ -12,8 +12,16 @@ export const theme = createMuiTheme({
   },
 })
 
+theme.props = {
+  MuiButton: {
+    disabledElevation: true,
+  },
+}
+
 theme.overrides = {
   MuiButton: {
+    root: {
+    },
     containedPrimary: {
     },
     contained: {

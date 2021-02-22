@@ -6,7 +6,7 @@ import { getCourseGroups } from "pages/api/courses/[term]/[courseId]/groups"
 import { getBBGitConnection } from "pages/api/courses/[term]/[courseId]/git/createConnection"
 import { useState } from "react"
 import fetcher from "utils/fetcher"
-import StyledButton from "components/Button"
+import { Button } from "@material-ui/core"
 import Link from "next/link"
 
 
@@ -41,38 +41,44 @@ export const Group = ({ courseGroups }) => {
         ? <>
           <h1>No groups found on Blackboard</h1>
           <Link href={`/courses/${term}/${courseId}/groups/create`} passHref>
-            <StyledButton
+            <Button
               variant="contained"
               color="primary"
             >
               Go to group creation page
-            </StyledButton>
+            </Button>
           </Link></>
         : <List type="groups" elements={courseGroups}/>}
       {(courseGroups && courseGroups.length !== 0)
       && <>
         <Link href={`/courses/${term}/${courseId}/groups/delete`} passHref>
-          <StyledButton
+          <Button
+            variant="contained"
+            color="primary"
             onClick={createSubGroups}
             disabled={loadingCreateSubGroups}
           >
         Delete groups on Blackboard
-          </StyledButton>
+          </Button>
         </Link>
         <Link href={`/courses/${term}/${courseId}/groupset/delete`} passHref>
-          <StyledButton
+          <Button
+            variant="contained"
+            color="primary"
             onClick={createSubGroups}
             disabled={loadingCreateSubGroups}
           >
         Delete groupset on Blackboard
-          </StyledButton>
+          </Button>
         </Link>
-        <StyledButton
+        <Button
+          variant="contained"
+          color="primary"
           onClick={createSubGroups}
           disabled={loadingCreateSubGroups}
         >
         Create groups on GitLab
-        </StyledButton>
+        </Button>
       </>}
 
       {courseGroups && (

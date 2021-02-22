@@ -2,7 +2,7 @@ import Tile from "components/Tile"
 import Navbar from "components/Navbar"
 import { Button } from "@material-ui/core"
 import { signIn } from "next-auth/client"
-import Link from "next/link"
+
 
 export default function LandingPage() {
   return (

@@ -1,6 +1,7 @@
 import Link from "@material-ui/core/Link"
-import Button from "@material-ui/core/Button"
+import { Button } from "@material-ui/core"
 import { useRouter } from "next/router"
+
 
 const CreateGitConnectionLink = () => {
   const router = useRouter()

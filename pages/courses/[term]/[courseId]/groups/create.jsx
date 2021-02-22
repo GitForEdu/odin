@@ -4,11 +4,10 @@ import { getCourseGroups } from "pages/api/courses/[term]/[courseId]/groups"
 import { getBBGitConnection } from "pages/api/courses/[term]/[courseId]/git/createConnection"
 import { useState, useEffect } from "react"
 import { getCourseUsers } from "pages/api/courses/[term]/[courseId]/users"
-import { StyledInputField } from "components/TextField"
 import { DragDropContext, Droppable, Draggable } from "react-beautiful-dnd"
 import fetcher from "utils/fetcher"
-import StyledButton from "components/Button"
 import { CSVReader } from "react-papaparse"
+import { Button, TextField } from "@material-ui/core"
 
 
 const getItemStyle = (isDragging, draggableStyle) => ({
@@ -292,7 +291,9 @@ export const Group = ({ courseUsers }) => {
       >
         <span>Click to upload group members CSV with data headers</span>
       </CSVReader>
-      <StyledInputField
+      <TextField
+        variant="outlined"
+        color="primary"
         id="numberOfStudentsPerGroup"
         label="numberOfStudentsPerGroup"
         value={numberOfStudentsPerGroup}
@@ -304,7 +305,9 @@ export const Group = ({ courseUsers }) => {
           },
         }}
       />
-      <StyledInputField
+      <TextField
+        variant="outlined"
+        color="primary"
         id="numberOfGroups"
         label="numberOfGroups"
         value={numberOfGroups}
@@ -316,22 +319,24 @@ export const Group = ({ courseUsers }) => {
           },
         }}
       />
-      <StyledButton
+      <Button
+        variant="contained"
+        color="primary"
         onClick={() => handleClickCreateRandomGroups()}
       >
         Create random groups
-      </StyledButton>
+      </Button>
       {groups && groups.length !== 0
       && <>
         <DragDropContext onDragEnd={onDragEnd}>
           {groups.map(group => Dropable(group.id, group.members))}
         </DragDropContext>
-        <StyledButton
+        <Button
           onClick={createSubGroups}
           disabled={loadingCreateGroups}
         >
         Create groups on Blackboard
-        </StyledButton>
+        </Button>
       </>}
     </>
   )
