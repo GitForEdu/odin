@@ -21,6 +21,8 @@ theme.props = {
 theme.overrides = {
   MuiButton: {
     root: {
+      borderRadius: 0,
+      textTransform: "none",
     },
     containedPrimary: {
     },
