@@ -295,7 +295,7 @@ export const Group = ({ courseUsers }) => {
         variant="outlined"
         color="primary"
         id="numberOfStudentsPerGroup"
-        label="numberOfStudentsPerGroup"
+        label="Students per group"
         value={numberOfStudentsPerGroup}
         onChange={handleChangeNumberOfStudentsPerGroup}
         type="number"
@@ -309,7 +309,7 @@ export const Group = ({ courseUsers }) => {
         variant="outlined"
         color="primary"
         id="numberOfGroups"
-        label="numberOfGroups"
+        label="Number of groups"
         value={numberOfGroups}
         onChange={handleChangeNumberOfGroups}
         type="number"
