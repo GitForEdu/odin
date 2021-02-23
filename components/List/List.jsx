@@ -21,7 +21,7 @@ const List = ({ type, elements }) => {
 
   const itemList = elements.map(elem => {
     // Gitlab provides full name as elem.name, Blackboard provides name.given and name.family
-    const fullName = elem.name.given ? `${elem.name.given} ${elem.name.family}` : elem.name
+    const fullName = elem.user?.name.given ? `${elem.user.name.given} ${elem.user.name.family}` : elem.name
     const data1 = { title: "Commits", amount: elem.commits ? elem.commits : 294 }
     const data2 = { title: "Pull requests", amount: elem.pullRequests ? elem.pullRequests : 50 }
     const data3 = { title: "Wiki edits", amount: elem.wikiEdits ? elem.wikiEdits : 17 }
