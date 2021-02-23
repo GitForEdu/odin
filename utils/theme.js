@@ -7,6 +7,7 @@ export const theme = createMuiTheme({
       main: "#00509e",
     },
     action: {
+      main: "grey",
       disabledBackground: "grey",
       disabled: "white",
     },

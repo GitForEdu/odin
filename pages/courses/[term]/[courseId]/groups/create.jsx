@@ -8,6 +8,46 @@ import { DragDropContext, Droppable, Draggable } from "react-beautiful-dnd"
 import fetcher from "utils/fetcher"
 import { CSVReader } from "react-papaparse"
 import { Button, TextField } from "@material-ui/core"
+import { theme } from "utils/theme"
+
+const CSVReaderStyles = {
+  dropArea: {
+    borderColor: theme.palette.primary.main,
+    borderRadius: 0,
+    margin: "2rem",
+    width: "50%",
+  },
+  dropAreaActive: {
+    borderColor: theme.palette.action.main,
+  },
+  dropFile: {
+    width: 100,
+    height: 120,
+    background: "#ccc",
+  },
+  fileSizeInfo: {
+    color: "#fff",
+    backgroundColor: "#000",
+    borderRadius: 3,
+    lineHeight: 1,
+    marginBottom: "0.5em",
+    padding: "0 0.4em",
+  },
+  fileNameInfo: {
+    color: "#fff",
+    backgroundColor: "#eee",
+    borderRadius: 3,
+    fontSize: 14,
+    lineHeight: 1,
+    padding: "0 0.4em",
+  },
+  removeButton: {
+    color: "red",
+  },
+  progressBar: {
+    backgroundColor: "green",
+  },
+}
 
 
 const getItemStyle = (isDragging, draggableStyle) => ({
@@ -274,8 +314,7 @@ export const Group = ({ courseUsers }) => {
       <h1>Upload CSV with groups or make randomgroups from studentlist from Blackboard</h1>
       <CSVReader
         onDrop={handleGroups}
-        noDrag
-        style={{}}
+        style={CSVReaderStyles}
         config={{ header: true }}
         addRemoveButton
       >
@@ -284,8 +323,7 @@ export const Group = ({ courseUsers }) => {
 
       <CSVReader
         onDrop={handleGroupMembers}
-        noDrag
-        style={{}}
+        style={CSVReaderStyles}
         config={{ header: true }}
         addRemoveButton
       >
