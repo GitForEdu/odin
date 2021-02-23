@@ -11,6 +11,9 @@ export const theme = createMuiTheme({
       disabledBackground: "grey",
       disabled: "white",
     },
+    selected: {
+      main: "green",
+    },
   },
 })
 
@@ -33,6 +36,7 @@ theme.overrides = {
     root: {
       borderRadius: 0,
       textTransform: "none",
+      margin: "1.0rem 0.5rem 0.5rem 0.5rem",
     },
     containedPrimary: {
     },

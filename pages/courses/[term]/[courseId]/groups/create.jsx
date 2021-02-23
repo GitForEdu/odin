@@ -9,13 +9,28 @@ import fetcher from "utils/fetcher"
 import { CSVReader } from "react-papaparse"
 import { Button, TextField } from "@material-ui/core"
 import { theme } from "utils/theme"
+import { makeStyles } from "@material-ui/core/styles"
+import Paper from "@material-ui/core/Paper"
+import Grid from "@material-ui/core/Grid"
+
+
+const useStyles = makeStyles((theme) => ({
+  root: {
+    flexGrow: 1,
+  },
+  paper: {
+    padding: theme.spacing(2),
+    textAlign: "center",
+    color: theme.palette.text.secondary,
+  },
+}))
 
 const CSVReaderStyles = {
   dropArea: {
     borderColor: theme.palette.primary.main,
     borderRadius: 0,
-    margin: "2rem",
-    width: "50%",
+    margin: "0rem",
+    width: "100%",
   },
   dropAreaActive: {
     borderColor: theme.palette.action.main,
@@ -57,14 +72,13 @@ const getItemStyle = (isDragging, draggableStyle) => ({
   margin: "0 0 8px 0",
 
   // change background colour if dragging
-  background: isDragging ? "lightgreen" : "grey",
+  background: isDragging ? theme.palette.selected.main : theme.palette.primary.main,
 
   // styles we need to apply on draggables
   ...draggableStyle,
 })
 
 const getListStyle = isDraggingOver => ({
-  background: isDraggingOver ? "lightblue" : "lightgrey",
   padding: 8,
   width: 250,
 })
@@ -135,40 +149,50 @@ const moveElementToOtherSubList = (source, destination, droppableSource, droppab
 const Dropable = (id, students) => {
   const stringId = id.toString()
   return(
-    <Droppable droppableId={stringId}>
-      {(provided, snapshot) => (
-        <div
-          style={getListStyle(snapshot.isDraggingOver)}
-          ref={provided.innerRef}>
-          {id}
-          {students.map((item, index) => (
-            <Draggable
-              key={item.id}
-              draggableId={item.id}
-              index={index}>
-              {(provided, snapshot) => (
-                <div
-                  ref={provided.innerRef}
-                  {...provided.draggableProps}
-                  {...provided.dragHandleProps}
+    <Grid
+      container
+      direction="row"
+      justify="center"
+      alignItems="center"
+      item
+      xs={4}
+    >
+      <Droppable droppableId={stringId}>
+        {(provided, snapshot) => (
+          <div
+            style={getListStyle(snapshot.isDraggingOver)}
+            ref={provided.innerRef}>
+            {id}
+            {students.map((item, index) => (
+              <Draggable
+                key={item.id}
+                draggableId={item.id}
+                index={index}>
+                {(provided, snapshot) => (
+                  <div
+                    ref={provided.innerRef}
+                    {...provided.draggableProps}
+                    {...provided.dragHandleProps}
 
-                  style={getItemStyle(
-                    snapshot.isDragging,
-                    provided.draggableProps.style
-                  )}>
-                  {item.id}
-                </div>
-              )}
-            </Draggable>
-          ))}
-          {provided.placeholder}
-        </div>
-      )}
-    </Droppable>
+                    style={getItemStyle(
+                      snapshot.isDragging,
+                      provided.draggableProps.style
+                    )}>
+                    {item.user.userName}
+                  </div>
+                )}
+              </Draggable>
+            ))}
+            {provided.placeholder}
+          </div>
+        )}
+      </Droppable>
+    </Grid>
   )
 }
 
 export const Group = ({ courseUsers }) => {
+  const classes = useStyles()
   // console.log("coursesusers:", courseUsers)
   const router = useRouter()
   const { courseId, term } = router.query
@@ -310,73 +334,184 @@ export const Group = ({ courseUsers }) => {
 
 
   return (
-    <>
-      <h1>Upload CSV with groups or make randomgroups from studentlist from Blackboard</h1>
-      <CSVReader
-        onDrop={handleGroups}
-        style={CSVReaderStyles}
-        config={{ header: true }}
-        addRemoveButton
+    <div className={classes.root}>
+      <Grid
+        container
+        direction="row"
+        justify="center"
+        alignItems="center"
       >
-        <span>Click to upload group info CSV with data headers</span>
-      </CSVReader>
-
-      <CSVReader
-        onDrop={handleGroupMembers}
-        style={CSVReaderStyles}
-        config={{ header: true }}
-        addRemoveButton
-      >
-        <span>Click to upload group members CSV with data headers</span>
-      </CSVReader>
-      <TextField
-        variant="outlined"
-        color="primary"
-        id="numberOfStudentsPerGroup"
-        label="Students per group"
-        value={numberOfStudentsPerGroup}
-        onChange={handleChangeNumberOfStudentsPerGroup}
-        type="number"
-        InputProps={{
-          inputProps: {
-            min: 1,
-          },
-        }}
-      />
-      <TextField
-        variant="outlined"
-        color="primary"
-        id="numberOfGroups"
-        label="Number of groups"
-        value={numberOfGroups}
-        onChange={handleChangeNumberOfGroups}
-        type="number"
-        InputProps={{
-          inputProps: {
-            min: 1,
-          },
-        }}
-      />
-      <Button
-        variant="contained"
-        color="primary"
-        onClick={() => handleClickCreateRandomGroups()}
-      >
-        Create random groups
-      </Button>
-      {groups && groups.length !== 0
-      && <>
-        <DragDropContext onDragEnd={onDragEnd}>
-          {groups.map(group => Dropable(group.id, group.members))}
-        </DragDropContext>
-        <Button
-          onClick={createSubGroups}
-          disabled={loadingCreateGroups}
+        <Grid
+          container
+          direction="row"
+          justify="center"
+          alignItems="center"
+          spacing={3}
+          item
+          xs={12}
         >
-        Create groups on Blackboard
-        </Button>
-      </>}
-    </>
+          <Grid item xs={12}>
+            <h2>Upload CSV with groups</h2>
+          </Grid>
+          <Grid
+            container
+            direction="row"
+            justify="center"
+            alignItems="center"
+            item
+            xs={12}
+          >
+            <Grid
+              item
+              xs={4}
+            >
+              <CSVReader
+                onDrop={handleGroups}
+                style={CSVReaderStyles}
+                config={{ header: true }}
+              >
+                <span>Click to upload group info CSV with data headers</span>
+              </CSVReader>
+            </Grid>
+          </Grid>
+          <Grid
+            container
+            direction="row"
+            justify="center"
+            alignItems="center"
+            item
+            xs={12}>
+            <Grid
+              item
+              xs={4}
+            >
+              <CSVReader
+                onDrop={handleGroupMembers}
+                style={CSVReaderStyles}
+                config={{ header: true }}
+              >
+                <span>Click to upload group members CSV with data headers</span>
+              </CSVReader>
+            </Grid>
+          </Grid>
+        </Grid>
+        <Grid item xs={12}>
+          <h2>or</h2>
+        </Grid>
+        <Grid
+          container
+          direction="row"
+          justify="center"
+          alignItems="center"
+          item
+          xs={12}
+        >
+          <Grid item xs={12}>
+            <h2>Create random groups</h2>
+          </Grid>
+          <Grid
+            container
+            direction="row"
+            justify="center"
+            alignItems="center"
+            item
+            xs={12}
+          >
+            <Grid
+              container
+              direction="row"
+              justify="center"
+              alignItems="center"
+              item
+              xs={4}
+            >
+              <Grid
+                item xs={6}>
+                <TextField
+                  variant="outlined"
+                  color="primary"
+                  id="numberOfStudentsPerGroup"
+                  label="Students per group"
+                  value={numberOfStudentsPerGroup}
+                  onChange={handleChangeNumberOfStudentsPerGroup}
+                  type="number"
+                  InputProps={{
+                    inputProps: {
+                      min: 1,
+                    },
+                  }}
+                />
+              </Grid>
+              <Grid item xs={6}>
+                <TextField
+                  variant="outlined"
+                  color="primary"
+                  id="numberOfGroups"
+                  label="Number of groups"
+                  value={numberOfGroups}
+                  onChange={handleChangeNumberOfGroups}
+                  type="number"
+                  InputProps={{
+                    inputProps: {
+                      min: 1,
+                    },
+                  }}
+                />
+              </Grid>
+            </Grid>
+          </Grid>
+          <Grid item xs={4}>
+            <Button
+              variant="contained"
+              color="primary"
+              onClick={() => handleClickCreateRandomGroups()}
+            >
+              Create random groups
+            </Button>
+          </Grid>
+        </Grid>
+        <Grid item xs={12}>
+          <h2>Groups...</h2>
+        </Grid>
+        <Grid
+          container
+          direction="row"
+          justify="center"
+          alignItems="center"
+          item
+          xs={12}
+        >
+          {
+            groups && groups.length !== 0
+            && <>
+              <Grid
+                container
+                direction="row"
+                justify="flex-start"
+                alignItems="flex-start"
+                spacing={3}
+                item
+                xs={12}
+              >
+                <DragDropContext onDragEnd={onDragEnd}>
+                  {groups.map(group => Dropable(group.id, group.members))}
+                </DragDropContext>
+              </Grid>
+              <Grid item xs={12}>
+                <Button
+                  variant="contained"
+                  color="primary"
+                  onClick={createSubGroups}
+                  disabled={loadingCreateGroups}
+                >
+                Create groups on Blackboard
+                </Button>
+              </Grid>
+            </>
+          }
+        </Grid>
+      </Grid>
+    </div>
   )
 }
 
