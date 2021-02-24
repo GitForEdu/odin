@@ -8,19 +8,19 @@ const prisma = new PrismaClient()
 
 const createSubGroupsFunc = async (connection, userConnection, groupsToCreate, parentGroupInfo) => {
   const createdGroups = await Promise.all(groupsToCreate.map(groupToCreate => {
-    const newGitGroup = createGroup(connection.gitURL, groupToCreate.code, userConnection.pat, parentGroupInfo.id)
+    const newGitGroup = createGroup(connection.gitURL, groupToCreate.id, userConnection.pat, parentGroupInfo.id)
     return newGitGroup
   }))
   const filledGroups = Promise.all(createdGroups.map(newleyCreatedGroup => {
     if (!newleyCreatedGroup.message) {
-      const groupToAddMembers = groupsToCreate.find(groupToCreate => groupToCreate.code === newleyCreatedGroup.name)
-      if(groupToAddMembers && groupToAddMembers.members) {
+      const groupToAddMembers = groupsToCreate.find(groupToCreate => groupToCreate.id === newleyCreatedGroup.name)
+      if (groupToAddMembers && groupToAddMembers.members) {
         const members = groupToAddMembers.members
         let membersNotFoundGitLab = []
         let membersFoundGitLab = []
         const statusSubGroup = Promise.all(members.map(member => {
           const memeberFoundOnGitlab = getUserInfo(connection.gitURL, userConnection.pat, member.userName).then(userInfo => {
-            if(userInfo.id) {
+            if (userInfo.id) {
               membersFoundGitLab.push(userInfo.id)
             }
             else {
