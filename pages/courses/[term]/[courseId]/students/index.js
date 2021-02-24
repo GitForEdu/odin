@@ -52,10 +52,13 @@ export const getServerSideProps = (async (context) => {
     },
   })
 
-  // console.log("getserversideprops 1st student", courseUsers[0])
+  console.log("getserversideprops 1st student", courseUsers[0])
 
-  const groupMembers = await getGroupMembersFromGitlab(context.req, params)
-  // console.log("getserversideprops groupmembers", groupMembers)
+  let groupMembers = await getGroupMembersFromGitlab(context.req, params)
+  if (groupMembers.message) {
+    console.log(groupMembers.message)
+  }
+  console.log("getserversideprops groupmembers", groupMembers)
 
   const initialUsers = {
     blackboard: courseUsers,
@@ -63,7 +66,7 @@ export const getServerSideProps = (async (context) => {
     both: [],
   }
 
-  if (groupMembers) {
+  if (!groupMembers.message) {
     // This block should probably be refactored
     // Add users present in both Gitlab and Blackboard to bothlist
     const usersPresentInBoth = initialUsers.gitlab.filter(gitlabUser => initialUsers.blackboard.find(blackboardUser => blackboardUser.user.userName === gitlabUser.userName))
@@ -83,6 +86,8 @@ export const getServerSideProps = (async (context) => {
   }
 
   if (initialUsers.blackboard.length > 0) initialUsers.blackboard.forEach(student => student.notInGitlab = true)
+
+  if (groupMembers.message) initialUsers.gitlab = []
 
   return {
     props: { initialUsers },

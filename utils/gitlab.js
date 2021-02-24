@@ -127,41 +127,47 @@ const getCourseMembersGitlab = async (path, groupID, pat) => {
       "Content-Type": "application/json",
       "PRIVATE-TOKEN": pat,
     },
-  })
-  const jsonList = (await response.json()).map(member => {
-    const { username, ...memberObject } = member
-    memberObject.userName = username
-    return memberObject
-  })
-
-  const subGroups = await fetch(`${path}/api/v4/groups/${groupID}/subgroups`, {
-    method: "GET",
-    headers: {
-      "Content-Type": "application/json",
-      "PRIVATE-TOKEN": pat,
-    },
   }).then(r => r.json())
+  console.log(response)
+  if (!response.message) {
+    const jsonList = response.map(member => {
+      const { username, ...memberObject } = member
+      memberObject.userName = username
+      return memberObject
+    })
 
-  const subGroupMembers = await Promise.all(subGroups.map(subgroup => {
-    return fetch(`${path}/api/v4/groups/${subgroup.id}/members`, {
+    const subGroups = await fetch(`${path}/api/v4/groups/${groupID}/subgroups`, {
       method: "GET",
       headers: {
         "Content-Type": "application/json",
         "PRIVATE-TOKEN": pat,
       },
-    }).then(r => r.json()).then(groupMembers => {
-      return {
-        group: subgroup,
-        groupMembers: groupMembers,
-      }
-    })
-  }))
+    }).then(r => r.json())
 
-  // console.log("CourseMembers Gitlab", courseMembers)
-  // console.log("Called for subgroups", subGroups)
-  // console.log("Subgroupmembers", subGroupMembers)
+    const subGroupMembers = await Promise.all(subGroups.map(subgroup => {
+      return fetch(`${path}/api/v4/groups/${subgroup.id}/members`, {
+        method: "GET",
+        headers: {
+          "Content-Type": "application/json",
+          "PRIVATE-TOKEN": pat,
+        },
+      }).then(r => r.json()).then(groupMembers => {
+        return {
+          group: subgroup,
+          groupMembers: groupMembers,
+        }
+      })
+    }))
 
-  return jsonList
+    // console.log("CourseMembers Gitlab", courseMembers)
+    // console.log("Called for subgroups", subGroups)
+    // console.log("Subgroupmembers", subGroupMembers)
+
+    return jsonList
+  }
+  else {
+    return response
+  }
 }
 
 const deleteGroup = async (path, pat, groupId) => {

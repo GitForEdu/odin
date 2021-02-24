@@ -36,6 +36,10 @@ export async function getGroupMembersFromGitlab (req, params) {
       // console.log(courseMembers)
       return courseMembers
     }
+    else {
+      return { message: "ingen connection" }
+    }
   }
   console.log("ingen connection")
+  return { message: "ingen connection" }
 }
