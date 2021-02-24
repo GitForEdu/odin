@@ -20,7 +20,7 @@ export const theme = createMuiTheme({
 // Props
 theme.props = {
   MuiButton: {
-    disabledElevation: true,
+    disableElevation: true,
   },
   MuiInputLabel: {
     shrink: true,
