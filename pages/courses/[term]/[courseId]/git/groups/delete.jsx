@@ -6,13 +6,14 @@ import { useState } from "react"
 import { useRouter } from "next/router"
 
 
-export const Group = ({ gitGroups }) => {
+export const Group = ({ parentRepoWithSubGroups }) => {
   const router = useRouter()
   const { courseId, term } = router.query
   const [loading, setLoading] = useState(false)
-  const [groups, setGroups] = useState(gitGroups)
+  const [parentRepo, setParentRepo] = useState(parentRepoWithSubGroups)
+  const [subGroups, setSubGroups] = useState(parentRepoWithSubGroups.subGroups)
 
-  const deleteElm = async (elm) => {
+  const deleteParentRepo = async (elm) => {
     setLoading(true)
     const data = await fetcher(
       `/api/courses/${term}/${courseId}/git/deleteGroup`,
@@ -22,24 +23,40 @@ export const Group = ({ gitGroups }) => {
     )
     setLoading(false)
     console.log("delete group gitlab", data)
-    // if (data === 204) {
-    //   const index = groups.findIndex(group => group.id === elm.id)
-    //   groups.splice(index, 1)
-    //   setGroups([ ...groups])
-    // }
+    if (data.message === "202 Accepted") {
+      setParentRepo([])
+      setSubGroups([])
+    }
+  }
+
+  const deleteSubGroup = async (elm) => {
+    setLoading(true)
+    const data = await fetcher(
+      `/api/courses/${term}/${courseId}/git/deleteGroup`,
+      {
+        groupId: elm.id,
+      }
+    )
+    setLoading(false)
+    console.log("delete group gitlab", data)
+    if (data.message === "202 Accepted") {
+      const index = subGroups.findIndex(group => group.id === elm.id)
+      subGroups.splice(index, 1)
+      setSubGroups([ ...subGroups])
+    }
   }
 
   return (
-    (groups.length > 1)
-      && (
-        <>
-          <ListDelete elements={[groups]} deleteFunc={deleteElm} disabled={loading}>
+    <>
+      <h1>Main repo</h1>
+      <ListDelete elements={[parentRepo]} deleteFunc={deleteParentRepo} disabled={loading}>
 
-          </ListDelete>
-          <ListDelete elements={groups.subGroups} deleteFunc={deleteElm} disabled={loading}>
+      </ListDelete>
+      <h1>Groups in main repo</h1>
+      <ListDelete elements={subGroups} deleteFunc={deleteSubGroup} disabled={loading}>
 
-          </ListDelete>
-        </>)
+      </ListDelete>
+    </>
   )
 }
 
@@ -47,19 +64,19 @@ export const Group = ({ gitGroups }) => {
 export const getServerSideProps = (async (context) => {
   const params = context.params
 
-  const gitGroups = (await GetGroups(context.req, params))
+  const parentRepoWithSubGroups = (await GetGroups(context.req, params))
 
-  if (!gitGroups) {
+  if (parentRepoWithSubGroups.message) {
     return {
       redirect: {
-        destination: "/",
+        destination: "/courses",
         permanent: false,
       },
     }
   }
 
   return {
-    props: { gitGroups },
+    props: { parentRepoWithSubGroups },
   }
 })
 
