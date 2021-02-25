@@ -22,13 +22,13 @@ const StudentActivity = ({ userName, activity }) => {
         <ListItemText primary={data2.title} secondary={data2.amount}/>
         <ListItemText primary={data3.title} secondary={data3.amount}/>
 
-        <Button
+        {/* <Button
           variant="contained"
           color="primary"
           onClick={() => handleAddUserToGitlab(userName)}
         >
               Attempt GitLab add
-        </Button>
+        </Button> */}
       </ListItem>
     </>
   )

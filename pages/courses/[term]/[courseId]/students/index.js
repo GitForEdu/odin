@@ -92,6 +92,12 @@ export const getServerSideProps = (async (context) => {
 
   if (groupMembers.message) initialUsers.gitlab = []
 
+  // TODO: Remove mock actitivty
+  initialUsers.both[0].activity = {
+    commits: 294 ,
+    pullRequests: 50,
+    wikiEdits: 17,
+  }
   return {
     props: { initialUsers, bbGitConnection },
   }

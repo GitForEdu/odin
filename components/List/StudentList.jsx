@@ -23,7 +23,7 @@ const StudentList = ({ elements }) => {
             secondaryTypographyProps={secondaryTextStyling}
           />
         </ListItem>
-        {elem.actvity && <StudentActivity userName={elem.user.userName} actvity={elem.actvity}/>}
+        {elem.activity && <StudentActivity userName={elem.userName} activity={elem.activity}/>}
       </ListItemLink>
     )
   })
