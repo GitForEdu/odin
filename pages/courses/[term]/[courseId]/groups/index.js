@@ -1,5 +1,5 @@
 import Navbar from "components/Navbar"
-import List from "components/List"
+import GroupList from "components/List/GroupList"
 import withAuth from "components/withAuth"
 import { useRouter } from "next/router"
 import { getCourseGroups } from "pages/api/courses/[term]/[courseId]/groups"
@@ -10,7 +10,7 @@ import { Button } from "@material-ui/core"
 import Link from "next/link"
 
 
-export const Group = ({ courseGroups }) => {
+export const Group = ({ courseGroups, bbGitConnection }) => {
   const router = useRouter()
   const { courseId, term } = router.query
 
@@ -48,7 +48,7 @@ export const Group = ({ courseGroups }) => {
               Go to group creation page
             </Button>
           </Link></>
-        : <List type="groups" elements={courseGroups}/>}
+        : <GroupList type="groups" elements={courseGroups}/>}
       {(courseGroups && courseGroups.length !== 0)
       && <>
         <Link href={`/courses/${term}/${courseId}/groups/delete`} passHref>
@@ -71,49 +71,16 @@ export const Group = ({ courseGroups }) => {
         Delete groupset on Blackboard
           </Button>
         </Link>
-        <Button
+        {bbGitConnection.pat
+        && <Button
           variant="contained"
           color="primary"
           onClick={createSubGroups}
           disabled={loadingCreateSubGroups}
         >
         Create groups on GitLab
-        </Button>
+        </Button>}
       </>}
-
-      {courseGroups && (
-        <section>
-          <h1>Groups</h1>
-          <ul>
-            {courseGroups.map(group =>
-              <li key={group.code}>
-                <h1>Group {group.code} - {group.title}</h1>
-                {(group.members.length)
-                  ? (<table>
-                    <thead>
-                      <tr>
-                        <th>User name</th>
-                        <th>First name</th>
-                        <th>Last name</th>
-                      </tr>
-                    </thead>
-                    <tbody>
-                      {group.members.map(groupMember =>
-                        <tr key={groupMember.userName}>
-                          <td>{groupMember.userName}</td>
-                          <td>{groupMember.firstName}</td>
-                          <td>{groupMember.lastName}</td>
-                        </tr>
-                      )}
-                    </tbody>
-                  </table>)
-                  : <p>No group members</p>
-                }
-              </li>
-            )}
-          </ul>
-        </section>
-      )}
     </>
   )
 }
@@ -121,7 +88,9 @@ export const Group = ({ courseGroups }) => {
 export const getServerSideProps = (async (context) => {
   const params = context.params
 
-  const courseGroups = await getCourseGroups(context.req, params)
+  let courseGroups = await getCourseGroups(context.req, params)
+
+  courseGroups = courseGroups.filter(group => !group.isGroupSet)
 
   const bbGitConnection = await getBBGitConnection(context.req, params)
 

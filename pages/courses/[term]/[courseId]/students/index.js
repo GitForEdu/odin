@@ -1,10 +1,11 @@
 import Navbar from "components/Navbar"
-import List from "components/List"
+import StudentList from "components/List/StudentList"
 import withAuth from "components/withAuth"
 import { useRouter } from "next/router"
 import { getCourseUsers } from "pages/api/courses/[term]/[courseId]/users"
 import { getGroupMembersFromGitlab } from "pages/api/courses/[term]/[courseId]/git/getGroupMembers"
 import { useState, Fragment } from "react"
+import { getBBGitConnection } from "pages/api/courses/[term]/[courseId]/git/createConnection"
 
 
 export const Students = ({ initialUsers }) => {
@@ -13,22 +14,25 @@ export const Students = ({ initialUsers }) => {
   const [users, setUsers] = useState(initialUsers)
 
   return (
-    <Fragment>
+    <>
       <Navbar pageTitle={"All students"} courseId={courseId} term={term} />
       <h1>Students only in GitLab (should be empty)</h1>
-      {users.gitlab && <List type="students" elements={users.gitlab} />}
+      {users.gitlab && <StudentList elements={users.gitlab} />}
       <h1>Students both in Blackboard and GitLab</h1>
-      {users.both && <List type="students" elements={users.both} />}
+      {users.both && <StudentList elements={users.both} />}
       <h1>Students only in Blackboard student list</h1>
-      {users.blackboard && <List type="students" elements={users.blackboard} />}
-    </Fragment>
+      {users.blackboard && <StudentList elements={users.blackboard} />}
+    </>
   )
 }
 
 export const getServerSideProps = (async (context) => {
   const params = context.params
 
-  const courseUsers = await getCourseUsers(context.req, params)
+  const bbGitConnection = await getBBGitConnection(context.req, params)
+
+  let courseUsers = await getCourseUsers(context.req, params)
+  courseUsers = courseUsers.filter(user => user.courseRoleId === "Student")
   courseUsers.push({
     availability: { available: "Yes" },
     courseId: "_56_1",
@@ -37,7 +41,6 @@ export const getServerSideProps = (async (context) => {
     dataSourceId: "_2_1",
     id: "_999_1",
     modified: "2020-12-04T13:47:11.996Z",
-    notInGitlab: true,
     userId: "_105_1",
     user: {
       availability: { available: "Yes" },
@@ -85,12 +88,12 @@ export const getServerSideProps = (async (context) => {
     }
   }
 
-  if (initialUsers.blackboard.length > 0) initialUsers.blackboard.forEach(student => student.notInGitlab = true)
+  if (initialUsers.blackboard.length > 0 && bbGitConnection.pat) initialUsers.blackboard.forEach(student => student.notInGitlab = true)
 
   if (groupMembers.message) initialUsers.gitlab = []
 
   return {
-    props: { initialUsers },
+    props: { initialUsers, bbGitConnection },
   }
 })
 

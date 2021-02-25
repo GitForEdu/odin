@@ -7,7 +7,7 @@ import { getCourseUsers } from "pages/api/courses/[term]/[courseId]/users"
 import { DragDropContext, Droppable, Draggable } from "react-beautiful-dnd"
 import fetcher from "utils/fetcher"
 import { CSVReader } from "react-papaparse"
-import { Button, TextField } from "@material-ui/core"
+import { Button, TextField, Typography } from "@material-ui/core"
 import { theme } from "utils/theme"
 import { makeStyles } from "@material-ui/core/styles"
 import Paper from "@material-ui/core/Paper"
@@ -162,7 +162,7 @@ const Dropable = (id, students) => {
           <div
             style={getListStyle(snapshot.isDraggingOver)}
             ref={provided.innerRef}>
-            {id}
+            Group {id}
             {students.map((item, index) => (
               <Draggable
                 key={item.id}
@@ -178,7 +178,29 @@ const Dropable = (id, students) => {
                       snapshot.isDragging,
                       provided.draggableProps.style
                     )}>
-                    {item.user.userName}
+                    <Grid
+                      container
+                      direction="row"
+                      justify="flex-start"
+                      alignItems="flex-start"
+                    >
+                      <Grid
+                        item
+                        xs={12}
+                      >
+                        <Typography>
+                          {`${item.user.name.given} ${item.user.name.family}`}
+                        </Typography>
+                      </Grid>
+                      <Grid
+                        item
+                        xs={12}
+                      >
+                        <Typography>
+                          {`${item.user.userName}`}
+                        </Typography>
+                      </Grid>
+                    </Grid>
                   </div>
                 )}
               </Draggable>
@@ -407,7 +429,7 @@ export const Group = ({ courseUsers }) => {
           xs={12}
         >
           <Grid item xs={12}>
-            <h2>Create random groups</h2>
+            <h2>Create random groups from the studentlist of Blackboard</h2>
           </Grid>
           <Grid
             container
@@ -471,7 +493,7 @@ export const Group = ({ courseUsers }) => {
           </Grid>
         </Grid>
         <Grid item xs={12}>
-          <h2>Groups...</h2>
+          <h2>Groups... (supports drag & drop)</h2>
         </Grid>
         <Grid
           container
@@ -519,7 +541,9 @@ export const Group = ({ courseUsers }) => {
 export const getServerSideProps = (async (context) => {
   const params = context.params
 
-  const courseUsers = await getCourseUsers(context.req, params)
+  let courseUsers = await getCourseUsers(context.req, params)
+
+  courseUsers = courseUsers.filter(user => user.courseRoleId === "Student")
 
   const bbGitConnection = await getBBGitConnection(context.req, params)
 

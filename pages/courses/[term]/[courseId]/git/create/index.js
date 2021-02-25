@@ -6,12 +6,43 @@ import fetcher from "utils/fetcher"
 import Navbar from "components/Navbar"
 
 
+function addhttps(url) {
+  if (!/^(?:f|ht)tps?\:\/\//.test(url)) {
+    url = "https://" + url
+  }
+  return url
+}
+
+function removeLastSlash(url) {
+  if (url.substring(url.length-1) === "/")
+  {
+    url = url.substring(0, url.length-1)
+  }
+
+  return url
+}
+
+function isValidUrl(url) {
+  if (url) {
+    try {
+      new URL(url)
+    } catch (e) {
+      console.error(e)
+      return false
+    }
+    console.log(url)
+    return true
+  }
+  return true
+}
+
 const CreateGit = () => {
   const router = useRouter()
   const { term, courseId } = router.query
   const [gitURL, setGitURL] = useState("")
   const [pat, setPat] = useState("")
   const [loading, setLoading] = useState(false)
+  const [invalidPAT, setInvalidPAT] = useState(false)
 
 
   const handleChangeGitURL = event => {
@@ -43,19 +74,20 @@ const CreateGit = () => {
     const data = await fetcher(
       `/api/courses/${term}/${courseId}/git/createConnectionAndRepo`,
       {
-        gitURL: gitURL,
+        gitURL: removeLastSlash(addhttps(gitURL)),
         pat: pat,
       }
     )
     setLoading(false)
 
     if (data.courseId) {
+      setInvalidPAT(false)
       router.push(`/courses/${term}/${courseId}`)
     }
 
-    if (data.error) {
-      console.log(data.error)
-      router.push(`/courses/${term}/${courseId}`)
+    if (data.message) {
+      console.log(data.message)
+      setInvalidPAT(true)
     }
   }
 
@@ -69,6 +101,8 @@ const CreateGit = () => {
         id="GitURL"
         label="GitLab base URL"
         value={gitURL}
+        error={!isValidUrl(gitURL)}
+        errorText={"Invalid Git base URL"}
         onChange={handleChangeGitURL}
       />
       <br />
@@ -86,17 +120,19 @@ const CreateGit = () => {
         id="pat"
         label="GitLab personal access token"
         value={pat}
+        error={invalidPAT}
+        errorText={"Invalid PAT"}
         onChange={handleChangePat}
       />
       <br />
-      <Button
+      {/* <Button
         variant="contained"
         color="primary"
         onClick={createConnection}
         disabled={gitURL === "" || pat === "" || loading}
       >
               Create GitConnection
-      </Button>
+      </Button> */}
       <Button
         variant="contained"
         color="primary"
