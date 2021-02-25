@@ -36,7 +36,7 @@ export const Group = ({ courseGroups, bbGitConnection }) => {
 
   return (
     <>
-      <Navbar pageTitle={"All students"} courseId={courseId} term={term} />
+      <Navbar pageTitle={"All groups"} courseId={courseId} term={term} />
       {courseGroups.length === 0
         ? <>
           <h1>No groups found on Blackboard</h1>

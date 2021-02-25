@@ -4,6 +4,7 @@ import fetcher from "utils/fetcher"
 import { ListDelete } from "components/List"
 import { useState } from "react"
 import { useRouter } from "next/router"
+import Navbar from "components/Navbar"
 
 
 export const Group = ({ parentRepoWithSubGroups }) => {
@@ -48,6 +49,7 @@ export const Group = ({ parentRepoWithSubGroups }) => {
 
   return (
     <>
+      <Navbar pageTitle={"Delete groups Gitlab"} courseId={courseId} term={term} />
       <h1>Main repo</h1>
       <ListDelete elements={[parentRepo]} deleteFunc={deleteParentRepo} disabled={loading}>
 

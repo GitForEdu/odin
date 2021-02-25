@@ -12,6 +12,7 @@ import { theme } from "utils/theme"
 import { makeStyles } from "@material-ui/core/styles"
 import Paper from "@material-ui/core/Paper"
 import Grid from "@material-ui/core/Grid"
+import Navbar from "components/Navbar"
 
 
 const useStyles = makeStyles((theme) => ({
@@ -356,155 +357,157 @@ export const Group = ({ courseUsers }) => {
 
 
   return (
-    <div className={classes.root}>
-      <Grid
-        container
-        direction="row"
-        justify="center"
-        alignItems="center"
-      >
+    <>
+      <Navbar pageTitle={"Create groups"} courseId={courseId} term={term} />
+      <div className={classes.root}>
         <Grid
           container
           direction="row"
           justify="center"
           alignItems="center"
-          spacing={3}
-          item
-          xs={12}
         >
-          <Grid item xs={12}>
-            <h2>Upload CSV with groups</h2>
-          </Grid>
           <Grid
             container
             direction="row"
             justify="center"
             alignItems="center"
+            spacing={3}
             item
             xs={12}
           >
-            <Grid
-              item
-              xs={4}
-            >
-              <CSVReader
-                onDrop={handleGroups}
-                style={CSVReaderStyles}
-                config={{ header: true }}
-              >
-                <span>Click to upload group info CSV with data headers</span>
-              </CSVReader>
+            <Grid item xs={12}>
+              <h2>Upload CSV with groups</h2>
             </Grid>
-          </Grid>
-          <Grid
-            container
-            direction="row"
-            justify="center"
-            alignItems="center"
-            item
-            xs={12}>
-            <Grid
-              item
-              xs={4}
-            >
-              <CSVReader
-                onDrop={handleGroupMembers}
-                style={CSVReaderStyles}
-                config={{ header: true }}
-              >
-                <span>Click to upload group members CSV with data headers</span>
-              </CSVReader>
-            </Grid>
-          </Grid>
-        </Grid>
-        <Grid item xs={12}>
-          <h2>or</h2>
-        </Grid>
-        <Grid
-          container
-          direction="row"
-          justify="center"
-          alignItems="center"
-          item
-          xs={12}
-        >
-          <Grid item xs={12}>
-            <h2>Create random groups from the studentlist of Blackboard</h2>
-          </Grid>
-          <Grid
-            container
-            direction="row"
-            justify="center"
-            alignItems="center"
-            item
-            xs={12}
-          >
             <Grid
               container
               direction="row"
               justify="center"
               alignItems="center"
               item
-              xs={4}
+              xs={12}
             >
               <Grid
-                item xs={6}>
-                <TextField
-                  variant="outlined"
-                  color="primary"
-                  id="numberOfStudentsPerGroup"
-                  label="Students per group"
-                  value={numberOfStudentsPerGroup}
-                  onChange={handleChangeNumberOfStudentsPerGroup}
-                  type="number"
-                  InputProps={{
-                    inputProps: {
-                      min: 1,
-                    },
-                  }}
-                />
+                item
+                xs={4}
+              >
+                <CSVReader
+                  onDrop={handleGroups}
+                  style={CSVReaderStyles}
+                  config={{ header: true }}
+                >
+                  <span>Click to upload group info CSV with data headers</span>
+                </CSVReader>
               </Grid>
-              <Grid item xs={6}>
-                <TextField
-                  variant="outlined"
-                  color="primary"
-                  id="numberOfGroups"
-                  label="Number of groups"
-                  value={numberOfGroups}
-                  onChange={handleChangeNumberOfGroups}
-                  type="number"
-                  InputProps={{
-                    inputProps: {
-                      min: 1,
-                    },
-                  }}
-                />
+            </Grid>
+            <Grid
+              container
+              direction="row"
+              justify="center"
+              alignItems="center"
+              item
+              xs={12}>
+              <Grid
+                item
+                xs={4}
+              >
+                <CSVReader
+                  onDrop={handleGroupMembers}
+                  style={CSVReaderStyles}
+                  config={{ header: true }}
+                >
+                  <span>Click to upload group members CSV with data headers</span>
+                </CSVReader>
               </Grid>
             </Grid>
           </Grid>
-          <Grid item xs={4}>
-            <Button
-              variant="contained"
-              color="primary"
-              onClick={() => handleClickCreateRandomGroups()}
-            >
-              Create random groups
-            </Button>
+          <Grid item xs={12}>
+            <h2>or</h2>
           </Grid>
-        </Grid>
-        <Grid item xs={12}>
-          <h2>Groups... (supports drag & drop)</h2>
-        </Grid>
-        <Grid
-          container
-          direction="row"
-          justify="center"
-          alignItems="center"
-          item
-          xs={12}
-        >
-          {
-            groups && groups.length !== 0
+          <Grid
+            container
+            direction="row"
+            justify="center"
+            alignItems="center"
+            item
+            xs={12}
+          >
+            <Grid item xs={12}>
+              <h2>Create random groups from the studentlist of Blackboard</h2>
+            </Grid>
+            <Grid
+              container
+              direction="row"
+              justify="center"
+              alignItems="center"
+              item
+              xs={12}
+            >
+              <Grid
+                container
+                direction="row"
+                justify="center"
+                alignItems="center"
+                item
+                xs={4}
+              >
+                <Grid
+                  item xs={6}>
+                  <TextField
+                    variant="outlined"
+                    color="primary"
+                    id="numberOfStudentsPerGroup"
+                    label="Students per group"
+                    value={numberOfStudentsPerGroup}
+                    onChange={handleChangeNumberOfStudentsPerGroup}
+                    type="number"
+                    InputProps={{
+                      inputProps: {
+                        min: 1,
+                      },
+                    }}
+                  />
+                </Grid>
+                <Grid item xs={6}>
+                  <TextField
+                    variant="outlined"
+                    color="primary"
+                    id="numberOfGroups"
+                    label="Number of groups"
+                    value={numberOfGroups}
+                    onChange={handleChangeNumberOfGroups}
+                    type="number"
+                    InputProps={{
+                      inputProps: {
+                        min: 1,
+                      },
+                    }}
+                  />
+                </Grid>
+              </Grid>
+            </Grid>
+            <Grid item xs={4}>
+              <Button
+                variant="contained"
+                color="primary"
+                onClick={() => handleClickCreateRandomGroups()}
+              >
+              Create random groups
+              </Button>
+            </Grid>
+          </Grid>
+          <Grid item xs={12}>
+            <h2>Groups... (supports drag & drop)</h2>
+          </Grid>
+          <Grid
+            container
+            direction="row"
+            justify="center"
+            alignItems="center"
+            item
+            xs={12}
+          >
+            {
+              groups && groups.length !== 0
             && <>
               <Grid
                 container
@@ -530,10 +533,11 @@ export const Group = ({ courseUsers }) => {
                 </Button>
               </Grid>
             </>
-          }
+            }
+          </Grid>
         </Grid>
-      </Grid>
-    </div>
+      </div>
+    </>
   )
 }
 

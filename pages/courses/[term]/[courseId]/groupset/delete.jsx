@@ -4,6 +4,7 @@ import fetcher from "utils/fetcher"
 import { ListDelete } from "components/List"
 import { useState } from "react"
 import { useRouter } from "next/router"
+import Navbar from "components/Navbar"
 
 
 export const GroupSet = ({ courseGroupSet }) => {
@@ -31,9 +32,12 @@ export const GroupSet = ({ courseGroupSet }) => {
 
 
   return (
-    <ListDelete elements={groups} deleteFunc={deleteElm} disabled={loading}>
+    <>
+      <Navbar pageTitle={"Delete groupset"} courseId={courseId} term={term} />
+      <ListDelete elements={groups} deleteFunc={deleteElm} disabled={loading}>
 
-    </ListDelete>
+      </ListDelete>
+    </>
   )
 }
 
