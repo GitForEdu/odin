@@ -6,6 +6,7 @@ import { getCourseUsers } from "pages/api/courses/[term]/[courseId]/users"
 import { getGroupMembersFromGitlab } from "pages/api/courses/[term]/[courseId]/git/getGroupMembers"
 import { useState, Fragment } from "react"
 import { getBBGitConnection } from "pages/api/courses/[term]/[courseId]/git/createConnection"
+import groups from "pages/api/courses/[term]/[courseId]/groups"
 
 
 export const Students = ({ initialUsers }) => {
@@ -93,10 +94,12 @@ export const getServerSideProps = (async (context) => {
   if (groupMembers.message) initialUsers.gitlab = []
 
   // TODO: Remove mock actitivty
-  initialUsers.both[0].activity = {
-    commits: 294 ,
-    pullRequests: 50,
-    wikiEdits: 17,
+  if(!groupMembers.message) {
+    initialUsers.both[0].activity = {
+      commits: 294 ,
+      pullRequests: 50,
+      wikiEdits: 17,
+    }
   }
   return {
     props: { initialUsers, bbGitConnection },
