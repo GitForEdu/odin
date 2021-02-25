@@ -8,7 +8,7 @@ const prisma = new PrismaClient()
 
 const createSubGroupsFunc = async (connection, userConnection, groupsToCreate, parentGroupInfo) => {
   const createdGroups = await Promise.all(groupsToCreate.map(groupToCreate => {
-    const newGitGroup = createGroup(connection.gitURL, groupToCreate.id, userConnection.pat, parentGroupInfo.id)
+    const newGitGroup = createGroup(connection.gitURL, groupToCreate.name, userConnection.pat, parentGroupInfo.id)
     return newGitGroup
   }))
   const filledGroups = Promise.all(createdGroups.map(newleyCreatedGroup => {

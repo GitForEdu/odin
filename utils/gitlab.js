@@ -3,7 +3,7 @@
 const createGroup = async (path, name, pat, parentId) => {
   let payload = {
     name: name,
-    path: name,
+    path: name.replace(" ", "_"),
     membership_lock: false,
     visibility: "public",
     share_with_group_lock: true,
@@ -202,4 +202,46 @@ const getGroupsGitLab = async (path, name, pat) => {
   return { ...parentGroup, subGroups: subGroups }
 }
 
-export { createGroup, getGroupInfo, addUserToGroup, getUserInfo, getCourseMembersGitlab, addUsersToGroup, deleteGroup, getGroupsGitLab }
+const getGroupsGitLabWithMembers = async (path, name, pat) => {
+  const parentGroup = await fetch(`${path}/api/v4/groups/${name}`, {
+    method: "GET",
+    headers: {
+      "Content-Type": "application/json",
+      "PRIVATE-TOKEN": pat,
+    },
+  }).then(r => r.json())
+
+  const subGroups = await fetch(`${path}/api/v4/groups/${parentGroup.id}/subgroups`, {
+    method: "GET",
+    headers: {
+      "Content-Type": "application/json",
+      "PRIVATE-TOKEN": pat,
+    },
+  }).then(r => r.json())
+
+  const subGroupsWithMembers = subGroups.map(group => {
+    return fetch(`${path}/api/v4/groups/${group.id}/members`, {
+      method: "GET",
+      headers: {
+        "Content-Type": "application/json",
+        "PRIVATE-TOKEN": pat,
+      },
+    }).then(r => r.json()).then(groupMembers => {
+      const fixedGroupMembers = groupMembers.map(member => {
+        const { nameGit, username, ...memberExploded } = member
+        const nameArray = nameGit.split(" ")
+        const givenName = nameArray[0]
+        const familyName = nameArray[1]
+        return { ...memberExploded, userName: username, name: { given: givenName, family: familyName } }
+      })
+      return {
+        ...group,
+        members: fixedGroupMembers,
+      }
+    })
+  })
+
+  return subGroupsWithMembers
+}
+
+export { createGroup, getGroupInfo, addUserToGroup, getUserInfo, getCourseMembersGitlab, addUsersToGroup, deleteGroup, getGroupsGitLab, getGroupsGitLabWithMembers }
