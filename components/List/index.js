@@ -1,4 +1,4 @@
-import List from "./List"
+import List from "./StudentActivity"
 import ListDelete from "./ListDelete"
 
 export { ListDelete }

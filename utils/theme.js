@@ -86,4 +86,16 @@ theme.overrides = {
       margin: "1.0rem 0.5rem 0.5rem 0.5rem",
     },
   },
+
+  MuiListItemText: {
+    primary: {
+      color: "white",
+      textAlign: "center",
+    },
+    secondary: {
+      color: "white",
+      textAlign: "center",
+      fontSize: "1.5rem",
+    },
+  },
 }
