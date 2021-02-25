@@ -11,13 +11,17 @@ import { CreateGitConnectionLink, CreatePatConnectionLink } from "components/Git
 const CourseDashboard = ({ session, bbGitConnection }) => {
   const router = useRouter()
   const { term, courseId } = router.query
+  const sessionCourse = session.bbUserCourses.find(course => course.id === courseId)
 
   return (
     <>
       <Navbar pageTitle={"Dashboard"} courseId={courseId} term={term} />
       <Tile>
-        <h1>Hey, {session.name}, {session.username}!</h1>
-        <h2>{`${courseId} ${term}`}</h2>
+        <h1>Hey, {session.name}! </h1>
+        {sessionCourse && (
+          <h2>{`Your user ${session.username} is registered as ${sessionCourse.role} in ${sessionCourse.name} (${courseId} ${term})`}</h2>
+        )}
+
         <Link href={`/courses/${term}/${courseId}/students`} passHref>
           <Button
             variant="contained"
