@@ -211,37 +211,45 @@ const getGroupsGitLabWithMembers = async (path, name, pat) => {
     },
   }).then(r => r.json())
 
-  const subGroups = await fetch(`${path}/api/v4/groups/${parentGroup.id}/subgroups`, {
-    method: "GET",
-    headers: {
-      "Content-Type": "application/json",
-      "PRIVATE-TOKEN": pat,
-    },
-  }).then(r => r.json())
-
-  const subGroupsWithMembers = subGroups.map(group => {
-    return fetch(`${path}/api/v4/groups/${group.id}/members`, {
+  if (!parentGroup.message) {
+    const subGroups = await fetch(`${path}/api/v4/groups/${parentGroup.id}/subgroups`, {
       method: "GET",
       headers: {
         "Content-Type": "application/json",
         "PRIVATE-TOKEN": pat,
       },
-    }).then(r => r.json()).then(groupMembers => {
-      const fixedGroupMembers = groupMembers.map(member => {
-        const { nameGit, username, ...memberExploded } = member
-        const nameArray = nameGit.split(" ")
-        const givenName = nameArray[0]
-        const familyName = nameArray[1]
-        return { ...memberExploded, userName: username, name: { given: givenName, family: familyName } }
-      })
-      return {
-        ...group,
-        members: fixedGroupMembers,
-      }
-    })
-  })
+    }).then(r => r.json())
 
-  return subGroupsWithMembers
+    const subGroupsWithMembers = subGroups.map(group => {
+      return fetch(`${path}/api/v4/groups/${group.id}/members`, {
+        method: "GET",
+        headers: {
+          "Content-Type": "application/json",
+          "PRIVATE-TOKEN": pat,
+        },
+      }).then(r => r.json()).then(groupMembers => {
+        const fixedGroupMembers = groupMembers.map(member => {
+          const { name, username, ...memberExploded } = member
+          console.log(member)
+          console.log(name)
+          const nameArray = name.split(" ")
+          let givenName = name
+          let familyName = undefined
+          if (nameArray.length > 1) {
+            givenName = nameArray[0]
+            familyName = nameArray[nameArray.length - 1]
+          }
+          return { ...memberExploded, userName: username, name: { given: givenName, family: familyName } }
+        })
+        return {
+          ...group,
+          members: fixedGroupMembers,
+        }
+      })
+    })
+    return subGroupsWithMembers
+  }
+  return parentGroup
 }
 
 export { createGroup, getGroupInfo, addUserToGroup, getUserInfo, getCourseMembersGitlab, addUsersToGroup, deleteGroup, getGroupsGitLab, getGroupsGitLabWithMembers }

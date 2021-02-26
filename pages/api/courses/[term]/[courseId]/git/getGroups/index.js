@@ -59,7 +59,11 @@ export async function GetGroupsWithMembers (req, params) {
       where: { userName_gitURL: { userName: userName, gitURL: connection.gitURL } },
     })
     if (userConnection) {
-      return await Promise.all(await getGroupsGitLabWithMembers(connection.gitURL, connection.repoName, userConnection.pat)).then(groups => groups)
+      const response = await getGroupsGitLabWithMembers(connection.gitURL, connection.repoName, userConnection.pat)
+      if (!response.message) {
+        return await Promise.all(response).then(groups => groups)
+      }
+      return response
     }
   }
   console.log("ingen connection")
