@@ -3,10 +3,23 @@ import { GetGroupsWithMembers } from "pages/api/courses/[term]/[courseId]/git/ge
 import withAuth from "components/withAuth"
 import { Grid, Typography } from "@material-ui/core"
 import { theme } from "utils/theme"
+import SchoolIcon from "@material-ui/icons/School"
+import GitIcon from "assets/git-icon-white.svg"
 
 const getListStyle = found => ({
   margin: "8px 8px 8px 8px",
-  background: found === "Both" ? "blue" : found === "Blackboard" ? "green" : theme.palette.selected.main,
+  padding: "0.75rem",
+  background: "black",
+  border: "1px dashed",
+})
+
+const getListTopStyle = (found) => ({
+  // some basic styles to make the items look a bit nicer
+  padding: 8 * 2,
+  margin: "0 0 8px 0",
+
+  // change background colour if dragging
+  background: found === "Both" ? "green" : found === "Blackboard" ? "#0e7c7b" : "#380d75",
 })
 
 const getItemStyle = (found) => ({
@@ -16,78 +29,156 @@ const getItemStyle = (found) => ({
   margin: "0 0 8px 0",
 
   // change background colour if dragging
-  background: found === "Both" ? "lightblue" : found === "Blackboard" ? "lightgreen" : theme.palette.selected.main,
+  background: found === "Multiple" ? "#8b0000" : found === "Both" ? "green" : found === "Blackboard" ? "#0e7c7b" : "#380d75",
 })
 
-const Dropable = (group, students) => {
+const getGitIconWrapperStyle = () => ({
+  // some basic styles to make the items look a bit nicer
+  width: "1.5rem",
+  height: "1.5rem",
+})
+
+const getGitIconStyle = () => ({
+  // some basic styles to make the items look a bit nicer
+  transform: "scale(0.2087)",
+})
+
+const Dropable = (group, students, studentsGroup) => {
   return (
     <Grid
       container
       direction="row"
-      justify="center"
-      alignItems="center"
+      justify="flex-start"
+      alignItems="flex-start"
       item
       xs={4}
     >
       <Grid
         container
         direction="row"
-        justify="center"
-        alignItems="center"
-        item
-        xs={12}
-        style={getListStyle(group.found)}
+        justify="flex-start"
+        alignItems="flex-start"
+        style={getListStyle()}
       >
         <Grid
           container
           direction="row"
-          justify="flex-start"
-          alignItems="flex-start"
-
+          justify="center"
+          alignItems="center"
+          style={getListTopStyle(group.found)}
         >
           <Grid
             item
-            xs={12}
+            xs={8}
           >
-            <Typography>
-              {`Name: ${group.name}`}
+            <Typography variant="h4" align="left">
+              {`${group.name}`}
+            </Typography>
+            <Typography align="left">
+              {`Source: ${group.found}`}
             </Typography>
           </Grid>
           <Grid
+            container
+            direction="row"
+            justify="flex-start"
+            alignItems="flex-start"
             item
-            xs={12}
+            xs={4}
           >
-            <Typography>
-              {`Found: ${group.found}`}
-            </Typography>
+            <Grid
+              container
+              direction="row"
+              justify="flex-start"
+              alignItems="flex-start"
+              item
+              xs={12}
+            >
+              <Grid
+                item
+                xs={6}
+              >
+                <Typography>
+                  <SchoolIcon/>
+                </Typography>
+                <Typography>
+                  {"check1"}
+                </Typography>
+              </Grid>
+              <Grid
+                item
+                xs={6}
+              >
+                <div style={getGitIconWrapperStyle()}>
+                  <GitIcon style={getGitIconStyle()}/>
+                </div>
+                <Typography>
+                  {"check2"}
+                </Typography>
+              </Grid>
+            </Grid>
           </Grid>
+
         </Grid>
         {students.map((item, index) => (
           <Grid
             key={item.name}
             container
             direction="row"
-            justify="flex-start"
-            alignItems="flex-start"
-            style={getItemStyle(item.found)}
+            justify="center"
+            alignItems="center"
+            style={getItemStyle(studentsGroup[item.userName]?.group.length > 1 ? "Multiple" : item.found)}
           >
             <Grid
               item
-              xs={12}
+              xs={8}
+
             >
-              <Typography>
-                {`Found: ${item.found}`}
+              <Typography align="left">
+                {`${item.name.given} ${item.name.family}`}
+              </Typography>
+              <Typography align="left">
+                {item.userName}
+              </Typography>
+              <Typography align="left">
+                {`Source: ${item.found}`}
               </Typography>
             </Grid>
             <Grid
               item
-              xs={12}
+              xs={4}
             >
-              <Typography>
-                {item.name.given} -
-                {item.name.family} -
-                {item.userName}
-              </Typography>
+              <Grid
+                container
+                direction="row"
+                justify="center"
+                alignItems="center"
+                item
+                xs={12}
+              >
+                <Grid
+                  item
+                  xs={6}
+                >
+                  <Typography>
+                    <SchoolIcon/>
+                  </Typography>
+                  <Typography>
+                    {"check1"}
+                  </Typography>
+                </Grid>
+                <Grid
+                  item
+                  xs={6}
+                >
+                  <Typography>
+                    <GitIcon style={getGitIconStyle()}/>
+                  </Typography>
+                  <Typography>
+                    {"check2"}
+                  </Typography>
+                </Grid>
+              </Grid>
             </Grid>
           </Grid>
         ))}
@@ -96,9 +187,9 @@ const Dropable = (group, students) => {
   )
 }
 
-export const GroupDiff = ({ groupDiff }) => {
+export const GroupDiff = ({ groupDiff, studentsGroup }) => {
 
-  console.log(groupDiff)
+  // console.log(groupDiff, studentsGroup)
 
   return (
     <>
@@ -108,11 +199,9 @@ export const GroupDiff = ({ groupDiff }) => {
         direction="row"
         justify="flex-start"
         alignItems="flex-start"
-        spacing={3}
-        item
-        xs={12}
+        spacing={2}
       >
-        {groupDiff.map(group => Dropable(group, group.members))}
+        {groupDiff.map(group => Dropable(group, group.members, studentsGroup))}
       </Grid>
     </>
   )
@@ -138,66 +227,52 @@ export const getServerSideProps = (async (context) => {
   }
 
   if(groupsGit.message) groupsGit = []
+  groupsGit[0].members.push({ name: { given: "Petter", family: "Rein" }, userName: "pettegre" })
+  groupsGit[0].members.push({ name: { given: "Rodie", family: "Wollacott" }, userName: "student1" })
+  groupsGit[1].members.push({ name: { given: "Petter", family: "Rein" }, userName: "pettegre" })
+  groupsGit[1].members.push({ name: { given: "Tore", family: "Stensaker" }, userName: "toretef" })
   const result = calculateGroupDiff(groupsGit, groupsBB)
   const groupDiff = result[0]
   const studentsGroup = result[1]
   //console.log(studentsGroup)
 
   return {
-    props: { groupDiff },
+    props: { groupDiff, studentsGroup },
   }
 })
 
 const calculateGroupDiff = (groupsGit, groupsBB) => {
   // record where the group was found, saves the groups to the object with the key group.name
-  const array = {}
+  const groups = {}
   // record the groups the student was found in. Uses student.userName as key, and have the property group which is a array of groups the student was found
   let studentsGroup = {}
 
   groupsGit.forEach(group => {
-    const members = group.members.filter(member => member.access_level !== 50).map(member => {
-      const foundStudent = studentsGroup[member.userName]
-      if (foundStudent) {
-        studentsGroup[member.userName].group.push(group.name)
-      }
-      else {
-        studentsGroup[member.userName] = {
-          username: member.userName,
-          group: [],
-        }
-        studentsGroup[member.userName].group.push(group.name)
-      }
+    const groupMembersOnGit = group.members.filter(member => member.access_level !== 50).map(member => {
+      studentsGroup = saveGroupStudentFoundIn(studentsGroup, member, group)
       return({ ...member, "found": "Git" })
     })
-    array[group.name] = {
+    groups[group.name] = {
       name: group.name,
       found: "Git",
-      members: members,
+      members: groupMembersOnGit,
     }
   })
 
   groupsBB.forEach(group => {
-    console.log(group.members[0])
-    const groupBothPlaces = !!array[group.name]
+    // Have we seen this group on Gitlab?
+    const groupBothPlaces = !!groups[group.name]
     let members = []
     if (!groupBothPlaces) {
+      // no it was a new group
       members = group.members.map(member => {
-        const foundStudent = studentsGroup[member.userName]
-        if (foundStudent) {
-          studentsGroup[member.userName].group.push(group.name)
-        }
-        else {
-          studentsGroup[member.userName] = {
-            username: member.userName,
-            group: [],
-          }
-          studentsGroup[member.userName].group.push(group.name)
-        }
+        studentsGroup = saveGroupStudentFoundIn(studentsGroup, member, group)
         return({ ...member, "found": "Blackboard" })
       })
     }
     else {
-      const membersGit = array[group.name].members
+      // get the members from the group found earlier from Git
+      const membersGit = groups[group.name].members
       const membersBB = group.members
       const longestArray = membersGit.length > membersBB.length
       if (longestArray) {
@@ -211,55 +286,54 @@ const calculateGroupDiff = (groupsGit, groupsBB) => {
         studentsGroup = result[1]
       }
     }
-    array[group.name] = {
+    groups[group.name] = {
       name: group.name,
       found: groupBothPlaces ? "Both" : "Blackboard",
       members: members,
     }
   })
 
-  return [Object.keys(array).map((key) => array[key]), Object.keys(studentsGroup).map((key) => studentsGroup[key])]
+  // convert the dicts into arrays
+  return [Object.keys(groups).map((key) => groups[key]), studentsGroup]
 }
 
-const diff = (arraySum, studentsGroup, group, array1, array2, string1, string2) => {
+const diff = (members, studentsGroup, group, array1, array2, string1, string2) => {
+  let tmpStudentsGroup = studentsGroup
   array1.forEach(memberArray1 => {
-    const foundStudent = studentsGroup[memberArray1.userName]
-    if (foundStudent) {
-      studentsGroup[memberArray1.userName].group.push(group.name)
-    }
-    else {
-      studentsGroup[memberArray1.userName] = {
-        username: memberArray1.userName,
-        group: [],
-      }
-      studentsGroup[memberArray1.userName].group.push(group.name)
-    }
-    const foundInOther = array2.find(memberArray2 => memberArray2.userName === memberArray1.username)
-    if (foundInOther) {
-      arraySum.push({ ...memberArray1, "found": "Both" })
+    const foundInOther = array2.findIndex(memberArray2 => memberArray2.userName === memberArray1.userName)
+    if (foundInOther >= 0) {
+      console.log("22", foundInOther)
+      members.push({ ...memberArray1, "found": "Both" })
       array2.splice(foundInOther, 1)
     }
     else {
-      arraySum.push({ ...memberArray1, "found": string1 })
+      tmpStudentsGroup = saveGroupStudentFoundIn(tmpStudentsGroup, memberArray1, group)
+      members.push({ ...memberArray1, "found": string1 })
     }
   })
 
+  // if we still have some entries in this list
   array2.forEach(member => {
-    const foundStudent = studentsGroup[member.userName]
-    if (foundStudent) {
-      studentsGroup[member.userName].group.push(group.name)
-    }
-    else {
-      studentsGroup[member.userName] = {
-        username: member.userName,
-        group: [],
-      }
-      studentsGroup[member.userName].group.push(group.name)
-    }
-    arraySum.push({ ...member, "found": string2 })
+    tmpStudentsGroup = saveGroupStudentFoundIn(tmpStudentsGroup, member, group)
+    members.push({ ...member, "found": string2 })
   })
 
-  return [arraySum, studentsGroup]
+  return [members, tmpStudentsGroup]
+}
+
+const saveGroupStudentFoundIn = (studentsGroup, member, group) => {
+  const foundStudent = studentsGroup[member.userName]
+  if (foundStudent && !foundStudent.group.includes(group.name)) {
+    studentsGroup[member.userName].group.push(group.name)
+  }
+  else {
+    studentsGroup[member.userName] = {
+      username: member.userName,
+      group: [],
+    }
+    studentsGroup[member.userName].group.push(group.name)
+  }
+  return studentsGroup
 }
 
 
