@@ -103,7 +103,8 @@ const Dropable = (group, index, students, studentsGroup, onClickListTop) => {
       justify="flex-start"
       alignItems="flex-start"
       item
-      xs={4}
+      md={4}
+      sx={4}
     >
       <Droppable droppableId={`${index}`}>
         {(provided, snapshot) => (
@@ -132,7 +133,7 @@ const Dropable = (group, index, students, studentsGroup, onClickListTop) => {
                   {`${group.name}`}
                 </Typography>
                 <Typography variant="h6" align="left">
-                  {`${group.members.length} members`}
+                  {(group.members.length === 0 || group.members.length > 1) ? `${group.members.length} members` : `${group.members.length} member`}
                 </Typography>
               </Grid>
               <Grid
@@ -431,7 +432,6 @@ export const getServerSideProps = (async (context) => {
 const checkGroupStatus = (groups) => {
   let studentsGroup = {}
   const updatedGroups = groups.map(group => {
-    console.log("group 434", group)
     let gitStatus = true
     let bbStatus = true
 
