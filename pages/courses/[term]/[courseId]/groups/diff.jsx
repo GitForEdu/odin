@@ -1,5 +1,6 @@
 import { useEffect, useState } from "react"
 import { getCourseGroups } from "pages/api/courses/[term]/[courseId]/groups"
+import { getCourseUsers } from "pages/api/courses/[term]/[courseId]/users"
 import { GetGroupsWithMembers } from "pages/api/courses/[term]/[courseId]/git/getGroups"
 import withAuth from "components/withAuth"
 import { Grid, Typography } from "@material-ui/core"
@@ -21,83 +22,37 @@ const getListStyle = isDraggingOver => ({
   borderColor: isDraggingOver && theme.palette.primary.main,
 })
 
-const getListTopStyle = (status) => ({
-  // some basic styles to make the items look a bit nicer
+const getListTopStyle = (status, clickable) => ({
   padding: 8 * 2,
   margin: "8px 0 8px 0",
-
-  // change background colour if dragging
+  cursor: clickable && "pointer",
   background: status && "green",
 })
 
-const getListMemberStyle = (collapsed, isDraggingOver) => ({
-  // some basic styles to make the items look a bit nicer
-  //padding: 8 * 2,
-  //margin: "0 0 8px 0",
-
-  // change background colour if dragging
-  //background: status && "green",
-  //height: !isDraggingOver && collapsed ? "0px" : "100%",
+const getListMemberStyle = (collapsed) => ({
   display: collapsed ? "none" : "block",
 })
 
 const getItemStyle = (found, isDragging, draggableStyle) => ({
-  // some basic styles to make the items look a bit nicer
   userSelect: "none",
   padding: 8 * 2,
   margin: "0 0 8px 0",
 
-  // change background colour if dragging
   background: found === "Multiple" ? "#8b0000" : found === "Both" ? "green" : found === "Blackboard" ? "#0e7c7b" : "#380d75",
   ...draggableStyle,
 })
 
-const getGitIconWrapperStyle = () => ({
-  // some basic styles to make the items look a bit nicer
-  //width: "3.48rem",
-  //height: "1.75rem",
-})
-
 const getGitIconStyle = () => ({
-  // some basic styles to make the items look a bit nicer
   width: "24px",
   height: "24px",
   transform: "scale(0.80)",
 })
 
-const reorderSubList = (list, listIndex, startIndex, endIndex, listOfList) => {
-  const listTemp = Array.from(list.members)
-  const [removed] = listTemp.splice(startIndex, 1)
-  listTemp.splice(endIndex, 0, removed)
-
-  listOfList[listIndex].members = listTemp
-
-  return listOfList
-}
-
-const moveElementToOtherSubList = (source, destination, droppableSource, droppableDestination, listOfList) => {
-  const sourceClone = Array.from(source)
-  const destClone = Array.from(destination)
-  const [removed] = sourceClone.splice(droppableSource.index, 1)
-
-  const duplicateUser = destClone.findIndex(user => user.userName === removed.userName)
-  if (duplicateUser >= 0) {
-
-  }
-  else {
-    destClone.splice(droppableDestination.index, 0, removed)
-  }
-
-  listOfList[droppableSource.droppableId].members = sourceClone
-  listOfList[droppableDestination.droppableId].members = destClone
-
-  return listOfList
-}
-
 
 const Dropable = (group, index, students, studentsGroup, onClickListTop) => {
   return (
     <Grid
+      key={index}
       container
       direction="row"
       justify="flex-start"
@@ -123,7 +78,7 @@ const Dropable = (group, index, students, studentsGroup, onClickListTop) => {
               direction="row"
               justify="center"
               alignItems="center"
-              style={getListTopStyle(group.status)}
+              style={getListTopStyle(group.status, !(group.members.length === 0))}
             >
               <Grid
                 item
@@ -164,13 +119,13 @@ const Dropable = (group, index, students, studentsGroup, onClickListTop) => {
                       item
                       xs={12}
                     >
-                      <SchoolIcon />
+                      {!group.noGroupStudents && (<SchoolIcon />)}
                     </Grid>
                     <Grid
                       item
                       xs={12}
                     >
-                      {group.bbStatus ? <CheckIcon /> : <ClearIcon />}
+                      {!group.noGroupStudents && (group.bbStatus ? <CheckIcon /> : <ClearIcon />)}
                     </Grid>
                   </Grid>
                   <Grid
@@ -185,13 +140,13 @@ const Dropable = (group, index, students, studentsGroup, onClickListTop) => {
                       item
                       xs={12}
                     >
-                      <GitIcon style={getGitIconStyle()} />
+                      {!group.noGroupStudents && <GitIcon style={getGitIconStyle()} />}
                     </Grid>
                     <Grid
                       item
                       xs={12}
                     >
-                      {group.gitStatus ? <CheckIcon /> : <ClearIcon />}
+                      {!group.noGroupStudents && (group.gitStatus ? <CheckIcon /> : <ClearIcon />)}
                     </Grid>
                   </Grid>
                 </Grid>
@@ -272,13 +227,13 @@ const Dropable = (group, index, students, studentsGroup, onClickListTop) => {
                               item
                               xs={12}
                             >
-                              <SchoolIcon />
+                              {!group.noGroupStudents && (<SchoolIcon />)}
                             </Grid>
                             <Grid
                               item
                               xs={12}
                             >
-                              {item.found === "Both" || item.found === "Blackboard" ? <CheckIcon /> : <ClearIcon />}
+                              {!group.noGroupStudents && (item.found === "Both" || item.found === "Blackboard" ? <CheckIcon /> : <ClearIcon />)}
                             </Grid>
                           </Grid>
                           <Grid
@@ -293,13 +248,13 @@ const Dropable = (group, index, students, studentsGroup, onClickListTop) => {
                               item
                               xs={12}
                             >
-                              <GitIcon style={getGitIconStyle()} />
+                              {!group.noGroupStudents && (<GitIcon style={getGitIconStyle()} />)}
                             </Grid>
                             <Grid
                               item
                               xs={12}
                             >
-                              {item.found === "Both" || item.found === "Git" ? <CheckIcon /> : <ClearIcon />}
+                              {!group.noGroupStudents && (item.found === "Both" || item.found === "Git" ? <CheckIcon /> : <ClearIcon />)}
                             </Grid>
                           </Grid>
                         </Grid>
@@ -321,11 +276,11 @@ const Dropable = (group, index, students, studentsGroup, onClickListTop) => {
   )
 }
 
+
 export const GroupDiff = ({ groupDiff }) => {
   const initGroups = checkGroupStatus(groupDiff)
   const [groups, setGroups] = useState(initGroups[0])
   const [studentsGroup, setStudentsGroup] = useState(initGroups[1])
-  console.log("ff", studentsGroup)
 
   const onClickListTop = (groupIndex) => {
     const tmpGroups = [...groups]
@@ -333,15 +288,12 @@ export const GroupDiff = ({ groupDiff }) => {
     setGroups(tmpGroups)
   }
 
-
   const onDragEnd = result => {
     const { source, destination } = result
-
     // dropped outside the list
     if (!destination) {
       return
     }
-
     // interal moved element
     if (source.droppableId === destination.droppableId) {
       const listOfList = reorderSubList(
@@ -351,11 +303,9 @@ export const GroupDiff = ({ groupDiff }) => {
         destination.index,
         groups
       )
-      console.log(listOfList)
       const status = checkGroupStatus(listOfList)
       setGroups([...status[0]])
       setStudentsGroup({ ...status[1] })
-
     }
     // moved into new sublist
     else {
@@ -366,7 +316,6 @@ export const GroupDiff = ({ groupDiff }) => {
         destination,
         groups
       )
-
       const status = checkGroupStatus(listOfList)
       setGroups([...status[0]])
       setStudentsGroup({ ...status[1] })
@@ -392,12 +341,14 @@ export const GroupDiff = ({ groupDiff }) => {
   )
 }
 
+
 export const getServerSideProps = (async (context) => {
   const params = context.params
 
-  let groupsBB = await getCourseGroups(context.req, params)
+  const groupsBB = (await getCourseGroups(context.req, params)).filter(group => !group.isGroupSet)
   //console.log("groupsBB", groupsBB)
-  groupsBB = groupsBB.filter(group => !group.isGroupSet)
+
+  let courseUsers = (await getCourseUsers(context.req, params)).filter(user => user.courseRoleId === "Student")
 
   let groupsGit = await GetGroupsWithMembers(context.req, params)
   //console.log("groupsGit", groupsGit)
@@ -422,12 +373,19 @@ export const getServerSideProps = (async (context) => {
   groupsGit[2].members.push({ name: { given: "Tore", family: "Stensaker" }, userName: "toretef" })
   groupsGit[3].members.push({ name: { given: "Petter", family: "Rein" }, userName: "pettegre" })
   const groupDiff = calculateGroupDiff(groupsGit, groupsBB)
+  const usersInNoGroup = checkIfUserInAGroup(courseUsers, checkGroupStatus(groupDiff)[1])
+  usersInNoGroup.push({ name: { given: "Petter", family: "Rein" }, userName: "test", found: "Blackboard" })
+
+  if (usersInNoGroup.length > 0) {
+    groupDiff.unshift({ name: "Students in no group", found: "Blackboard", members: usersInNoGroup, noGroupStudents: true })
+  }
   //console.log(studentsGroup)
 
   return {
     props: { groupDiff },
   }
 })
+
 
 const checkGroupStatus = (groups) => {
   let studentsGroup = {}
@@ -536,6 +494,47 @@ const saveGroupStudentFoundIn = (studentsGroup, member, group) => {
     studentsGroup[member.userName].group.push(group.name)
   }
   return studentsGroup
+}
+
+const reorderSubList = (list, listIndex, startIndex, endIndex, listOfList) => {
+  const listTemp = Array.from(list.members)
+  const [removed] = listTemp.splice(startIndex, 1)
+  listTemp.splice(endIndex, 0, removed)
+  listOfList[listIndex].members = listTemp
+  return listOfList
+}
+
+const moveElementToOtherSubList = (source, destination, droppableSource, droppableDestination, listOfList) => {
+  const sourceClone = Array.from(source)
+  const destClone = Array.from(destination)
+  const [removed] = sourceClone.splice(droppableSource.index, 1)
+
+  const duplicateUser = destClone.findIndex(user => user.userName === removed.userName)
+  if (!(duplicateUser >= 0)) {
+    destClone.splice(droppableDestination.index, 0, removed)
+  }
+
+  listOfList[droppableSource.droppableId].members = sourceClone
+  listOfList[droppableDestination.droppableId].members = destClone
+
+  if (listOfList[droppableSource.droppableId].noGroupStudents && listOfList[droppableSource.droppableId].members.length === 0) {
+    listOfList.splice(droppableSource.droppableId, 1)
+    return listOfList
+  }
+  return listOfList
+}
+
+const checkIfUserInAGroup = (users, usersGroups) => {
+  const usersNoGroup = []
+
+  users.forEach(user => {
+    const foundUser = usersGroups[user.user.userName]
+    if(!foundUser) {
+      usersNoGroup.push({ ...user.user, found: "Blackboard" })
+    }
+  })
+
+  return usersNoGroup
 }
 
 

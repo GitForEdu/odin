@@ -230,8 +230,6 @@ const getGroupsGitLabWithMembers = async (path, name, pat) => {
       }).then(r => r.json()).then(groupMembers => {
         const fixedGroupMembers = groupMembers.map(member => {
           const { name, username, ...memberExploded } = member
-          console.log(member)
-          console.log(name)
           const nameArray = name.split(" ")
           let givenName = name
           let familyName = undefined
