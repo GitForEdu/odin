@@ -320,9 +320,10 @@ const Dropable = (group, index, students, studentsGroup, onClickListTop) => {
   )
 }
 
-export const GroupDiff = ({ groupDiff, studentsGroupInit }) => {
-  const [groups, setGroups] = useState(checkGroupStatus(groupDiff)[0])
-  const [studentsGroup, setStudentsGroup] = useState(studentsGroupInit)
+export const GroupDiff = ({ groupDiff }) => {
+  const initGroups = checkGroupStatus(groupDiff)
+  const [groups, setGroups] = useState(initGroups[0])
+  const [studentsGroup, setStudentsGroup] = useState(initGroups[1])
   console.log("ff", studentsGroup)
 
   const onClickListTop = (groupIndex) => {
@@ -419,19 +420,18 @@ export const getServerSideProps = (async (context) => {
   groupsGit[2].members.push({ name: { given: "Petter", family: "Rein" }, userName: "pettegre" })
   groupsGit[2].members.push({ name: { given: "Tore", family: "Stensaker" }, userName: "toretef" })
   groupsGit[3].members.push({ name: { given: "Petter", family: "Rein" }, userName: "pettegre" })
-  const result = calculateGroupDiff(groupsGit, groupsBB)
-  const groupDiff = result[0]
-  const studentsGroupInit = result[1]
+  const groupDiff = calculateGroupDiff(groupsGit, groupsBB)
   //console.log(studentsGroup)
 
   return {
-    props: { groupDiff, studentsGroupInit },
+    props: { groupDiff },
   }
 })
 
 const checkGroupStatus = (groups) => {
   let studentsGroup = {}
   const updatedGroups = groups.map(group => {
+    console.log("group 434", group)
     let gitStatus = true
     let bbStatus = true
 
@@ -458,12 +458,9 @@ const checkGroupStatus = (groups) => {
 const calculateGroupDiff = (groupsGit, groupsBB) => {
   // record where the group was found, saves the groups to the object with the key group.name
   const groups = {}
-  // record the groups the student was found in. Uses student.userName as key, and have the property group which is a array of groups the student was found
-  let studentsGroup = {}
 
   groupsGit.forEach(group => {
     const groupMembersOnGit = group.members.filter(member => member.access_level !== 50).map(member => {
-      studentsGroup = saveGroupStudentFoundIn(studentsGroup, member, group)
       return ({ ...member, "found": "Git" })
     })
     groups[group.name] = {
@@ -480,7 +477,6 @@ const calculateGroupDiff = (groupsGit, groupsBB) => {
     if (!groupBothPlaces) {
       // no it was a new group
       members = group.members.map(member => {
-        studentsGroup = saveGroupStudentFoundIn(studentsGroup, member, group)
         return ({ ...member, "found": "Blackboard" })
       })
     }
@@ -490,14 +486,10 @@ const calculateGroupDiff = (groupsGit, groupsBB) => {
       const membersBB = group.members
       const longestArray = membersGit.length > membersBB.length
       if (longestArray) {
-        const result = diff(members, studentsGroup, group, membersGit, membersBB, "Git", "Blackboard")
-        members = result[0]
-        studentsGroup = result[1]
+        members = diff(members, membersGit, membersBB, "Git", "Blackboard")
       }
       else {
-        const result = diff(members, studentsGroup, group, membersBB, membersGit, "Blackboard", "Git")
-        members = result[0]
-        studentsGroup = result[1]
+        members = diff(members, membersBB, membersGit, "Blackboard", "Git")
       }
     }
     groups[group.name] = {
@@ -508,31 +500,27 @@ const calculateGroupDiff = (groupsGit, groupsBB) => {
   })
 
   // convert the dicts into arrays
-  return [Object.keys(groups).map((key) => groups[key]), studentsGroup]
+  return Object.keys(groups).map((key) => groups[key])
 }
 
-const diff = (members, studentsGroup, group, array1, array2, string1, string2) => {
-  let tmpStudentsGroup = studentsGroup
+const diff = (members, array1, array2, string1, string2) => {
   array1.forEach(memberArray1 => {
     const foundInOther = array2.findIndex(memberArray2 => memberArray2.userName === memberArray1.userName)
     if (foundInOther >= 0) {
-      console.log("22", foundInOther)
       members.push({ ...memberArray1, "found": "Both" })
       array2.splice(foundInOther, 1)
     }
     else {
-      tmpStudentsGroup = saveGroupStudentFoundIn(tmpStudentsGroup, memberArray1, group)
       members.push({ ...memberArray1, "found": string1 })
     }
   })
 
   // if we still have some entries in this list
   array2.forEach(member => {
-    tmpStudentsGroup = saveGroupStudentFoundIn(tmpStudentsGroup, member, group)
     members.push({ ...member, "found": string2 })
   })
 
-  return [members, tmpStudentsGroup]
+  return members
 }
 
 const saveGroupStudentFoundIn = (studentsGroup, member, group) => {
