@@ -162,7 +162,8 @@ const Dropable = (id, students) => {
         {(provided, snapshot) => (
           <div
             style={getListStyle(snapshot.isDraggingOver)}
-            ref={provided.innerRef}>
+            ref={provided.innerRef}
+          >
             {id}
             {students.map((item, index) => (
               <Draggable

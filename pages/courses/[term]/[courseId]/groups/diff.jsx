@@ -1,28 +1,47 @@
+import { useEffect, useState } from "react"
 import { getCourseGroups } from "pages/api/courses/[term]/[courseId]/groups"
 import { GetGroupsWithMembers } from "pages/api/courses/[term]/[courseId]/git/getGroups"
 import withAuth from "components/withAuth"
 import { Grid, Typography } from "@material-ui/core"
 import { theme } from "utils/theme"
 import SchoolIcon from "@material-ui/icons/School"
+import CheckIcon from "@material-ui/icons/Check"
+import ClearIcon from "@material-ui/icons/Clear"
 import GitIcon from "assets/git-icon-white.svg"
+import { DragDropContext, Droppable, Draggable } from "react-beautiful-dnd"
+import ExpandMoreIcon from "@material-ui/icons/ExpandMore"
+import ExpandLessIcon from "@material-ui/icons/ExpandLess"
 
-const getListStyle = found => ({
+
+const getListStyle = isDraggingOver => ({
   margin: "8px 8px 8px 8px",
   padding: "0.75rem",
   background: "black",
   border: "1px dashed",
+  borderColor: isDraggingOver && theme.palette.primary.main,
 })
 
-const getListTopStyle = (found) => ({
+const getListTopStyle = (status) => ({
   // some basic styles to make the items look a bit nicer
   padding: 8 * 2,
-  margin: "0 0 8px 0",
+  margin: "8px 0 8px 0",
 
   // change background colour if dragging
-  background: found === "Both" ? "green" : found === "Blackboard" ? "#0e7c7b" : "#380d75",
+  background: status && "green",
 })
 
-const getItemStyle = (found) => ({
+const getListMemberStyle = (collapsed, isDraggingOver) => ({
+  // some basic styles to make the items look a bit nicer
+  //padding: 8 * 2,
+  //margin: "0 0 8px 0",
+
+  // change background colour if dragging
+  //background: status && "green",
+  //height: !isDraggingOver && collapsed ? "0px" : "100%",
+  display: collapsed ? "none" : "block",
+})
+
+const getItemStyle = (found, isDragging, draggableStyle) => ({
   // some basic styles to make the items look a bit nicer
   userSelect: "none",
   padding: 8 * 2,
@@ -30,20 +49,47 @@ const getItemStyle = (found) => ({
 
   // change background colour if dragging
   background: found === "Multiple" ? "#8b0000" : found === "Both" ? "green" : found === "Blackboard" ? "#0e7c7b" : "#380d75",
+  ...draggableStyle,
 })
 
 const getGitIconWrapperStyle = () => ({
   // some basic styles to make the items look a bit nicer
-  width: "1.5rem",
-  height: "1.5rem",
+  //width: "3.48rem",
+  //height: "1.75rem",
 })
 
 const getGitIconStyle = () => ({
   // some basic styles to make the items look a bit nicer
-  transform: "scale(0.2087)",
+  width:"24px",
+  height:"24px",
+  transform: "scale(0.80)",
 })
 
-const Dropable = (group, students, studentsGroup) => {
+const reorderSubList = (list, listIndex, startIndex, endIndex, listOfList) => {
+  const listTemp = Array.from(list.members)
+  const [removed] = listTemp.splice(startIndex, 1)
+  listTemp.splice(endIndex, 0, removed)
+
+  listOfList[listIndex].members = listTemp
+
+  return listOfList
+}
+
+const moveElementToOtherSubList = (source, destination, droppableSource, droppableDestination, listOfList) => {
+  const sourceClone = Array.from(source)
+  const destClone = Array.from(destination)
+  const [removed] = sourceClone.splice(droppableSource.index, 1)
+
+  destClone.splice(droppableDestination.index, 0, removed)
+
+  listOfList[droppableSource.droppableId].members = sourceClone
+  listOfList[droppableDestination.droppableId].members = destClone
+
+  return listOfList
+}
+
+
+const Dropable = (group, index, students, studentsGroup, onClickListTop) => {
   return (
     <Grid
       container
@@ -53,147 +99,267 @@ const Dropable = (group, students, studentsGroup) => {
       item
       xs={4}
     >
-      <Grid
-        container
-        direction="row"
-        justify="flex-start"
-        alignItems="flex-start"
-        style={getListStyle()}
-      >
-        <Grid
-          container
-          direction="row"
-          justify="center"
-          alignItems="center"
-          style={getListTopStyle(group.found)}
-        >
+      <Droppable droppableId={`${index}`}>
+        {(provided, snapshot) => (
           <Grid
-            item
-            xs={8}
-          >
-            <Typography variant="h4" align="left">
-              {`${group.name}`}
-            </Typography>
-            <Typography align="left">
-              {`Source: ${group.found}`}
-            </Typography>
-          </Grid>
-          <Grid
+            ref={provided.innerRef}
             container
             direction="row"
             justify="flex-start"
             alignItems="flex-start"
-            item
-            xs={4}
+            style={getListStyle(snapshot.isDraggingOver)}
+            index={index}
           >
             <Grid
+              onClick={() => onClickListTop(index)}
               container
               direction="row"
-              justify="flex-start"
-              alignItems="flex-start"
-              item
-              xs={12}
+              justify="center"
+              alignItems="center"
+              style={getListTopStyle(group.status)}
             >
               <Grid
                 item
-                xs={6}
+                xs={8}
               >
-                <Typography>
-                  <SchoolIcon/>
+                <Typography variant="h4" align="left">
+                  {`${group.name}`}
                 </Typography>
-                <Typography>
-                  {"check1"}
+                <Typography variant="h6" align="left">
+                  {`${group.members.length} members`}
                 </Typography>
               </Grid>
-              <Grid
-                item
-                xs={6}
-              >
-                <div style={getGitIconWrapperStyle()}>
-                  <GitIcon style={getGitIconStyle()}/>
-                </div>
-                <Typography>
-                  {"check2"}
-                </Typography>
-              </Grid>
-            </Grid>
-          </Grid>
-
-        </Grid>
-        {students.map((item, index) => (
-          <Grid
-            key={item.name}
-            container
-            direction="row"
-            justify="center"
-            alignItems="center"
-            style={getItemStyle(studentsGroup[item.userName]?.group.length > 1 ? "Multiple" : item.found)}
-          >
-            <Grid
-              item
-              xs={8}
-
-            >
-              <Typography align="left">
-                {`${item.name.given} ${item.name.family}`}
-              </Typography>
-              <Typography align="left">
-                {item.userName}
-              </Typography>
-              <Typography align="left">
-                {`Source: ${item.found}`}
-              </Typography>
-            </Grid>
-            <Grid
-              item
-              xs={4}
-            >
               <Grid
                 container
                 direction="row"
-                justify="center"
-                alignItems="center"
+                justify="flex-start"
+                alignItems="flex-start"
                 item
-                xs={12}
+                xs={3}
               >
                 <Grid
+                  container
+                  direction="row"
+                  justify="flex-start"
+                  alignItems="flex-start"
                   item
-                  xs={6}
+                  xs={12}
                 >
-                  <Typography>
-                    <SchoolIcon/>
-                  </Typography>
-                  <Typography>
-                    {"check1"}
-                  </Typography>
-                </Grid>
-                <Grid
-                  item
-                  xs={6}
-                >
-                  <Typography>
-                    <GitIcon style={getGitIconStyle()}/>
-                  </Typography>
-                  <Typography>
-                    {"check2"}
-                  </Typography>
+                  <Grid
+                    container
+                    direction="column"
+                    justify="flex-start"
+                    alignItems="flex-start"
+                    item
+                    xs={6}
+                  >
+                    <Grid
+                      item
+                      xs={12}
+                    >
+                      <SchoolIcon/>
+                    </Grid>
+                    <Grid
+                      item
+                      xs={12}
+                    >
+                      {group.bbStatus ? <CheckIcon /> : <ClearIcon />}
+                    </Grid>
+                  </Grid>
+                  <Grid
+                    container
+                    direction="column"
+                    justify="flex-start"
+                    alignItems="flex-start"
+                    item
+                    xs={6}
+                  >
+                    <Grid
+                      item
+                      xs={12}
+                    >
+                      <GitIcon style={getGitIconStyle()}/>
+                    </Grid>
+                    <Grid
+                      item
+                      xs={12}
+                    >
+                      {group.gitStatus ? <CheckIcon /> : <ClearIcon />}
+                    </Grid>
+                  </Grid>
                 </Grid>
               </Grid>
+              <Grid
+                item
+                xs={1}
+              >
+                {group.members.length === 0 ? undefined : group.collapsed ? <ExpandMoreIcon /> : <ExpandLessIcon />}
+              </Grid>
+
+            </Grid>
+            <Grid
+              container
+              direction="row"
+              justify="center"
+              alignItems="center"
+              style={getListMemberStyle(group.collapsed, snapshot.isDraggingOver)}
+            >
+              {students.map((item, indexStudent) => (
+                <Draggable
+                  key={`${index}${item.userName}${indexStudent}`}
+                  draggableId={`${index}${item.userName}${indexStudent}`}
+                  index={indexStudent}
+                >
+                  {(provided, snapshot) => (
+                    <Grid
+                      ref={provided.innerRef}
+                      {...provided.draggableProps}
+                      {...provided.dragHandleProps}
+                      container
+                      direction="row"
+                      justify="center"
+                      alignItems="center"
+                      style={getItemStyle(studentsGroup[item.userName]?.group.length > 1 ? "Multiple" : item.found, snapshot.isDragging, provided.draggableProps.style)}
+                    >
+                      <Grid
+                        item
+                        xs={8}
+
+                      >
+                        <Typography align="left">
+                          {`${item.name.given} ${item.name.family}`}
+                        </Typography>
+                        <Typography align="left">
+                          {item.userName}
+                        </Typography>
+                      </Grid>
+                      <Grid
+                        container
+                        direction="row"
+                        justify="flex-start"
+                        alignItems="flex-start"
+                        item
+                        xs={3}
+                      >
+                        <Grid
+                          container
+                          direction="row"
+                          justify="flex-start"
+                          alignItems="flex-start"
+                          item
+                          xs={12}
+                        >
+                          <Grid
+                            container
+                            direction="column"
+                            justify="flex-start"
+                            alignItems="flex-start"
+                            item
+                            xs={6}
+                          >
+                            <Grid
+                              item
+                              xs={12}
+                            >
+                              <SchoolIcon />
+                            </Grid>
+                            <Grid
+                              item
+                              xs={12}
+                            >
+                              {item.found === "Both" || item.found === "Blackboard" ? <CheckIcon /> : <ClearIcon />}
+                            </Grid>
+                          </Grid>
+                          <Grid
+                            container
+                            direction="column"
+                            justify="flex-start"
+                            alignItems="flex-start"
+                            item
+                            xs={6}
+                          >
+                            <Grid
+                              item
+                              xs={12}
+                            >
+                              <GitIcon style={getGitIconStyle()}/>
+                            </Grid>
+                            <Grid
+                              item
+                              xs={12}
+                            >
+                              {item.found === "Both" || item.found === "Git" ? <CheckIcon /> : <ClearIcon />}
+                            </Grid>
+                          </Grid>
+                        </Grid>
+                      </Grid>
+                      <Grid
+                        item
+                        xs={1}
+                      />
+                    </Grid>
+                  )}
+                </Draggable>
+              ))}
+              {provided.placeholder}
             </Grid>
           </Grid>
-        ))}
-      </Grid>
+        )}
+      </Droppable>
     </Grid>
   )
 }
 
 export const GroupDiff = ({ groupDiff, studentsGroup }) => {
+  const [groups, setGroups] = useState(checkGroupStatus(groupDiff))
+  console.log("ff",groups)
 
-  // console.log(groupDiff, studentsGroup)
+  const onClickListTop = (groupIndex) => {
+    const tmpGroups = [...groups]
+    tmpGroups[groupIndex]["collapsed"] = !tmpGroups[groupIndex]["collapsed"]
+    setGroups(tmpGroups)
+  }
+
+
+  const onDragEnd = result => {
+    const { source, destination } = result
+
+    // dropped outside the list
+    if (!destination) {
+      return
+    }
+
+    console.log("soruce", source, "destination", destination)
+    // interal moved element
+    if (source.droppableId === destination.droppableId) {
+      const listOfList = reorderSubList(
+        groups[source.droppableId],
+        source.droppableId,
+        source.index,
+        destination.index,
+        groups
+      )
+      console.log(listOfList)
+      setGroups([...checkGroupStatus(listOfList)])
+
+    }
+    // moved into new sublist
+    else {
+      const listOfList = moveElementToOtherSubList(
+        groups[source.droppableId].members,
+        groups[destination.droppableId].members,
+        source,
+        destination,
+        groups
+      )
+
+      setGroups([...checkGroupStatus(listOfList)])
+    }
+  }
 
   return (
     <>
-      {!groupDiff.length && "no groups"}
+      {!groups.length && "no groups"}
       <Grid
         container
         direction="row"
@@ -201,8 +367,11 @@ export const GroupDiff = ({ groupDiff, studentsGroup }) => {
         alignItems="flex-start"
         spacing={2}
       >
-        {groupDiff.map(group => Dropable(group, group.members, studentsGroup))}
+        <DragDropContext onDragEnd={onDragEnd}>
+          {groups.map((group, index) => Dropable(group, index, group.members, studentsGroup, onClickListTop))}
+        </DragDropContext>
       </Grid>
+
     </>
   )
 }
@@ -225,12 +394,16 @@ export const getServerSideProps = (async (context) => {
       },
     }
   }
+  groupsGit.unshift({ name: "Group -1", members: [] })
+  groupsBB.unshift({ name: "Group -1", members: [] })
+  groupsGit[0].members.push({ name: { given: "Petter", family: "Rein" }, userName: "pettegre1" })
+  groupsBB[0].members.push({ name: { given: "Petter", family: "Rein" }, userName: "pettegre1" })
 
   if(groupsGit.message) groupsGit = []
-  groupsGit[0].members.push({ name: { given: "Petter", family: "Rein" }, userName: "pettegre" })
-  groupsGit[0].members.push({ name: { given: "Rodie", family: "Wollacott" }, userName: "student1" })
   groupsGit[1].members.push({ name: { given: "Petter", family: "Rein" }, userName: "pettegre" })
-  groupsGit[1].members.push({ name: { given: "Tore", family: "Stensaker" }, userName: "toretef" })
+  groupsGit[1].members.push({ name: { given: "Rodie", family: "Wollacott" }, userName: "student1" })
+  groupsGit[2].members.push({ name: { given: "Petter", family: "Rein" }, userName: "pettegre" })
+  groupsGit[2].members.push({ name: { given: "Tore", family: "Stensaker" }, userName: "toretef" })
   const result = calculateGroupDiff(groupsGit, groupsBB)
   const groupDiff = result[0]
   const studentsGroup = result[1]
@@ -240,6 +413,30 @@ export const getServerSideProps = (async (context) => {
     props: { groupDiff, studentsGroup },
   }
 })
+
+const checkGroupStatus = (groups) => {
+  const updatedGroups = groups.map(group => {
+    let gitStatus = true
+    let bbStatus = true
+
+    group.members.forEach(member => {
+      if (member.found === "Git") {
+        bbStatus = false
+      }
+      if (member.found === "Blackboard") {
+        gitStatus = false
+      }
+    })
+    let status = gitStatus && bbStatus
+    if (group.members.length <= 0) {
+      status = false
+      gitStatus = false
+      bbStatus = false
+    }
+    return { ...group, status: status, gitStatus: gitStatus, bbStatus: bbStatus, collapsed: status }
+  })
+  return updatedGroups
+}
 
 const calculateGroupDiff = (groupsGit, groupsBB) => {
   // record where the group was found, saves the groups to the object with the key group.name
