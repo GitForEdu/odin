@@ -60,8 +60,8 @@ const getGitIconWrapperStyle = () => ({
 
 const getGitIconStyle = () => ({
   // some basic styles to make the items look a bit nicer
-  width:"24px",
-  height:"24px",
+  width: "24px",
+  height: "24px",
   transform: "scale(0.80)",
 })
 
@@ -80,7 +80,13 @@ const moveElementToOtherSubList = (source, destination, droppableSource, droppab
   const destClone = Array.from(destination)
   const [removed] = sourceClone.splice(droppableSource.index, 1)
 
-  destClone.splice(droppableDestination.index, 0, removed)
+  const duplicateUser = destClone.findIndex(user => user.userName === removed.userName)
+  if (duplicateUser >= 0) {
+
+  }
+  else {
+    destClone.splice(droppableDestination.index, 0, removed)
+  }
 
   listOfList[droppableSource.droppableId].members = sourceClone
   listOfList[droppableDestination.droppableId].members = destClone
@@ -157,7 +163,7 @@ const Dropable = (group, index, students, studentsGroup, onClickListTop) => {
                       item
                       xs={12}
                     >
-                      <SchoolIcon/>
+                      <SchoolIcon />
                     </Grid>
                     <Grid
                       item
@@ -178,7 +184,7 @@ const Dropable = (group, index, students, studentsGroup, onClickListTop) => {
                       item
                       xs={12}
                     >
-                      <GitIcon style={getGitIconStyle()}/>
+                      <GitIcon style={getGitIconStyle()} />
                     </Grid>
                     <Grid
                       item
@@ -232,6 +238,10 @@ const Dropable = (group, index, students, studentsGroup, onClickListTop) => {
                         <Typography align="left">
                           {item.userName}
                         </Typography>
+                        {studentsGroup[item.userName].group.length > 1
+                        && <Typography align="left">
+                          In groups: {(studentsGroup[item.userName].group.toString()).replaceAll(",", ", ")}
+                        </Typography>}
                       </Grid>
                       <Grid
                         container
@@ -282,7 +292,7 @@ const Dropable = (group, index, students, studentsGroup, onClickListTop) => {
                               item
                               xs={12}
                             >
-                              <GitIcon style={getGitIconStyle()}/>
+                              <GitIcon style={getGitIconStyle()} />
                             </Grid>
                             <Grid
                               item
@@ -310,9 +320,10 @@ const Dropable = (group, index, students, studentsGroup, onClickListTop) => {
   )
 }
 
-export const GroupDiff = ({ groupDiff, studentsGroup }) => {
-  const [groups, setGroups] = useState(checkGroupStatus(groupDiff))
-  console.log("ff",groups)
+export const GroupDiff = ({ groupDiff, studentsGroupInit }) => {
+  const [groups, setGroups] = useState(checkGroupStatus(groupDiff)[0])
+  const [studentsGroup, setStudentsGroup] = useState(studentsGroupInit)
+  console.log("ff", studentsGroup)
 
   const onClickListTop = (groupIndex) => {
     const tmpGroups = [...groups]
@@ -329,7 +340,6 @@ export const GroupDiff = ({ groupDiff, studentsGroup }) => {
       return
     }
 
-    console.log("soruce", source, "destination", destination)
     // interal moved element
     if (source.droppableId === destination.droppableId) {
       const listOfList = reorderSubList(
@@ -340,7 +350,9 @@ export const GroupDiff = ({ groupDiff, studentsGroup }) => {
         groups
       )
       console.log(listOfList)
-      setGroups([...checkGroupStatus(listOfList)])
+      const status = checkGroupStatus(listOfList)
+      setGroups([...status[0]])
+      setStudentsGroup({ ...status[1] })
 
     }
     // moved into new sublist
@@ -353,7 +365,9 @@ export const GroupDiff = ({ groupDiff, studentsGroup }) => {
         groups
       )
 
-      setGroups([...checkGroupStatus(listOfList)])
+      const status = checkGroupStatus(listOfList)
+      setGroups([...status[0]])
+      setStudentsGroup({ ...status[1] })
     }
   }
 
@@ -399,27 +413,30 @@ export const getServerSideProps = (async (context) => {
   groupsGit[0].members.push({ name: { given: "Petter", family: "Rein" }, userName: "pettegre1" })
   groupsBB[0].members.push({ name: { given: "Petter", family: "Rein" }, userName: "pettegre1" })
 
-  if(groupsGit.message) groupsGit = []
+  if (groupsGit.message) groupsGit = []
   groupsGit[1].members.push({ name: { given: "Petter", family: "Rein" }, userName: "pettegre" })
   groupsGit[1].members.push({ name: { given: "Rodie", family: "Wollacott" }, userName: "student1" })
   groupsGit[2].members.push({ name: { given: "Petter", family: "Rein" }, userName: "pettegre" })
   groupsGit[2].members.push({ name: { given: "Tore", family: "Stensaker" }, userName: "toretef" })
+  groupsGit[3].members.push({ name: { given: "Petter", family: "Rein" }, userName: "pettegre" })
   const result = calculateGroupDiff(groupsGit, groupsBB)
   const groupDiff = result[0]
-  const studentsGroup = result[1]
+  const studentsGroupInit = result[1]
   //console.log(studentsGroup)
 
   return {
-    props: { groupDiff, studentsGroup },
+    props: { groupDiff, studentsGroupInit },
   }
 })
 
 const checkGroupStatus = (groups) => {
+  let studentsGroup = {}
   const updatedGroups = groups.map(group => {
     let gitStatus = true
     let bbStatus = true
 
     group.members.forEach(member => {
+      studentsGroup = saveGroupStudentFoundIn(studentsGroup, member, group)
       if (member.found === "Git") {
         bbStatus = false
       }
@@ -435,7 +452,7 @@ const checkGroupStatus = (groups) => {
     }
     return { ...group, status: status, gitStatus: gitStatus, bbStatus: bbStatus, collapsed: status }
   })
-  return updatedGroups
+  return [updatedGroups, studentsGroup]
 }
 
 const calculateGroupDiff = (groupsGit, groupsBB) => {
@@ -447,7 +464,7 @@ const calculateGroupDiff = (groupsGit, groupsBB) => {
   groupsGit.forEach(group => {
     const groupMembersOnGit = group.members.filter(member => member.access_level !== 50).map(member => {
       studentsGroup = saveGroupStudentFoundIn(studentsGroup, member, group)
-      return({ ...member, "found": "Git" })
+      return ({ ...member, "found": "Git" })
     })
     groups[group.name] = {
       name: group.name,
@@ -464,7 +481,7 @@ const calculateGroupDiff = (groupsGit, groupsBB) => {
       // no it was a new group
       members = group.members.map(member => {
         studentsGroup = saveGroupStudentFoundIn(studentsGroup, member, group)
-        return({ ...member, "found": "Blackboard" })
+        return ({ ...member, "found": "Blackboard" })
       })
     }
     else {
