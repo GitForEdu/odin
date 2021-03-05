@@ -3,7 +3,7 @@ import { getCourseGroups } from "pages/api/courses/[term]/[courseId]/groups"
 import { getCourseUsers } from "pages/api/courses/[term]/[courseId]/users"
 import { GetGroupsWithMembers } from "pages/api/courses/[term]/[courseId]/git/getGroups"
 import withAuth from "components/withAuth"
-import { Grid, Typography } from "@material-ui/core"
+import { Button, Grid, Typography } from "@material-ui/core"
 import { theme } from "utils/theme"
 import SchoolIcon from "@material-ui/icons/School"
 import CheckIcon from "@material-ui/icons/Check"
@@ -164,7 +164,7 @@ const Dropable = (group, index, students, studentsGroup, onClickListTop) => {
               direction="row"
               justify="center"
               alignItems="center"
-              style={getListMemberStyle(group.collapsed, snapshot.isDraggingOver)}
+              style={getListMemberStyle(group.collapsed)}
             >
               {students.map((item, indexStudent) => (
                 <Draggable
@@ -195,9 +195,9 @@ const Dropable = (group, index, students, studentsGroup, onClickListTop) => {
                           {item.userName}
                         </Typography>
                         {studentsGroup[item.userName].group.length > 1
-                        && <Typography align="left">
-                          In groups: {(studentsGroup[item.userName].group.toString()).replaceAll(",", ", ")}
-                        </Typography>}
+                          && <Typography align="left">
+                            In groups: {(studentsGroup[item.userName].group.toString()).replaceAll(",", ", ")}
+                          </Typography>}
                       </Grid>
                       <Grid
                         container
@@ -282,6 +282,8 @@ export const GroupDiff = ({ groupDiff }) => {
   const [groups, setGroups] = useState(initGroups[0])
   const [studentsGroup, setStudentsGroup] = useState(initGroups[1])
 
+  const disableSyncButton = disableSyncButtonCheck(studentsGroup, groups)
+
   const onClickListTop = (groupIndex) => {
     const tmpGroups = [...groups]
     tmpGroups[groupIndex]["collapsed"] = !tmpGroups[groupIndex]["collapsed"]
@@ -336,6 +338,14 @@ export const GroupDiff = ({ groupDiff }) => {
           {groups.map((group, index) => Dropable(group, index, group.members, studentsGroup, onClickListTop))}
         </DragDropContext>
       </Grid>
+      <Button
+        variant="contained"
+        color="primary"
+        onClick={() => syncGroups(groupDiff, groups)}
+        disabled={disableSyncButton}
+      >
+        {disableSyncButton ? "Fix red boxes to sync / or students in no group" : "Click me to sync"}
+      </Button>
 
     </>
   )
@@ -529,7 +539,7 @@ const checkIfUserInAGroup = (users, usersGroups) => {
 
   users.forEach(user => {
     const foundUser = usersGroups[user.user.userName]
-    if(!foundUser) {
+    if (!foundUser) {
       usersNoGroup.push({ ...user.user, found: "Blackboard" })
     }
   })
@@ -537,5 +547,115 @@ const checkIfUserInAGroup = (users, usersGroups) => {
   return usersNoGroup
 }
 
+const syncGroups = (initalGroups, updatedGroups) => {
+  // Funky deepCopy, Javascript is using references for nested elements
+  // https://dev.to/samanthaming/how-to-deep-clone-an-array-in-javascript-3cig
+  const initalGroupsTmp = JSON.parse(JSON.stringify(initalGroups))
+  const updatedGroupsTmp = JSON.parse(JSON.stringify(updatedGroups))
+
+  const groupsToDeleteBB = []
+  const groupsToCreateBB = []
+  const groupsToDeleteGit = []
+  const groupsToCreateGit = []
+
+  const membersToRemoveBB = []
+  const membersToAddBB = []
+  const membersToRemoveGit = []
+  const membersToAddGit = []
+
+  if (initalGroupsTmp[0].noGroupStudents) {
+    initalGroupsTmp.splice(0, 1)
+  }
+  if (updatedGroupsTmp[0].noGroupStudents) {
+    updatedGroupsTmp.splice(0, 1)
+  }
+
+  initalGroupsTmp.forEach(initalGroup => {
+    const updatedGroupIndex = updatedGroupsTmp.findIndex(updatedGroup => initalGroup.name === updatedGroup.name)
+    if (updatedGroupIndex >= 0) {
+      if (initalGroup.found === "Blackboard") {
+        groupsToCreateGit.push(initalGroup)
+      }
+      if (initalGroup.found === "Git") {
+        groupsToCreateBB.push(initalGroup)
+      }
+      initalGroup.members.forEach(initalMember => {
+        const updatedMemberIndex = (updatedGroupsTmp[updatedGroupIndex].members).findIndex(updatedMember => updatedMember.userName === initalMember.userName)
+        if (updatedMemberIndex >= 0) {
+          if (initalMember.found === "Blackboard") {
+            membersToAddGit.push({ ...initalMember, groupName: initalGroup.name, groupFound: initalGroup.found })
+          }
+          if (initalMember.found === "Git") {
+            membersToAddBB.push({ ...initalMember, groupName: initalGroup.name, groupFound: initalGroup.found })
+          }
+          updatedGroupsTmp[updatedGroupIndex].members.splice(updatedMemberIndex, 1)
+        }
+        else {
+          if (initalMember.found === "Both") {
+            membersToRemoveGit.push({ ...initalMember, groupName: initalGroup.name, groupFound: initalGroup.found })
+            membersToRemoveBB.push({ ...initalMember, groupName: initalGroup.name, groupFound: initalGroup.found })
+          }
+          if (initalMember.found === "Blackboard") {
+            membersToRemoveBB.push({ ...initalMember, groupName: initalGroup.name, groupFound: initalGroup.found })
+          }
+          if (initalMember.found === "Git") {
+            membersToRemoveGit.push({ ...initalMember, groupName: initalGroup.name, groupFound: initalGroup.found })
+          }
+        }
+      })
+
+      // check if any new members in group
+      updatedGroupsTmp[updatedGroupIndex].members.forEach(updatedMember => {
+        membersToAddGit.push({ ...updatedMember, groupName: updatedGroupsTmp[updatedGroupIndex].name, groupFound: updatedGroups[updatedGroupIndex].found })
+        membersToAddBB.push({ ...updatedMember, groupName: updatedGroupsTmp[updatedGroupIndex].name, groupFound: updatedGroups[updatedGroupIndex].found })
+      })
+      updatedGroupsTmp.splice(updatedGroupIndex, 1)
+    }
+    else {
+      if (initalGroup.found === "Both") {
+        groupsToDeleteBB.push(initalGroup)
+        groupsToDeleteGit.push(initalGroup)
+      }
+      else if (initalGroup.found === "Blackboard") {
+        groupsToDeleteBB.push(initalGroup)
+      }
+      else if (initalGroup.found === "Git") {
+        groupsToDeleteGit.push(initalGroup)
+      }
+    }
+  })
+
+  // check for new groups
+  updatedGroupsTmp.forEach(updatedGroup => {
+    groupsToCreateBB.push(updatedGroup)
+    updatedGroup.members.forEach(updatedMember => {
+      membersToAddGit.push({ ...updatedMember, groupName: updatedGroup.name, groupFound: updatedGroup.found })
+      membersToAddBB.push({ ...updatedMember, groupName: updatedGroup.name, groupFound: updatedGroup.found })
+    })
+  })
+
+  console.log("groups to delete bb", groupsToDeleteBB)
+  console.log("groups to create bb", groupsToCreateBB)
+  console.log("groups to delete git", groupsToDeleteGit)
+  console.log("groups to create git", groupsToCreateGit)
+  console.log("students to remove bb", membersToRemoveBB)
+  console.log("students to add bb", membersToAddBB)
+  console.log("students to remove gitlab", membersToRemoveGit)
+  console.log("students to add gitlab", membersToAddGit)
+}
+
+const disableSyncButtonCheck = (studentsGroup, groups) => {
+  let disabled = false
+  for (const [_, value] of Object.entries(studentsGroup)) {
+    if (value.group.length > 1) {
+      disabled = true
+    }
+  }
+
+  if (groups[0].noGroupStudents) {
+    disabled = true
+  }
+  return disabled
+}
 
 export default withAuth(GroupDiff)
