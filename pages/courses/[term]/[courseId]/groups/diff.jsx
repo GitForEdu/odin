@@ -12,7 +12,28 @@ import GitIcon from "assets/git-icon-white.svg"
 import { DragDropContext, Droppable, Draggable } from "react-beautiful-dnd"
 import ExpandMoreIcon from "@material-ui/icons/ExpandMore"
 import ExpandLessIcon from "@material-ui/icons/ExpandLess"
+import useMediaQuery from "@material-ui/core/useMediaQuery"
+import { useRouter } from "next/router"
+import Navbar from "components/Navbar"
+import { Fragment } from "react"
 
+const getPageStyle = bigScreen => {
+  const baseStyle = {
+    padding: "1rem",
+  }
+  if (bigScreen) {
+    return ({
+      ...baseStyle,
+      paddingLeft: "20%",
+      paddingRight: "20%",
+    })
+  }
+  else {
+    return ({
+      ...baseStyle,
+    })
+  }
+}
 
 const getListStyle = isDraggingOver => ({
   margin: "8px 8px 8px 8px",
@@ -278,6 +299,9 @@ const Dropable = (group, index, students, studentsGroup, onClickListTop) => {
 
 
 export const GroupDiff = ({ groupDiff }) => {
+  const router = useRouter()
+  const { courseId, term } = router.query
+  const matches = useMediaQuery("(min-width:1300px)")
   const initGroups = checkGroupStatus(groupDiff)
   const [groups, setGroups] = useState(initGroups[0])
   const [studentsGroup, setStudentsGroup] = useState(initGroups[1])
@@ -326,27 +350,30 @@ export const GroupDiff = ({ groupDiff }) => {
 
   return (
     <>
+      <Navbar pageTitle={"Group diff"} courseId={courseId} term={term} />
       {!groups.length && "no groups"}
-      <Grid
-        container
-        direction="row"
-        justify="flex-start"
-        alignItems="flex-start"
-        spacing={2}
-      >
-        <DragDropContext onDragEnd={onDragEnd}>
-          {groups.map((group, index) => Dropable(group, index, group.members, studentsGroup, onClickListTop))}
-        </DragDropContext>
-      </Grid>
-      <Button
-        variant="contained"
-        color="primary"
-        onClick={() => syncGroups(groupDiff, groups)}
-        disabled={disableSyncButton}
-      >
-        {disableSyncButton ? "Fix red boxes to sync / or students in no group" : "Click me to sync"}
-      </Button>
-
+      <div style={{ paddingBottom: "2rem" }}>
+        <Grid
+          container
+          direction="row"
+          justify="flex-start"
+          alignItems="flex-start"
+          spacing={2}
+          style={getPageStyle(matches)}
+        >
+          <DragDropContext onDragEnd={onDragEnd}>
+            {groups.map((group, index) => Dropable(group, index, group.members, studentsGroup, onClickListTop))}
+          </DragDropContext>
+        </Grid>
+        <Button
+          variant="contained"
+          color="primary"
+          onClick={() => syncGroups(groupDiff, groups)}
+          disabled={disableSyncButton}
+        >
+          {disableSyncButton ? "Fix red boxes to sync / or students in no group" : "Click me to sync"}
+        </Button>
+      </div>
     </>
   )
 }

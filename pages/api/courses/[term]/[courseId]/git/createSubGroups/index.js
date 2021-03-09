@@ -13,7 +13,7 @@ const createSubGroupsFunc = async (connection, userConnection, groupsToCreate, p
   }))
   const filledGroups = Promise.all(createdGroups.map(newleyCreatedGroup => {
     if (!newleyCreatedGroup.message) {
-      const groupToAddMembers = groupsToCreate.find(groupToCreate => groupToCreate.id === newleyCreatedGroup.name)
+      const groupToAddMembers = groupsToCreate.find(groupToCreate => groupToCreate.name === newleyCreatedGroup.name)
       if (groupToAddMembers && groupToAddMembers.members) {
         const members = groupToAddMembers.members
         let membersNotFoundGitLab = []
