@@ -1,13 +1,17 @@
+import { Grid } from "@material-ui/core"
+
 export const Activity = props => {
   const { data } = props
 
   return (
-    <section style={{
-      display: "grid",
-      gridTemplateRows: "repeat(4, 1em)",
-      gridTemplateColumns: "repeat(7, 1em)",
-      gap: "2px",
-    }}>
+    <Grid
+      container
+      direction="row"
+      justify="flex-start"
+      alignItems="flex-start"
+      item
+      xs={12}
+    >
       {data.map((digit, index) => {
         if (digit === 0) return <WhiteBox key={index} />
         if (digit === 1) return <LightGrayBox key={index} />
@@ -15,40 +19,68 @@ export const Activity = props => {
         if (digit === 3) return <DarkGrayBox key={index} />
         return <DarkGrayBox key={index} />
       } )}
-    </section>
+    </Grid>
   )
 }
 
 const WhiteBox = () => (
-  <div style={{
-    width: "1em",
-    height: "1em",
-    backgroundColor: "white",
-  }} />
+  <Grid
+    item
+    xs={2}
+  >
+    <div
+      style={{
+        height: "1rem",
+        width: "1rem",
+        backgroundColor: "white",
+      }}
+    />
+  </Grid>
 )
 
 const LightGrayBox = () => (
-  <div style={{
-    width: "1em",
-    height: "1em",
-    backgroundColor: "lightgray",
-  }} />
+  <Grid
+    item
+    xs={2}
+  >
+    <div
+      style={{
+        height: "1rem",
+        width: "1rem",
+        backgroundColor: "lightgray",
+      }}
+    />
+  </Grid>
 )
 
 const GrayBox = () => (
-  <div style={{
-    width: "1em",
-    height: "1em",
-    backgroundColor: "gray",
-  }} />
+  <Grid
+    item
+    xs={2}
+  >
+    <div
+      style={{
+        height: "1rem",
+        width: "1rem",
+        backgroundColor: "gray",
+      }}
+    />
+  </Grid>
 )
 
 const DarkGrayBox = () => (
-  <div style={{
-    width: "1em",
-    height: "1em",
-    backgroundColor: "darkgray",
-  }} />
+  <Grid
+    item
+    xs={2}
+  >
+    <div
+      style={{
+        height: "1rem",
+        width: "1rem",
+        backgroundColor: "darkgray",
+      }}
+    />
+  </Grid>
 )
 
 export default Activity

@@ -2,13 +2,33 @@ import React from "react"
 import Tile from "components/Tile"
 import Navbar from "components/Navbar"
 import withAuth from "components/withAuth"
-import { Button } from "@material-ui/core"
+import { Button, Grid, useMediaQuery } from "@material-ui/core"
 import { useRouter } from "next/router"
 import Link from "next/link"
 import { getBBGitConnection } from "pages/api/courses/[term]/[courseId]/git/createConnection"
 import { CreateGitConnectionLink, CreatePatConnectionLink } from "components/GitConnection"
 
+
+const getButtonStyle = bigScreen => {
+  const baseStyle = {
+    width: "90%",
+  }
+  if (bigScreen) {
+    return ({
+      ...baseStyle,
+    })
+  }
+  else {
+    return ({
+      ...baseStyle,
+      width: "30%",
+    })
+  }
+}
+
+
 const CourseDashboard = ({ session, bbGitConnection }) => {
+  const matches = useMediaQuery("(max-width:400px)")
   const router = useRouter()
   const { term, courseId } = router.query
   const sessionCourse = session.bbUserCourses.find(course => course.id === courseId)
@@ -16,16 +36,22 @@ const CourseDashboard = ({ session, bbGitConnection }) => {
   return (
     <>
       <Navbar pageTitle={"Dashboard"} courseId={courseId} term={term} />
-      <Tile>
-        <h1>Hey, {session.name}! </h1>
-        {sessionCourse && (
-          <h2>{`Your user ${session.username} is registered as ${sessionCourse.role} in ${sessionCourse.name} (${courseId} ${term})`}</h2>
-        )}
-
+      <h1>Hey, {session.name}! </h1>
+      {sessionCourse && (
+        <h2>{`Your user ${session.username} is registered as ${sessionCourse.role} in ${sessionCourse.name} (${courseId} ${term})`}</h2>
+      )}
+      <Grid
+        container
+        direction="column"
+        justify="center"
+        alignItems="center"
+        spacing={2}
+      >
         <Link href={`/courses/${term}/${courseId}/students`} passHref>
           <Button
             variant="contained"
             color="primary"
+            style={getButtonStyle(matches)}
           >
               Show students
           </Button>
@@ -34,6 +60,7 @@ const CourseDashboard = ({ session, bbGitConnection }) => {
           <Button
             variant="contained"
             color="primary"
+            style={getButtonStyle(matches)}
           >
               Show groups
           </Button>
@@ -44,7 +71,7 @@ const CourseDashboard = ({ session, bbGitConnection }) => {
             ? <CreatePatConnectionLink />
             : undefined
         }
-      </Tile>
+      </Grid>
     </>
   )
 }

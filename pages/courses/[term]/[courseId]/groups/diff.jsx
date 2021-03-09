@@ -16,24 +16,8 @@ import useMediaQuery from "@material-ui/core/useMediaQuery"
 import { useRouter } from "next/router"
 import Navbar from "components/Navbar"
 import { Fragment } from "react"
+import PagePadder from "components/PagePadder"
 
-const getPageStyle = bigScreen => {
-  const baseStyle = {
-    padding: "1rem",
-  }
-  if (bigScreen) {
-    return ({
-      ...baseStyle,
-      paddingLeft: "20%",
-      paddingRight: "20%",
-    })
-  }
-  else {
-    return ({
-      ...baseStyle,
-    })
-  }
-}
 
 const getListStyle = isDraggingOver => ({
   margin: "8px 8px 8px 8px",
@@ -352,14 +336,13 @@ export const GroupDiff = ({ groupDiff }) => {
     <>
       <Navbar pageTitle={"Group diff"} courseId={courseId} term={term} />
       {!groups.length && "no groups"}
-      <div style={{ paddingBottom: "2rem" }}>
+      <PagePadder>
         <Grid
           container
           direction="row"
           justify="flex-start"
           alignItems="flex-start"
           spacing={2}
-          style={getPageStyle(matches)}
         >
           <DragDropContext onDragEnd={onDragEnd}>
             {groups.map((group, index) => Dropable(group, index, group.members, studentsGroup, onClickListTop))}
@@ -373,7 +356,7 @@ export const GroupDiff = ({ groupDiff }) => {
         >
           {disableSyncButton ? "Fix red boxes to sync / or students in no group" : "Click me to sync"}
         </Button>
-      </div>
+      </PagePadder>
     </>
   )
 }
@@ -398,20 +381,23 @@ export const getServerSideProps = (async (context) => {
       },
     }
   }
-  groupsGit.unshift({ name: "Group -1", members: [] })
-  groupsBB.unshift({ name: "Group -1", members: [] })
-  groupsGit[0].members.push({ name: { given: "Petter", family: "Rein" }, userName: "pettegre1" })
-  groupsBB[0].members.push({ name: { given: "Petter", family: "Rein" }, userName: "pettegre1" })
+
+  // groupsGit.unshift({ name: "Group -1", members: [] })
+  // groupsBB.unshift({ name: "Group -1", members: [] })
+  // groupsGit[0].members.push({ name: { given: "Petter", family: "Rein" }, userName: "pettegre1" })
+  // groupsBB[0].members.push({ name: { given: "Petter", family: "Rein" }, userName: "pettegre1" })
 
   if (groupsGit.message) groupsGit = []
-  groupsGit[1].members.push({ name: { given: "Petter", family: "Rein" }, userName: "pettegre" })
-  groupsGit[1].members.push({ name: { given: "Rodie", family: "Wollacott" }, userName: "student1" })
-  groupsGit[2].members.push({ name: { given: "Petter", family: "Rein" }, userName: "pettegre" })
-  groupsGit[2].members.push({ name: { given: "Tore", family: "Stensaker" }, userName: "toretef" })
-  groupsGit[3].members.push({ name: { given: "Petter", family: "Rein" }, userName: "pettegre" })
+  // groupsGit[1].members.push({ name: { given: "Petter", family: "Rein" }, userName: "pettegre" })
+  // groupsGit[1].members.push({ name: { given: "Rodie", family: "Wollacott" }, userName: "student1" })
+  // groupsGit[2].members.push({ name: { given: "Petter", family: "Rein" }, userName: "pettegre" })
+  // groupsGit[2].members.push({ name: { given: "Tore", family: "Stensaker" }, userName: "toretef" })
+  // groupsGit[3].members.push({ name: { given: "Petter", family: "Rein" }, userName: "pettegre" })
+
+
   const groupDiff = calculateGroupDiff(groupsGit, groupsBB)
   const usersInNoGroup = checkIfUserInAGroup(courseUsers, checkGroupStatus(groupDiff)[1])
-  usersInNoGroup.push({ name: { given: "Petter", family: "Rein" }, userName: "test", found: "Blackboard" })
+  // usersInNoGroup.push({ name: { given: "Petter", family: "Rein" }, userName: "test", found: "Blackboard" })
 
   if (usersInNoGroup.length > 0) {
     groupDiff.unshift({ name: "Students in no group", found: "Blackboard", members: usersInNoGroup, noGroupStudents: true })
