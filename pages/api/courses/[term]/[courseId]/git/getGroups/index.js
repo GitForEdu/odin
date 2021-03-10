@@ -1,6 +1,6 @@
 import { PrismaClient } from "@prisma/client"
 import { getSession } from "next-auth/client"
-import { getGroupsGitLab } from "utils/gitlab"
+import { getGroupsGitLab, getGroupsGitLabWithMembers } from "utils/gitlab"
 
 
 export async function GetGroupsGit(req, res) {
@@ -35,6 +35,35 @@ export async function GetGroups (req, params) {
       const groupsGit = await getGroupsGitLab(connection.gitURL, connection.repoName, userConnection.pat)
       // console.log(groupsGit)
       return groupsGit
+    }
+  }
+  console.log("ingen connection")
+}
+
+export async function GetGroupsWithMembers (req, params) {
+  const session = await getSession({ req })
+
+  const userName = session.username
+  const courseId = params.courseId
+  const term = params.term
+  const courseFull = `${courseId}-${term}`
+
+  const connection = await prisma.bbGitConnection.findUnique({
+    where: { courseId: courseFull },
+  })
+
+  // console.log("connection? ", connection)
+
+  if (connection) {
+    const userConnection = await prisma.userGitConnection.findUnique({
+      where: { userName_gitURL: { userName: userName, gitURL: connection.gitURL } },
+    })
+    if (userConnection) {
+      const response = await getGroupsGitLabWithMembers(connection.gitURL, connection.repoName, userConnection.pat)
+      if (!response.message) {
+        return await Promise.all(response).then(groups => groups)
+      }
+      return response
     }
   }
   console.log("ingen connection")

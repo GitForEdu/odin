@@ -8,6 +8,7 @@ import { useState } from "react"
 import fetcher from "utils/fetcher"
 import { Button } from "@material-ui/core"
 import Link from "next/link"
+import PagePadder from "components/PagePadder"
 
 
 export const Group = ({ courseGroups, bbGitConnection }) => {
@@ -37,19 +38,20 @@ export const Group = ({ courseGroups, bbGitConnection }) => {
   return (
     <>
       <Navbar pageTitle={"All groups"} courseId={courseId} term={term} />
-      {courseGroups.length === 0
-        ? <>
-          <h1>No groups found on Blackboard</h1>
-          <Link href={`/courses/${term}/${courseId}/groups/create`} passHref>
-            <Button
-              variant="contained"
-              color="primary"
-            >
+      <PagePadder>
+        {courseGroups.length === 0
+          ? <>
+            <h1>No groups found on Blackboard</h1>
+            <Link href={`/courses/${term}/${courseId}/groups/create`} passHref>
+              <Button
+                variant="contained"
+                color="primary"
+              >
               Go to group creation page
-            </Button>
-          </Link></>
-        : <GroupList type="groups" elements={courseGroups}/>}
-      {(courseGroups && courseGroups.length !== 0)
+              </Button>
+            </Link></>
+          : <GroupList type="groups" elements={courseGroups}/>}
+        {(courseGroups && courseGroups.length !== 0)
       && <>
         <Link href={`/courses/${term}/${courseId}/groups/delete`} passHref>
           <Button
@@ -81,6 +83,7 @@ export const Group = ({ courseGroups, bbGitConnection }) => {
         Create groups on GitLab
         </Button>}
       </>}
+      </PagePadder>
     </>
   )
 }

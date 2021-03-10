@@ -95,7 +95,7 @@ const makeRandomGroups = (students, numberOfGroups, studentsPerGroup, mode = "ov
 
   for (let i = 0; i < groups; i++) {
     const localGroup = {
-      id: i,
+      id: `Group ${i}`,
       members: [],
     }
     for (let j = 0; j < studentsPerGroup; j++) {
@@ -162,8 +162,9 @@ const Dropable = (id, students) => {
         {(provided, snapshot) => (
           <div
             style={getListStyle(snapshot.isDraggingOver)}
-            ref={provided.innerRef}>
-            Group {id}
+            ref={provided.innerRef}
+          >
+            {id}
             {students.map((item, index) => (
               <Draggable
                 key={item.id}

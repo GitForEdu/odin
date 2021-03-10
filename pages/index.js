@@ -8,19 +8,17 @@ export default function LandingPage() {
   return (
     <>
       <Navbar />
-      <Tile>
-        <h1>Welcome!</h1>
-        <p>This a teaching tool for staff at the Norwegian University of Science and Technology (NTNU)</p>
-        <Button
-          variant="contained"
-          color="primary"
-          onClick={() => signIn("dataporten", {
-            callbackUrl: "/courses",
-          })}
-        >
+      <h1>Welcome!</h1>
+      <p>This a teaching tool for staff at the Norwegian University of Science and Technology (NTNU)</p>
+      <Button
+        variant="contained"
+        color="primary"
+        onClick={() => signIn("dataporten", {
+          callbackUrl: "/courses",
+        })}
+      >
           Log in with Feide
-        </Button>
-      </Tile>
+      </Button>
     </>
   )
 }
