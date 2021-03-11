@@ -47,7 +47,7 @@ export const Group = ({ courseGroups, bbGitConnection }) => {
           <StudentList elements={groupInfo.members} />
 
           <Link
-            href={`https://ntnu.blackboard.com/webapps/blackboard/execute/modulepage/viewGroup?course_id=${courseId}&group_id=${groupId}`}
+            href={`${process.env.NEXT_PUBLIC_BB_PATH}/webapps/blackboard/execute/modulepage/viewGroup?course_id=${courseId}&group_id=${groupId}`}
             passHref
           >
             <Button
