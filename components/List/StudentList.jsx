@@ -12,7 +12,7 @@ const StudentList = ({ elements }) => {
 
   const itemList = elements.map(elem => {
     // Gitlab provides full name as elem.name, Blackboard provides name.given and name.family
-    const fullName = elem.user?.name.given ? `${elem.user.name.given} ${elem.user.name.family}` : elem.name
+    const fullName = elem.user ? `${elem.user.name.given} ${elem.user.name.family}` : `${elem.name.given} ${elem.name.family}`
 
     return (
       <ListItemLink key={elem.id} alignItems="center" >
