@@ -27,12 +27,10 @@ const getButtonStyle = bigScreen => {
 }
 
 export const Group = ({ courseGroups, bbGitConnection }) => {
-  console.log(bbGitConnection)
   const matches = useMediaQuery("(max-width:400px)")
   const router = useRouter()
   const { courseId, term, groupId } = router.query
   const groupInfo = courseGroups.find(group => group.id = groupId)
-  console.log(groupInfo)
   return (
     <>
       <Navbar pageTitle={"Group information"} courseId={courseId} term={term} />
