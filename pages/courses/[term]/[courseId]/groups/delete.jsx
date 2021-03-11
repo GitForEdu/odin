@@ -41,7 +41,7 @@ export const Group = ({ courseGroups }) => {
 export const getServerSideProps = (async (context) => {
   const params = context.params
 
-  const courseGroups = (await getCourseGroups(context.req, params)).filter(group => !group.isGroupSet)
+  const courseGroups = await getCourseGroups(context.req, params)
 
 
   if (!courseGroups) {

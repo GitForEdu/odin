@@ -4,7 +4,6 @@ import Navbar from "components/Navbar"
 import { Button, Grid, useMediaQuery } from "@material-ui/core"
 import withAuth from "components/withAuth"
 import Link from "next/link"
-import PagePadder from "components/PagePadder"
 
 // import { getCourses } from "pages/api/courses"
 
@@ -31,31 +30,29 @@ const Dashboard = ({ session }) => {
   return (
     <>
       <Navbar pageTitle={"Dashboard"} />
-      <PagePadder>
-        <h1>Hey, {session.name} ({session.username})!</h1>
-        <h2>Please select a course:</h2>
-        <Grid
-          container
-          direction="column"
-          justify="center"
-          alignItems="center"
-          spacing={2}
-        >
-          {session.bbUserCourses.map((course) => (
-            <Link
-              key={course.code + course.term}
-              href={`/courses/${course.term}/${course.id}`} passHref>
-              <Button
-                variant="contained"
-                color="primary"
-                style={getButtonStyle(matches)}
-              >
-                {course.id} - {course.name} - {course.term}
-              </Button>
-            </Link>)
-          )}
-        </Grid>
-      </PagePadder>
+      <h1>Hey, {session.name} ({session.username})!</h1>
+      <h2>Please select a course:</h2>
+      <Grid
+        container
+        direction="column"
+        justify="center"
+        alignItems="center"
+        spacing={2}
+      >
+        {session.bbUserCourses.map((course) => (
+          <Link
+            key={course.code + course.term}
+            href={`/courses/${course.term}/${course.id}`} passHref>
+            <Button
+              variant="contained"
+              color="primary"
+              style={getButtonStyle(matches)}
+            >
+              {course.id} - {course.name} - {course.term}
+            </Button>
+          </Link>)
+        )}
+      </Grid>
     </>
   )
 }

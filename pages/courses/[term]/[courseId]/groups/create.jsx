@@ -3,7 +3,7 @@ import { useRouter } from "next/router"
 import { getCourseGroups } from "pages/api/courses/[term]/[courseId]/groups"
 import { getBBGitConnection } from "pages/api/courses/[term]/[courseId]/git/createConnection"
 import { useState, useEffect } from "react"
-import { getCourseUsers } from "pages/api/courses/[term]/[courseId]/users"
+import { getCourseStudents } from "pages/api/courses/[term]/[courseId]/users"
 import { DragDropContext, Droppable, Draggable } from "react-beautiful-dnd"
 import fetcher from "utils/fetcher"
 import { CSVReader } from "react-papaparse"
@@ -37,17 +37,17 @@ const CSVReaderStyles = {
     borderColor: theme.palette.action.main,
   },
   dropFile: {
-    width: 100,
-    height: 120,
+    width: "6.25rem",
+    height: "7.5rem",
     background: "#ccc",
   },
   fileSizeInfo: {
     color: "#fff",
     backgroundColor: "#000",
-    borderRadius: 3,
-    lineHeight: 1,
-    marginBottom: "0.5em",
-    padding: "0 0.4em",
+    borderRadius: "0.1875rem",
+    lineHeight: "0.0625rem",
+    marginBottom: "0.5rem",
+    padding: "0 0.4rem",
   },
   fileNameInfo: {
     color: "#fff",
@@ -55,7 +55,7 @@ const CSVReaderStyles = {
     borderRadius: 3,
     fontSize: 14,
     lineHeight: 1,
-    padding: "0 0.4em",
+    padding: "0 0.4rem",
   },
   removeButton: {
     color: "red",
@@ -69,8 +69,8 @@ const CSVReaderStyles = {
 const getItemStyle = (isDragging, draggableStyle) => ({
   // some basic styles to make the items look a bit nicer
   userSelect: "none",
-  padding: 8 * 2,
-  margin: "0 0 8px 0",
+  padding: "1rem",
+  margin: "0 0 0.5rem 0",
 
   // change background colour if dragging
   background: isDragging ? theme.palette.selected.main : theme.palette.primary.main,
@@ -80,12 +80,11 @@ const getItemStyle = (isDragging, draggableStyle) => ({
 })
 
 const getListStyle = isDraggingOver => ({
-  padding: 8,
-  width: 250,
+  padding: "0.5rem",
+  width: "16rem",
 })
 
 const makeRandomGroups = (students, numberOfGroups, studentsPerGroup, mode = "overflowGroups") => {
-  console.log(numberOfGroups, studentsPerGroup, mode)
   let studentList = [...students]
   let numberOfStudents = students.length
   let groups = numberOfGroups
@@ -95,7 +94,8 @@ const makeRandomGroups = (students, numberOfGroups, studentsPerGroup, mode = "ov
 
   for (let i = 0; i < groups; i++) {
     const localGroup = {
-      id: `Group ${i}`,
+      id: i,
+      name: `Group ${i}`,
       members: [],
     }
     for (let j = 0; j < studentsPerGroup; j++) {
@@ -124,85 +124,67 @@ const makeRandomGroups = (students, numberOfGroups, studentsPerGroup, mode = "ov
   return groupsOfStudents
 }
 
-const reorderSubList = (list, startIndex, endIndex, listOfList) => {
+const reorderSubList = (list, startIndex, endIndex) => {
   const listTemp = Array.from(list.members)
   const [removed] = listTemp.splice(startIndex, 1)
   listTemp.splice(endIndex, 0, removed)
 
-  listOfList[list.id].members = listTemp
+  return listTemp
+}
+
+const moveElementToOtherSubList = (sourceMembers, destinationMemberes, droppableSource, droppableDestination, listOfList) => {
+  const sourceMembersClone = Array.from(sourceMembers)
+  const destinationMemberesClone = Array.from(destinationMemberes)
+  const [removed] = sourceMembersClone.splice(droppableSource.index, 1)
+
+  destinationMemberesClone.splice(droppableDestination.index, 0, removed)
+
+  listOfList[droppableSource.droppableId].members = sourceMembersClone
+  listOfList[droppableDestination.droppableId].members = destinationMemberesClone
 
   return listOfList
 }
 
-const moveElementToOtherSubList = (source, destination, droppableSource, droppableDestination, listOfList) => {
-  const sourceClone = Array.from(source)
-  const destClone = Array.from(destination)
-  const [removed] = sourceClone.splice(droppableSource.index, 1)
-
-  destClone.splice(droppableDestination.index, 0, removed)
-
-  listOfList[droppableSource.droppableId].members = sourceClone
-  listOfList[droppableDestination.droppableId].members = destClone
-
-  return listOfList
-}
-
-const Dropable = (id, students) => {
-  const stringId = id.toString()
+const GroupListElement = (group) => {
   return(
     <Grid
+      key={group.name}
       container
       direction="row"
       justify="center"
       alignItems="center"
       item
-      xs={4}
+      xs={6}
+      md={4}
     >
-      <Droppable droppableId={stringId}>
+      <Droppable droppableId={group.id.toString()}>
         {(provided, snapshot) => (
           <div
-            style={getListStyle(snapshot.isDraggingOver)}
             ref={provided.innerRef}
+            style={getListStyle(snapshot.isDraggingOver)}
           >
-            {id}
-            {students.map((item, index) => (
+            {group.name}
+            {group.members.map((member, index) => (
               <Draggable
-                key={item.id}
-                draggableId={item.id}
+                key={member.id}
+                draggableId={member.id}
                 index={index}>
                 {(provided, snapshot) => (
                   <div
                     ref={provided.innerRef}
                     {...provided.draggableProps}
                     {...provided.dragHandleProps}
-
                     style={getItemStyle(
                       snapshot.isDragging,
                       provided.draggableProps.style
                     )}>
-                    <Grid
-                      container
-                      direction="row"
-                      justify="flex-start"
-                      alignItems="flex-start"
-                    >
-                      <Grid
-                        item
-                        xs={12}
-                      >
-                        <Typography>
-                          {`${item.user.name.given} ${item.user.name.family}`}
-                        </Typography>
-                      </Grid>
-                      <Grid
-                        item
-                        xs={12}
-                      >
-                        <Typography>
-                          {`${item.user.userName}`}
-                        </Typography>
-                      </Grid>
-                    </Grid>
+                    <Typography>
+                      {`${member.user.name.given} ${member.user.name.family}`}
+                    </Typography>
+
+                    <Typography>
+                      {`${member.user.userName}`}
+                    </Typography>
                   </div>
                 )}
               </Draggable>
@@ -215,14 +197,14 @@ const Dropable = (id, students) => {
   )
 }
 
-export const Group = ({ courseUsers }) => {
+export const Group = ({ courseStudents }) => {
   const classes = useStyles()
-  // console.log("coursesusers:", courseUsers)
+  // console.log("courseStudents:", courseStudents)
   const router = useRouter()
   const { courseId, term } = router.query
   const [numberOfStudentsPerGroup, setNumberOfStudentsPerGroup] = useState(5)
   const [groupMode, setGroupMode] = useState("overflowStudentsPerGroup")
-  const [numberOfGroups, setNumberOfGroups] = useState(groupMode === "overflowGroups" ? Math.ceil(courseUsers.length / numberOfStudentsPerGroup) : Math.floor(courseUsers.length / numberOfStudentsPerGroup))
+  const [numberOfGroups, setNumberOfGroups] = useState(groupMode === "overflowGroups" ? Math.ceil(courseStudents.length / numberOfStudentsPerGroup) : Math.floor(courseStudents.length / numberOfStudentsPerGroup))
   const [loadingCreateGroups, setLoadingCreateGroups] = useState(false)
   const [groups, setGroups] = useState([])
   const [files, setFiles] = useState({
@@ -246,7 +228,7 @@ export const Group = ({ courseUsers }) => {
 
   const handleChangeNumberOfGroups = (event) => {
     const newNumberOfGroups = parseInt(event.target.value)
-    const tmpNumber = Math.floor(courseUsers.length / newNumberOfGroups)
+    const tmpNumber = Math.floor(courseStudents.length / newNumberOfGroups)
     const newNumberOfStudentsPerGroup = tmpNumber ? tmpNumber : 1
     setGroupMode("overflowStudentsPerGroup")
     setNumberOfStudentsPerGroup(newNumberOfStudentsPerGroup)
@@ -255,7 +237,7 @@ export const Group = ({ courseUsers }) => {
 
   const handleChangeNumberOfStudentsPerGroup = (event) => {
     const newNumberOfStudentsPerGroup = parseInt(event.target.value)
-    const newNumberOfGroups = Math.ceil(courseUsers.length / newNumberOfStudentsPerGroup)
+    const newNumberOfGroups = Math.ceil(courseStudents.length / newNumberOfStudentsPerGroup)
     setGroupMode("overflowGroups")
     setNumberOfStudentsPerGroup(newNumberOfStudentsPerGroup)
     setNumberOfGroups(newNumberOfGroups)
@@ -271,14 +253,15 @@ export const Group = ({ courseUsers }) => {
 
     // interal moved element
     if (source.droppableId === destination.droppableId) {
-      const listOfList = reorderSubList(
+      const reorderedSubList = reorderSubList(
         groups[source.droppableId],
         source.index,
-        destination.index,
-        groups
+        destination.index
       )
 
-      setGroups([...listOfList])
+      groups[source.droppableId].members = reorderedSubList
+
+      setGroups([...groups])
 
     }
     // moved into new sublist
@@ -352,7 +335,7 @@ export const Group = ({ courseUsers }) => {
   }, [files])
 
   const handleClickCreateRandomGroups = () => {
-    const randomGroups = makeRandomGroups(courseUsers, numberOfGroups, numberOfStudentsPerGroup, groupMode)
+    const randomGroups = makeRandomGroups(courseStudents, numberOfGroups, numberOfStudentsPerGroup, groupMode)
     setGroups(randomGroups)
   }
 
@@ -360,69 +343,59 @@ export const Group = ({ courseUsers }) => {
   return (
     <>
       <Navbar pageTitle={"Create groups"} courseId={courseId} term={term} />
-      <div className={classes.root}>
+      {/* Main/Page Grid Container */}
+      <Grid
+        container
+        direction="row"
+        justify="center"
+        alignItems="center"
+      >
+        {/* Upload CSV Container */}
         <Grid
           container
-          direction="row"
+          direction="column"
           justify="center"
           alignItems="center"
+          spacing={3}
+          item
+          xs={12}
         >
-          <Grid
-            container
-            direction="row"
-            justify="center"
-            alignItems="center"
-            spacing={3}
-            item
-            xs={12}
-          >
-            <Grid item xs={12}>
-              <h2>Upload CSV with groups</h2>
-            </Grid>
-            <Grid
-              container
-              direction="row"
-              justify="center"
-              alignItems="center"
-              item
-              xs={12}
-            >
-              <Grid
-                item
-                xs={4}
-              >
-                <CSVReader
-                  onDrop={handleGroups}
-                  style={CSVReaderStyles}
-                  config={{ header: true }}
-                >
-                  <span>Click to upload group info CSV with data headers</span>
-                </CSVReader>
-              </Grid>
-            </Grid>
-            <Grid
-              container
-              direction="row"
-              justify="center"
-              alignItems="center"
-              item
-              xs={12}>
-              <Grid
-                item
-                xs={4}
-              >
-                <CSVReader
-                  onDrop={handleGroupMembers}
-                  style={CSVReaderStyles}
-                  config={{ header: true }}
-                >
-                  <span>Click to upload group members CSV with data headers</span>
-                </CSVReader>
-              </Grid>
-            </Grid>
-          </Grid>
           <Grid item xs={12}>
-            <h2>or</h2>
+            <h2>Upload CSV with groups</h2>
+          </Grid>
+          <Grid container item xs={10} lg={6} xl={4}>
+            <CSVReader
+              onDrop={handleGroups}
+              style={CSVReaderStyles}
+              config={{ header: true }}
+            >
+              <span>Click to upload group info CSV with data headers</span>
+            </CSVReader>
+          </Grid>
+          <Grid container item xs={10} lg={6} xl={4}>
+            <CSVReader
+              onDrop={handleGroupMembers}
+              style={CSVReaderStyles}
+              config={{ header: true }}
+            >
+              <span>Click to upload group members CSV with data headers</span>
+            </CSVReader>
+          </Grid>
+        </Grid>
+        <Grid item xs={12}>
+          <h2>or</h2>
+        </Grid>
+        {/* Create random input Container */}
+        <Grid
+          container
+          direction="column"
+          justify="center"
+          alignItems="center"
+          item
+          xs={12}
+        >
+          <Grid item xs={12}>
+            <h2>Create random groups from the studentlist of Blackboard</h2>
           </Grid>
           <Grid
             container
@@ -431,84 +404,60 @@ export const Group = ({ courseUsers }) => {
             alignItems="center"
             item
             xs={12}
+            sm={4}
+            md={4}
+            xl={2}
           >
-            <Grid item xs={12}>
-              <h2>Create random groups from the studentlist of Blackboard</h2>
-            </Grid>
-            <Grid
-              container
-              direction="row"
-              justify="center"
-              alignItems="center"
-              item
-              xs={12}
-            >
-              <Grid
-                container
-                direction="row"
-                justify="center"
-                alignItems="center"
-                item
-                xs={4}
-              >
-                <Grid
-                  item xs={6}>
-                  <TextField
-                    variant="outlined"
-                    color="primary"
-                    id="numberOfStudentsPerGroup"
-                    label="Students per group"
-                    value={numberOfStudentsPerGroup}
-                    onChange={handleChangeNumberOfStudentsPerGroup}
-                    type="number"
-                    InputProps={{
-                      inputProps: {
-                        min: 1,
-                      },
-                    }}
-                  />
-                </Grid>
-                <Grid item xs={6}>
-                  <TextField
-                    variant="outlined"
-                    color="primary"
-                    id="numberOfGroups"
-                    label="Number of groups"
-                    value={numberOfGroups}
-                    onChange={handleChangeNumberOfGroups}
-                    type="number"
-                    InputProps={{
-                      inputProps: {
-                        min: 1,
-                      },
-                    }}
-                  />
-                </Grid>
-              </Grid>
-            </Grid>
-            <Grid item xs={4}>
-              <Button
-                variant="contained"
+            <Grid item xs={6}>
+              <TextField
+                variant="outlined"
                 color="primary"
-                onClick={() => handleClickCreateRandomGroups()}
-              >
-              Create random groups
-              </Button>
+                id="numberOfStudentsPerGroup"
+                label="Students per group"
+                value={numberOfStudentsPerGroup}
+                onChange={handleChangeNumberOfStudentsPerGroup}
+                type="number"
+                InputProps={{
+                  inputProps: {
+                    min: 1,
+                  },
+                }}
+              />
+            </Grid>
+            <Grid item xs={6}>
+              <TextField
+                variant="outlined"
+                color="primary"
+                id="numberOfGroups"
+                label="Number of groups"
+                value={numberOfGroups}
+                onChange={handleChangeNumberOfGroups}
+                type="number"
+                InputProps={{
+                  inputProps: {
+                    min: 1,
+                  },
+                }}
+              />
             </Grid>
           </Grid>
-          <Grid item xs={12}>
-            <h2>Groups... (supports drag & drop)</h2>
-          </Grid>
-          <Grid
-            container
-            direction="row"
-            justify="center"
-            alignItems="center"
-            item
-            xs={12}
+        </Grid>
+        <Grid item xs={8} lg={4} xl={2}>
+          <Button
+            variant="contained"
+            color="primary"
+            onClick={() => handleClickCreateRandomGroups()}
           >
-            {
-              groups && groups.length !== 0
+              Create random groups
+          </Button>
+        </Grid>
+        {/* Groups Container */}
+        <Grid item xs={12}>
+          <h2>Groups... (supports drag & drop)</h2>
+        </Grid>
+
+        {
+          groups && groups.length !== 0
             && <>
               <Grid
                 container
@@ -518,9 +467,10 @@ export const Group = ({ courseUsers }) => {
                 spacing={3}
                 item
                 xs={12}
+                xl={6}
               >
                 <DragDropContext onDragEnd={onDragEnd}>
-                  {groups.map(group => Dropable(group.id, group.members))}
+                  {groups.map(group => GroupListElement(group))}
                 </DragDropContext>
               </Grid>
               <Grid item xs={12}>
@@ -534,10 +484,8 @@ export const Group = ({ courseUsers }) => {
                 </Button>
               </Grid>
             </>
-            }
-          </Grid>
-        </Grid>
-      </div>
+        }
+      </Grid>
     </>
   )
 }
@@ -546,13 +494,11 @@ export const Group = ({ courseUsers }) => {
 export const getServerSideProps = (async (context) => {
   const params = context.params
 
-  let courseUsers = await getCourseUsers(context.req, params)
-
-  courseUsers = courseUsers.filter(user => user.courseRoleId === "Student")
+  let courseStudents = await getCourseStudents(context.req, params)
 
   const bbGitConnection = await getBBGitConnection(context.req, params)
 
-  if (!bbGitConnection || !courseUsers) {
+  if (!bbGitConnection || !courseStudents) {
     return {
       redirect: {
         destination: "/",
@@ -562,7 +508,7 @@ export const getServerSideProps = (async (context) => {
   }
 
   return {
-    props: { bbGitConnection, courseUsers },
+    props: { bbGitConnection, courseStudents },
   }
 })
 

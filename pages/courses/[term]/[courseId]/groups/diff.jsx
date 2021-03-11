@@ -1,6 +1,6 @@
 import { useEffect, useState } from "react"
 import { getCourseGroups } from "pages/api/courses/[term]/[courseId]/groups"
-import { getCourseUsers } from "pages/api/courses/[term]/[courseId]/users"
+import { getCourseStudents } from "pages/api/courses/[term]/[courseId]/users"
 import { GetGroupsWithMembers } from "pages/api/courses/[term]/[courseId]/git/getGroups"
 import withAuth from "components/withAuth"
 import { Button, Grid, Typography } from "@material-ui/core"
@@ -16,20 +16,19 @@ import useMediaQuery from "@material-ui/core/useMediaQuery"
 import { useRouter } from "next/router"
 import Navbar from "components/Navbar"
 import { Fragment } from "react"
-import PagePadder from "components/PagePadder"
 
 
 const getListStyle = isDraggingOver => ({
-  margin: "8px 8px 8px 8px",
+  margin: "0.5rem",
   padding: "0.75rem",
+  width: "32rem",
   background: "black",
-  border: "1px dashed",
+  border: "0.0625rem dashed",
   borderColor: isDraggingOver && theme.palette.primary.main,
 })
 
 const getListTopStyle = (status, clickable) => ({
-  padding: 8 * 2,
-  margin: "8px 0 8px 0",
+  padding: "1.5rem 1rem 1.5rem 1rem",
   cursor: clickable && "pointer",
   background: status && "green",
 })
@@ -40,16 +39,16 @@ const getListMemberStyle = (collapsed) => ({
 
 const getItemStyle = (found, isDragging, draggableStyle) => ({
   userSelect: "none",
-  padding: 8 * 2,
-  margin: "0 0 8px 0",
+  padding: "1rem",
+  margin: "0 0 0.5rem 0",
 
   background: found === "Multiple" ? "#8b0000" : found === "Both" ? "green" : found === "Blackboard" ? "#0e7c7b" : "#380d75",
   ...draggableStyle,
 })
 
 const getGitIconStyle = () => ({
-  width: "24px",
-  height: "24px",
+  width: "1.5rem",
+  height: "1.5rem",
   transform: "scale(0.80)",
 })
 
@@ -60,22 +59,17 @@ const Dropable = (group, index, students, studentsGroup, onClickListTop) => {
       key={index}
       container
       direction="row"
-      justify="flex-start"
-      alignItems="flex-start"
+      justify="center"
+      alignItems="center"
       item
+      xs={12}
       md={4}
-      sx={4}
     >
       <Droppable droppableId={`${index}`}>
         {(provided, snapshot) => (
-          <Grid
+          <div
             ref={provided.innerRef}
-            container
-            direction="row"
-            justify="flex-start"
-            alignItems="flex-start"
             style={getListStyle(snapshot.isDraggingOver)}
-            index={index}
           >
             <Grid
               onClick={() => onClickListTop(index)}
@@ -274,7 +268,7 @@ const Dropable = (group, index, students, studentsGroup, onClickListTop) => {
               ))}
               {provided.placeholder}
             </Grid>
-          </Grid>
+          </div>
         )}
       </Droppable>
     </Grid>
@@ -335,14 +329,23 @@ export const GroupDiff = ({ groupDiff }) => {
   return (
     <>
       <Navbar pageTitle={"Group diff"} courseId={courseId} term={term} />
-      {!groups.length && "no groups"}
-      <PagePadder>
+      {/* Main/Page Grid Container */}
+      <Grid
+        container
+        direction="column"
+        justify="center"
+        alignItems="center"
+        xs={12}
+      >
+        {!groups.length && "no groups"}
         <Grid
           container
           direction="row"
-          justify="flex-start"
+          justify="center"
           alignItems="flex-start"
-          spacing={2}
+          item
+          xs={12}
+          xl={8}
         >
           <DragDropContext onDragEnd={onDragEnd}>
             {groups.map((group, index) => Dropable(group, index, group.members, studentsGroup, onClickListTop))}
@@ -356,7 +359,7 @@ export const GroupDiff = ({ groupDiff }) => {
         >
           {disableSyncButton ? "Fix red boxes to sync / or students in no group" : "Click me to sync"}
         </Button>
-      </PagePadder>
+      </Grid>
     </>
   )
 }
@@ -365,10 +368,10 @@ export const GroupDiff = ({ groupDiff }) => {
 export const getServerSideProps = (async (context) => {
   const params = context.params
 
-  const groupsBB = (await getCourseGroups(context.req, params)).filter(group => !group.isGroupSet)
+  const groupsBB = await getCourseGroups(context.req, params)
   //console.log("groupsBB", groupsBB)
 
-  let courseUsers = (await getCourseUsers(context.req, params)).filter(user => user.courseRoleId === "Student")
+  let courseStudents = await getCourseStudents(context.req, params)
 
   let groupsGit = await GetGroupsWithMembers(context.req, params)
   //console.log("groupsGit", groupsGit)
@@ -396,7 +399,7 @@ export const getServerSideProps = (async (context) => {
 
 
   const groupDiff = calculateGroupDiff(groupsGit, groupsBB)
-  const usersInNoGroup = checkIfUserInAGroup(courseUsers, checkGroupStatus(groupDiff)[1])
+  const usersInNoGroup = checkIfUserInAGroup(courseStudents, checkGroupStatus(groupDiff)[1])
   // usersInNoGroup.push({ name: { given: "Petter", family: "Rein" }, userName: "test", found: "Blackboard" })
 
   if (usersInNoGroup.length > 0) {
@@ -441,7 +444,7 @@ const calculateGroupDiff = (groupsGit, groupsBB) => {
   const groups = {}
 
   groupsGit.forEach(group => {
-    const groupMembersOnGit = group.members.filter(member => member.access_level !== 50).map(member => {
+    const groupMembersOnGit = group.members.map(member => {
       return ({ ...member, "found": "Git" })
     })
     groups[group.name] = {
