@@ -1,7 +1,7 @@
 import { PrismaClient } from "@prisma/client"
 import isAuthorized from "middelwares/authorized"
 import { getSession } from "next-auth/client"
-import { createGroup } from "utils/gitlab"
+import { createGroupGit } from "utils/gitlab"
 
 const prisma = new PrismaClient()
 
@@ -29,7 +29,7 @@ export async function createBBGitRepoConnection(req, params) {
 
   if(!checkIfConnExsitsAllready) {
     if (platform === "GitLab") {
-      group = await createGroup(body.gitURL, legalGitName, body.pat, undefined)
+      group = await createGroupGit(body.gitURL, legalGitName, body.pat, undefined)
     }
     if (group.id) {
       // Create conn if not exsists allready and the group was created on Gitlab

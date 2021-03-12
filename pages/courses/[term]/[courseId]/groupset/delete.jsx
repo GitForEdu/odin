@@ -1,5 +1,5 @@
 import withAuth from "components/withAuth"
-import { getCourseGroups } from "pages/api/courses/[term]/[courseId]/groups"
+import { getCourseGroupsWithGroupset } from "pages/api/courses/[term]/[courseId]/groups"
 import fetcher from "utils/fetcher"
 import { ListDelete } from "components/List"
 import { useState } from "react"
@@ -45,7 +45,7 @@ export const GroupSet = ({ courseGroupSet }) => {
 export const getServerSideProps = (async (context) => {
   const params = context.params
 
-  const courseGroupSet = (await getCourseGroups(context.req, params)).filter(group => group.isGroupSet)
+  const courseGroupSet = (await getCourseGroupsWithGroupset(context.req, params)).filter(group => group.isGroupSet)
 
 
   if (!courseGroupSet) {

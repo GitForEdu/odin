@@ -1,6 +1,6 @@
 import { PrismaClient } from "@prisma/client"
 import { getSession } from "next-auth/client"
-import { getCourseMembersGitlab } from "utils/gitlab"
+import { getCourseUsersGit } from "utils/gitlab"
 
 
 export async function getGroupMembers(req, res) {
@@ -32,7 +32,7 @@ export async function getGroupMembersFromGitlab (req, params) {
       where: { userName_gitURL: { userName: userName, gitURL: connection.gitURL } },
     })
     if (userConnection) {
-      const courseMembers = await getCourseMembersGitlab(connection.gitURL, connection.repoName, userConnection.pat)
+      const courseMembers = await getCourseUsersGit(connection.gitURL, connection.repoName, userConnection.pat)
       // console.log(courseMembers)
       return courseMembers
     }

@@ -1,18 +1,18 @@
 import { PrismaClient } from "@prisma/client"
 import { getSession } from "next-auth/client"
-import { deleteGroup } from "utils/gitlab"
+import { deleteGroupGit } from "utils/gitlab"
 import isAuthorized from "middelwares/authorized"
 
 
-async function deleteGroupGit(req, res) {
+const prisma = new PrismaClient()
+
+async function deleteGroup(req, res) {
   // console.log("deleteGroupGit called with query", req.query)
   const deletedGroup = await deleteGroupGitLab(req, req.query)
 
   // console.log("deleteGroup called: ", deletedGroup)
   res.json(deletedGroup)
 }
-
-const prisma = new PrismaClient()
 
 async function deleteGroupGitLab (req, params) {
   const session = await getSession({ req })
@@ -37,7 +37,7 @@ async function deleteGroupGitLab (req, params) {
       where: { userName_gitURL: { userName: userName, gitURL: connection.gitURL } },
     })
     if (userConnection) {
-      const deleteGroupResponse = await deleteGroup(connection.gitURL, userConnection.pat, groupId)
+      const deleteGroupResponse = await deleteGroupGit(connection.gitURL, userConnection.pat, groupId)
       // console.log(deleteGroupResponse)
       return deleteGroupResponse
     }
@@ -45,4 +45,4 @@ async function deleteGroupGitLab (req, params) {
   console.log("ingen connection")
 }
 
-export default isAuthorized(deleteGroupGit)
+export default isAuthorized(deleteGroup)

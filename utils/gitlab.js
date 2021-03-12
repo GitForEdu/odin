@@ -1,9 +1,9 @@
 
 
-const createGroup = async (path, name, pat, parentId) => {
+const createGroupGit = async (path, courseNameGit, pat, parentId) => {
   let payload = {
-    name: name,
-    path: name.replace(" ", "_"),
+    name: courseNameGit,
+    path: courseNameGit.replace(" ", "_"),
     membership_lock: false,
     visibility: "public",
     share_with_group_lock: true,
@@ -33,8 +33,8 @@ const createGroup = async (path, name, pat, parentId) => {
   return response
 }
 
-const getGroupInfo = async (path, groupID, pat) => {
-  const response = fetch(`${path}/api/v4/groups/${groupID}`, {
+const getGroupGit = async (path, groupId, pat) => {
+  const response = fetch(`${path}/api/v4/groups/${groupId}`, {
     method: "GET",
     headers: {
       "Content-Type": "application/json",
@@ -45,7 +45,7 @@ const getGroupInfo = async (path, groupID, pat) => {
   return response
 }
 
-const getUserInfo = async (path, pat, userName) => {
+const getUserGit = async (path, pat, userName) => {
   const response = fetch(`${path}/api/v4/users?username=${userName}`, {
     method: "GET",
     headers: {
@@ -77,13 +77,13 @@ const getUserInfo = async (path, pat, userName) => {
   - Maintainer: 40
   - Owner: 50 (Valid only for groups)
 */
-const addUserToGroup = async (path, groupID, pat, userName, access_level) => {
+const addUserToGroupGit = async (path, groupId, pat, userName, access_level) => {
   let payload = {
     user_id: userName,
     access_level: access_level,
   }
 
-  const response = fetch(`${path}/api/v4/groups/${groupID}/members`, {
+  const response = fetch(`${path}/api/v4/groups/${groupId}/members`, {
     method: "POST",
     headers: {
       "Content-Type": "application/json",
@@ -95,14 +95,14 @@ const addUserToGroup = async (path, groupID, pat, userName, access_level) => {
   return response
 }
 
-const addUsersToGroup = async (path, groupID, pat, userNames, access_level) => {
+const addUsersToGroupGit = async (path, groupId, pat, userNames, access_level) => {
   if (userNames.length > 0) {
     let payload = {
       user_id: userNames.toString(),
       access_level: access_level,
     }
 
-    const response = fetch(`${path}/api/v4/groups/${groupID}/members`, {
+    const response = fetch(`${path}/api/v4/groups/${groupId}/members`, {
       method: "POST",
       headers: {
         "Content-Type": "application/json",
@@ -119,9 +119,9 @@ const addUsersToGroup = async (path, groupID, pat, userNames, access_level) => {
 }
 
 
-const getCourseMembersGitlab = async (path, groupID, pat) => {
+const getCourseUsersGit = async (path, groupId, pat) => {
   // console.log("getCourseMembersGitlab called with path", path, "groupID", groupID, "PAT", pat)
-  const response = await fetch(`${path}/api/v4/groups/${groupID}/members`, {
+  const response = await fetch(`${path}/api/v4/groups/${groupId}/members`, {
     method: "GET",
     headers: {
       "Content-Type": "application/json",
@@ -136,28 +136,28 @@ const getCourseMembersGitlab = async (path, groupID, pat) => {
       return memberObject
     })
 
-    const subGroups = await fetch(`${path}/api/v4/groups/${groupID}/subgroups`, {
-      method: "GET",
-      headers: {
-        "Content-Type": "application/json",
-        "PRIVATE-TOKEN": pat,
-      },
-    }).then(r => r.json())
+    // const subGroups = await fetch(`${path}/api/v4/groups/${groupID}/subgroups`, {
+    //   method: "GET",
+    //   headers: {
+    //     "Content-Type": "application/json",
+    //     "PRIVATE-TOKEN": pat,
+    //   },
+    // }).then(r => r.json())
 
-    const subGroupMembers = await Promise.all(subGroups.map(subgroup => {
-      return fetch(`${path}/api/v4/groups/${subgroup.id}/members`, {
-        method: "GET",
-        headers: {
-          "Content-Type": "application/json",
-          "PRIVATE-TOKEN": pat,
-        },
-      }).then(r => r.json()).then(groupMembers => {
-        return {
-          group: subgroup,
-          groupMembers: groupMembers,
-        }
-      })
-    }))
+    // const subGroupMembers = await Promise.all(subGroups.map(subgroup => {
+    //   return fetch(`${path}/api/v4/groups/${subgroup.id}/members`, {
+    //     method: "GET",
+    //     headers: {
+    //       "Content-Type": "application/json",
+    //       "PRIVATE-TOKEN": pat,
+    //     },
+    //   }).then(r => r.json()).then(groupMembers => {
+    //     return {
+    //       group: subgroup,
+    //       groupMembers: groupMembers,
+    //     }
+    //   })
+    // }))
 
     // console.log("CourseMembers Gitlab", courseMembers)
     // console.log("Called for subgroups", subGroups)
@@ -170,7 +170,7 @@ const getCourseMembersGitlab = async (path, groupID, pat) => {
   }
 }
 
-const deleteGroup = async (path, pat, groupId) => {
+const deleteGroupGit = async (path, pat, groupId) => {
   const response = await fetch(`${path}/api/v4/groups/${groupId}`, {
     method: "DELETE",
     headers: {
@@ -182,8 +182,8 @@ const deleteGroup = async (path, pat, groupId) => {
   return response
 }
 
-const getGroupsGitLab = async (path, name, pat) => {
-  const parentGroup = await fetch(`${path}/api/v4/groups/${name}`, {
+const getGroupsGit = async (path, courseNameGit, pat) => {
+  const parentGroup = await fetch(`${path}/api/v4/groups/${courseNameGit}`, {
     method: "GET",
     headers: {
       "Content-Type": "application/json",
@@ -202,8 +202,8 @@ const getGroupsGitLab = async (path, name, pat) => {
   return { ...parentGroup, subGroups: subGroups }
 }
 
-const getGroupsGitLabWithMembers = async (path, name, pat) => {
-  const parentGroup = await fetch(`${path}/api/v4/groups/${name}`, {
+const getGroupsWithStudentsGit = async (path, courseNameGit, pat) => {
+  const parentGroup = await fetch(`${path}/api/v4/groups/${courseNameGit}`, {
     method: "GET",
     headers: {
       "Content-Type": "application/json",
@@ -228,7 +228,7 @@ const getGroupsGitLabWithMembers = async (path, name, pat) => {
           "PRIVATE-TOKEN": pat,
         },
       }).then(r => r.json()).then(groupMembers => {
-        const fixedGroupMembers = groupMembers.map(member => {
+        const fixedGroupMembers = groupMembers.filter(member => member.access_level !== 50).map(member => {
           const { name, username, ...memberExploded } = member
           const nameArray = name.split(" ")
           let givenName = name
@@ -250,4 +250,4 @@ const getGroupsGitLabWithMembers = async (path, name, pat) => {
   return parentGroup
 }
 
-export { createGroup, getGroupInfo, addUserToGroup, getUserInfo, getCourseMembersGitlab, addUsersToGroup, deleteGroup, getGroupsGitLab, getGroupsGitLabWithMembers }
+export { createGroupGit, getGroupGit, addUserToGroupGit, getUserGit, getCourseUsersGit, addUsersToGroupGit, deleteGroupGit, getGroupsGit, getGroupsWithStudentsGit }

@@ -1,14 +1,14 @@
 import { PrismaClient } from "@prisma/client"
 import isAuthorized from "middelwares/authorized"
 import { getSession } from "next-auth/client"
-import { createGroup, getGroupInfo, addUsersToGroup, getUserInfo } from "utils/gitlab"
+import { createGroupGit, getGroupGit, addUsersToGroupGit, getUserGit } from "utils/gitlab"
 
 
 const prisma = new PrismaClient()
 
 const createSubGroupsFunc = async (connection, userConnection, groupsToCreate, parentGroupInfo) => {
   const createdGroups = await Promise.all(groupsToCreate.map(groupToCreate => {
-    const newGitGroup = createGroup(connection.gitURL, groupToCreate.name, userConnection.pat, parentGroupInfo.id)
+    const newGitGroup = createGroupGit(connection.gitURL, groupToCreate.name, userConnection.pat, parentGroupInfo.id)
     return newGitGroup
   }))
   const filledGroups = Promise.all(createdGroups.map(newleyCreatedGroup => {
@@ -19,7 +19,7 @@ const createSubGroupsFunc = async (connection, userConnection, groupsToCreate, p
         let membersNotFoundGitLab = []
         let membersFoundGitLab = []
         const statusSubGroup = Promise.all(members.map(member => {
-          const memeberFoundOnGitlab = getUserInfo(connection.gitURL, userConnection.pat, member.userName).then(userInfo => {
+          const memeberFoundOnGitlab = getUserGit(connection.gitURL, userConnection.pat, member.userName).then(userInfo => {
             if (userInfo.id) {
               membersFoundGitLab.push(userInfo.id)
             }
@@ -29,7 +29,7 @@ const createSubGroupsFunc = async (connection, userConnection, groupsToCreate, p
           })
           return memeberFoundOnGitlab
         })).then(() => {
-          const statusAddMembersToGroup = addUsersToGroup(connection.gitURL, newleyCreatedGroup.id, userConnection.pat, membersFoundGitLab, 30).then((status) => ({ group: groupToAddMembers, usersNotFoundGitLab: membersNotFoundGitLab, status: status }))
+          const statusAddMembersToGroup = addUsersToGroupGit(connection.gitURL, newleyCreatedGroup.id, userConnection.pat, membersFoundGitLab, 30).then((status) => ({ group: groupToAddMembers, usersNotFoundGitLab: membersNotFoundGitLab, status: status }))
           return statusAddMembersToGroup
         })
         return statusSubGroup
@@ -76,13 +76,13 @@ export async function createSubGroups(req, params) {
     })
     if (userConnection) {
       if (platform === "GitLab") {
-        const parentGroupInfo = await getGroupInfo(connection.gitURL, connection.repoName, userConnection.pat)
+        const parentGroupInfo = await getGroupGit(connection.gitURL, connection.repoName, userConnection.pat)
         if (parentGroupInfo.id) {
           return createSubGroupsFunc(connection, userConnection, groupsToCreate, parentGroupInfo)
         }
         else {
           // Parent group for course was not found for some reason, try to create it
-          const parentGroupNew = await createGroup(connection.gitURL, legalGitName, userConnection.pat, undefined)
+          const parentGroupNew = await createGroupGit(connection.gitURL, legalGitName, userConnection.pat, undefined)
           if (parentGroupNew.id) {
             return createSubGroupsFunc(connection, userConnection, groupsToCreate, parentGroupNew)
           }

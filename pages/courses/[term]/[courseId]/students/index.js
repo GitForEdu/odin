@@ -2,7 +2,7 @@ import Navbar from "components/Navbar"
 import StudentList from "components/List/StudentList"
 import withAuth from "components/withAuth"
 import { useRouter } from "next/router"
-import { getCourseUsers } from "pages/api/courses/[term]/[courseId]/users"
+import { getCourseStudents } from "pages/api/courses/[term]/[courseId]/users"
 import { getGroupMembersFromGitlab } from "pages/api/courses/[term]/[courseId]/git/getGroupMembers"
 import { useState, Fragment } from "react"
 import { getBBGitConnection } from "pages/api/courses/[term]/[courseId]/git/createConnection"
@@ -32,9 +32,9 @@ export const getServerSideProps = (async (context) => {
 
   const bbGitConnection = await getBBGitConnection(context.req, params)
 
-  let courseUsers = await getCourseUsers(context.req, params)
-  courseUsers = courseUsers.filter(user => user.courseRoleId === "Student")
-  courseUsers.push({
+  let courseStudents = await getCourseStudents(context.req, params)
+
+  courseStudents.push({
     availability: { available: "Yes" },
     courseId: "_56_1",
     courseRoleId: "Student",
@@ -56,7 +56,7 @@ export const getServerSideProps = (async (context) => {
     },
   })
 
-  console.log("getserversideprops 1st student", courseUsers[0])
+  console.log("getserversideprops 1st student", courseStudents[0])
 
   let groupMembers = await getGroupMembersFromGitlab(context.req, params)
   if (groupMembers.message) {
@@ -65,7 +65,7 @@ export const getServerSideProps = (async (context) => {
   console.log("getserversideprops groupmembers", groupMembers)
 
   const initialUsers = {
-    blackboard: courseUsers,
+    blackboard: courseStudents,
     gitlab: groupMembers ? groupMembers : [],
     both: [],
   }
@@ -80,7 +80,7 @@ export const getServerSideProps = (async (context) => {
     initialUsers.blackboard = initialUsers.blackboard.filter(blackboardUser => usersPresentInBoth.find(bothUser => (blackboardUser.user.userName === bothUser.userName) === false))
   }
 
-  if (!courseUsers) {
+  if (!courseStudents) {
     return {
       redirect: {
         destination: "/",

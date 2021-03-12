@@ -1,15 +1,15 @@
 import isAuthorized from "middelwares/authorized"
-import { createGroupSet, createGroupInGroupSet, addStudentToGroup } from "utils/blackboard"
+import { createGroupsetBB, createGroupInGroupsetBB, addStudentToGroupBB } from "utils/blackboard"
 import getAccessToken from "utils/bb_token_cache"
 
 
 const createGroupsFunc = async (groupsToCreate, groupSet, courseId, bbToken) => {
   const bbGroups = groupsToCreate.map(groupToCreate => {
-    const bbGroup = createGroupInGroupSet(courseId, groupSet.id, groupToCreate.id, bbToken).then(group => {
+    const bbGroup = createGroupInGroupsetBB(courseId, groupSet.id, groupToCreate.id, bbToken).then(group => {
       const members = groupToCreate.members
       const resultMembersAdd = members.map(student => {
         if(group.id) {
-          return addStudentToGroup(courseId, group.id, student.userId, bbToken)
+          return addStudentToGroupBB(courseId, group.id, student.userId, bbToken)
         }
         else {
           return group
@@ -35,7 +35,7 @@ export async function createBBGroups(req, params) {
   // TODO: check if user is instructor
   const bbToken = await getAccessToken()
   if (platform === "GitLab") {
-    const groupSet = await createGroupSet(courseId, bbToken)
+    const groupSet = await createGroupsetBB(courseId, bbToken)
     if (groupSet.id) {
       return createGroupsFunc(groupsToCreate, groupSet, courseId, bbToken)
     }
