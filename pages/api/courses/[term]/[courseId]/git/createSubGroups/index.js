@@ -6,7 +6,7 @@ import { createGroupGit, getGroupGit, addUsersToGroupGit, getUserGit } from "uti
 
 const prisma = new PrismaClient()
 
-const createSubGroupsFunc = async (connection, userConnection, groupsToCreate, parentGroupInfo) => {
+const createSubGroupsWithMembers = async (connection, userConnection, groupsToCreate, parentGroupInfo) => {
   const createdGroups = await Promise.all(groupsToCreate.map(groupToCreate => {
     const newGitGroup = createGroupGit(connection.gitURL, groupToCreate.name, userConnection.pat, parentGroupInfo.id)
     return newGitGroup
@@ -46,7 +46,7 @@ const createSubGroupsFunc = async (connection, userConnection, groupsToCreate, p
   return filledGroups
 }
 
-export async function createSubGroups(req, params) {
+export async function createSubGroupsWithMembersInit(req, params) {
   const session = await getSession({ req })
 
   const userName = session.username
@@ -78,13 +78,13 @@ export async function createSubGroups(req, params) {
       if (platform === "GitLab") {
         const parentGroupInfo = await getGroupGit(connection.gitURL, connection.repoName, userConnection.pat)
         if (parentGroupInfo.id) {
-          return createSubGroupsFunc(connection, userConnection, groupsToCreate, parentGroupInfo)
+          return createSubGroupsWithMembers(connection, userConnection, groupsToCreate, parentGroupInfo)
         }
         else {
           // Parent group for course was not found for some reason, try to create it
           const parentGroupNew = await createGroupGit(connection.gitURL, legalGitName, userConnection.pat, undefined)
           if (parentGroupNew.id) {
-            return createSubGroupsFunc(connection, userConnection, groupsToCreate, parentGroupNew)
+            return createSubGroupsWithMembers(connection, userConnection, groupsToCreate, parentGroupNew)
           }
           // Failed to create parent group on Git
           return parentGroupNew
@@ -102,7 +102,7 @@ export async function createSubGroups(req, params) {
 
 async function git(req, res) {
   if (req.method === "POST") {
-    const infoCreationGroups = await createSubGroups(req, req.query)
+    const infoCreationGroups = await createSubGroupsWithMembersInit(req, req.query)
 
     res.json(infoCreationGroups)
   }

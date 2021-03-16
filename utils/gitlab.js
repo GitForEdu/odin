@@ -95,6 +95,18 @@ const addUserToGroupGit = async (path, groupId, pat, userName, access_level) => 
   return response
 }
 
+const removeUserInGroupGit = async (path, groupId, pat, userId) => {
+  const response = fetch(`${path}/api/v4/groups/${groupId}/members/${userId}`, {
+    method: "DELETE",
+    headers: {
+      "Content-Type": "application/json",
+      "PRIVATE-TOKEN": pat,
+    },
+  }).then(r => r)
+
+  return response
+}
+
 const addUsersToGroupGit = async (path, groupId, pat, userNames, access_level) => {
   if (userNames.length > 0) {
     let payload = {
@@ -232,7 +244,7 @@ const getGroupsWithStudentsGit = async (path, courseNameGit, pat) => {
           const { name, username, ...memberExploded } = member
           const nameArray = name.split(" ")
           let givenName = name
-          let familyName = undefined
+          let familyName = ""
           if (nameArray.length > 1) {
             givenName = nameArray[0]
             familyName = nameArray[nameArray.length - 1]
@@ -250,4 +262,4 @@ const getGroupsWithStudentsGit = async (path, courseNameGit, pat) => {
   return parentGroup
 }
 
-export { createGroupGit, getGroupGit, addUserToGroupGit, getUserGit, getCourseUsersGit, addUsersToGroupGit, deleteGroupGit, getGroupsGit, getGroupsWithStudentsGit }
+export { createGroupGit, getGroupGit, addUserToGroupGit, getUserGit, getCourseUsersGit, addUsersToGroupGit, deleteGroupGit, getGroupsGit, getGroupsWithStudentsGit, removeUserInGroupGit }

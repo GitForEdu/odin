@@ -1,6 +1,6 @@
-import isAuthorized from "middelwares/authorized"
-import { createGroupsetBB, createGroupInGroupsetBB, addStudentToGroupBB } from "utils/blackboard"
 import getAccessToken from "utils/bb_token_cache"
+import { createGroupsetBB, createGroupInGroupsetBB, addStudentToGroupWithUserIdBB } from "utils/blackboard"
+import isAuthorized from "middelwares/authorized"
 
 
 const createGroupsFunc = async (groupsToCreate, groupSet, courseId, bbToken) => {
@@ -9,7 +9,7 @@ const createGroupsFunc = async (groupsToCreate, groupSet, courseId, bbToken) => 
       const members = groupToCreate.members
       const resultMembersAdd = members.map(student => {
         if(group.id) {
-          return addStudentToGroupBB(courseId, group.id, student.userId, bbToken)
+          return addStudentToGroupWithUserIdBB(courseId, group.id, student.userId, bbToken)
         }
         else {
           return group
@@ -23,30 +23,26 @@ const createGroupsFunc = async (groupsToCreate, groupSet, courseId, bbToken) => 
   return Promise.all(bbGroups)
 }
 
-export async function createBBGroups(req, params) {
+async function createBBGroups(req, params) {
   const courseId = params.courseId
 
   const body = req.body
 
   const groupsToCreate = body.groups
 
-  const platform = "GitLab" // TODO: do magic add find out if gitlab, github bitbucket etc.....
-
   // TODO: check if user is instructor
   const bbToken = await getAccessToken()
-  if (platform === "GitLab") {
-    const groupSet = await createGroupsetBB(courseId, bbToken)
-    if (groupSet.id) {
-      return createGroupsFunc(groupsToCreate, groupSet, courseId, bbToken)
-    }
-    else {
-      console.log("Feil i laging av blackboard grupper", groupSet)
-      return { error: "feil i laging av blackboard grupper" }
-    }
+  const groupSet = await createGroupsetBB(courseId, bbToken)
+  if (groupSet.id) {
+    return createGroupsFunc(groupsToCreate, groupSet, courseId, bbToken)
+  }
+  else {
+    console.log("Feil i laging av blackboard grupper", groupSet)
+    return { error: "feil i laging av blackboard grupper" }
   }
 }
 
-async function bb(req, res) {
+async function groupsAndGroupset(req, res) {
   if (req.method === "POST") {
     const infoCreationGroups = await createBBGroups(req, req.query)
 
@@ -56,4 +52,5 @@ async function bb(req, res) {
   }
 }
 
-export default isAuthorized(bb)
+
+export default isAuthorized(groupsAndGroupset)

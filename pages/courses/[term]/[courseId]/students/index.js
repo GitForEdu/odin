@@ -3,7 +3,7 @@ import StudentList from "components/List/StudentList"
 import withAuth from "components/withAuth"
 import { useRouter } from "next/router"
 import { getCourseStudents } from "pages/api/courses/[term]/[courseId]/users"
-import { getGroupMembersFromGitlab } from "pages/api/courses/[term]/[courseId]/git/getGroupMembers"
+import { getAllMembersFromGitlab } from "pages/api/courses/[term]/[courseId]/git/getAllMembers"
 import { useState, Fragment } from "react"
 import { getBBGitConnection } from "pages/api/courses/[term]/[courseId]/git/createConnection"
 import groups from "pages/api/courses/[term]/[courseId]/groups"
@@ -58,7 +58,7 @@ export const getServerSideProps = (async (context) => {
 
   console.log("getserversideprops 1st student", courseStudents[0])
 
-  let groupMembers = await getGroupMembersFromGitlab(context.req, params)
+  let groupMembers = await getAllMembersFromGitlab(context.req, params)
   if (groupMembers.message) {
     console.log(groupMembers.message)
   }

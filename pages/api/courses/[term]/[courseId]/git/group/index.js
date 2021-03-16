@@ -1,25 +1,22 @@
 import { PrismaClient } from "@prisma/client"
 import { getSession } from "next-auth/client"
-import { getCourseUsersGit } from "utils/gitlab"
+import { deleteGroupGit } from "utils/gitlab"
+import isAuthorized from "middelwares/authorized"
 
-
-export async function getGroupMembers(req, res) {
-  // console.log("getGroupMembers called with query", req.query)
-  const groupMembersFromGitlab = await getGroupMembersFromGitlab(req, req.query)
-
-  // console.log("getGroupMembers called: ", groupMembersFromGitlab)
-  res.json(groupMembersFromGitlab)
-}
 
 const prisma = new PrismaClient()
 
-export async function getGroupMembersFromGitlab (req, params) {
+async function deleteGroup (req, params) {
   const session = await getSession({ req })
 
   const userName = session.username
   const courseId = params.courseId
   const term = params.term
   const courseFull = `${courseId}-${term}`
+
+  const body = req.body
+
+  const groupId = body.groupId
 
   const connection = await prisma.bbGitConnection.findUnique({
     where: { courseId: courseFull },
@@ -32,14 +29,21 @@ export async function getGroupMembersFromGitlab (req, params) {
       where: { userName_gitURL: { userName: userName, gitURL: connection.gitURL } },
     })
     if (userConnection) {
-      const courseMembers = await getCourseUsersGit(connection.gitURL, connection.repoName, userConnection.pat)
-      // console.log(courseMembers)
-      return courseMembers
-    }
-    else {
-      return { message: "ingen connection" }
+      const deleteGroupResponse = await deleteGroupGit(connection.gitURL, userConnection.pat, groupId)
+      // console.log(deleteGroupResponse)
+      return deleteGroupResponse
     }
   }
   console.log("ingen connection")
-  return { message: "ingen connection" }
 }
+
+async function group(req, res) {
+  if (req.method === "DELETE") {
+    const deletedGroup = await deleteGroup(req, req.query)
+
+    res.json(deletedGroup)
+  }
+}
+
+
+export default isAuthorized(group)
