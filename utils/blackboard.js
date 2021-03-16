@@ -192,7 +192,7 @@ const createGroupInGroupsetBB = async (courseId, groupSetId, groupName, bbToken)
   return response
 }
 
-const addStudentToGroupBB = async (courseId, groupId, userId, bbToken) => {
+const addStudentToGroupWithUserIdBB = async (courseId, groupId, userId, bbToken) => {
   const response = await fetch(`${process.env.BB_API}/learn/api/public/v2/courses/${courseId}/groups/${groupId}/users/${userId}`, {
     method: "PUT",
     headers: new Headers({
@@ -200,6 +200,30 @@ const addStudentToGroupBB = async (courseId, groupId, userId, bbToken) => {
       "Content-Type": "application/json",
     }),
   }).then(r => r.json())
+
+  return response
+}
+
+const addStudentToGroupWithUserNameBB = async (courseId, groupId, userName, bbToken) => {
+  const response = await fetch(`${process.env.BB_API}/learn/api/public/v2/courses/${courseId}/groups/${groupId}/users/userName:${userName}`, {
+    method: "PUT",
+    headers: new Headers({
+      "Authorization" : `Bearer ${bbToken}`,
+      "Content-Type": "application/json",
+    }),
+  }).then(r => r.json())
+
+  return response
+}
+
+const removeStudentInGroupWithUserNameBB = async (courseId, groupId, userName, bbToken) => {
+  const response = await fetch(`${process.env.BB_API}/learn/api/public/v2/courses/${courseId}/groups/${groupId}/users/userName:${userName}`, {
+    method: "DELETE",
+    headers: new Headers({
+      "Authorization" : `Bearer ${bbToken}`,
+      "Content-Type": "application/json",
+    }),
+  }).then(r => r)
 
   return response
 }
@@ -246,4 +270,4 @@ const deleteGroupsetBB = async (courseId, groupId, bbToken) => {
   return response
 }
 
-export { getCourseGroupsBB, getCourseUsersBB, getCourseBB, getCoursesBB, getUserWithUserNameBB, createGroupsetBB, createGroupInGroupsetBB, addStudentToGroupBB, getUserWithUserIdBB, getCourseGroupUsersBB, deleteGroupBB, deleteGroupsetBB, getCourseUsersExpandedBB, getCourseGroupsWithGroupsetBB, getCourseStudentsExpandedBB }
+export { getCourseGroupsBB, getCourseUsersBB, getCourseBB, getCoursesBB, getUserWithUserNameBB, createGroupsetBB, createGroupInGroupsetBB, addStudentToGroupWithUserIdBB, getUserWithUserIdBB, getCourseGroupUsersBB, deleteGroupBB, deleteGroupsetBB, getCourseUsersExpandedBB, getCourseGroupsWithGroupsetBB, getCourseStudentsExpandedBB, removeStudentInGroupWithUserNameBB, addStudentToGroupWithUserNameBB }

@@ -1,5 +1,5 @@
 import withAuth from "components/withAuth"
-import { GetGroups } from "pages/api/courses/[term]/[courseId]/git/getGroups"
+import { GetGroups } from "pages/api/courses/[term]/[courseId]/git/groups"
 import fetcher from "utils/fetcher"
 import { ListDelete } from "components/List"
 import { useState } from "react"

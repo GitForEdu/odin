@@ -1,7 +1,7 @@
 import { useEffect, useState } from "react"
 import { getCourseGroups } from "pages/api/courses/[term]/[courseId]/groups"
 import { getCourseStudents } from "pages/api/courses/[term]/[courseId]/users"
-import { GetGroupsWithMembers } from "pages/api/courses/[term]/[courseId]/git/getGroups"
+import { GetGroupsWithMembers } from "pages/api/courses/[term]/[courseId]/git/groups"
 import withAuth from "components/withAuth"
 import { Button, Grid, Typography } from "@material-ui/core"
 import { theme } from "utils/theme"
@@ -16,6 +16,7 @@ import useMediaQuery from "@material-ui/core/useMediaQuery"
 import { useRouter } from "next/router"
 import Navbar from "components/Navbar"
 import { Fragment } from "react"
+import fetcher from "utils/fetcher"
 
 
 const getListStyle = isDraggingOver => ({
@@ -165,10 +166,10 @@ const Dropable = (group, index, students, studentsGroup, onClickListTop) => {
               alignItems="center"
               style={getListMemberStyle(group.collapsed)}
             >
-              {students.map((item, indexStudent) => (
+              {students.map((student, indexStudent) => (
                 <Draggable
-                  key={`${index}${item.userName}${indexStudent}`}
-                  draggableId={`${index}${item.userName}${indexStudent}`}
+                  key={`${index}${student.userName}${indexStudent}`}
+                  draggableId={`${index}${student.userName}${indexStudent}`}
                   index={indexStudent}
                 >
                   {(provided, snapshot) => (
@@ -180,7 +181,7 @@ const Dropable = (group, index, students, studentsGroup, onClickListTop) => {
                       direction="row"
                       justify="center"
                       alignItems="center"
-                      style={getItemStyle(studentsGroup[item.userName]?.group.length > 1 ? "Multiple" : item.found, snapshot.isDragging, provided.draggableProps.style)}
+                      style={getItemStyle(studentsGroup[student.userName]?.group.length > 1 ? "Multiple" : student.found, snapshot.isDragging, provided.draggableProps.style)}
                     >
                       <Grid
                         item
@@ -188,14 +189,14 @@ const Dropable = (group, index, students, studentsGroup, onClickListTop) => {
 
                       >
                         <Typography align="left">
-                          {`${item.name.given} ${item.name.family}`}
+                          {`${student.name.given} ${student.name.family}`}
                         </Typography>
                         <Typography align="left">
-                          {item.userName}
+                          {student.userName}
                         </Typography>
-                        {studentsGroup[item.userName].group.length > 1
+                        {studentsGroup[student.userName].group.length > 1
                           && <Typography align="left">
-                            In groups: {(studentsGroup[item.userName].group.toString()).replaceAll(",", ", ")}
+                            In groups: {(studentsGroup[student.userName].group.toString()).replaceAll(",", ", ")}
                           </Typography>}
                       </Grid>
                       <Grid
@@ -232,7 +233,7 @@ const Dropable = (group, index, students, studentsGroup, onClickListTop) => {
                               item
                               xs={12}
                             >
-                              {!group.noGroupStudents && (item.found === "Both" || item.found === "Blackboard" ? <CheckIcon /> : <ClearIcon />)}
+                              {!group.noGroupStudents && (student.found === "Both" || student.found === "Blackboard" ? <CheckIcon /> : <ClearIcon />)}
                             </Grid>
                           </Grid>
                           <Grid
@@ -253,7 +254,7 @@ const Dropable = (group, index, students, studentsGroup, onClickListTop) => {
                               item
                               xs={12}
                             >
-                              {!group.noGroupStudents && (item.found === "Both" || item.found === "Git" ? <CheckIcon /> : <ClearIcon />)}
+                              {!group.noGroupStudents && (student.found === "Both" || student.found === "Git" ? <CheckIcon /> : <ClearIcon />)}
                             </Grid>
                           </Grid>
                         </Grid>
@@ -283,6 +284,7 @@ export const GroupDiff = ({ groupDiff }) => {
   const initGroups = checkGroupStatus(groupDiff)
   const [groups, setGroups] = useState(initGroups[0])
   const [studentsGroup, setStudentsGroup] = useState(initGroups[1])
+  const [loading, setLoading] = useState(false)
 
   const disableSyncButton = disableSyncButtonCheck(studentsGroup, groups)
 
@@ -326,6 +328,12 @@ export const GroupDiff = ({ groupDiff }) => {
     }
   }
 
+  const createSubGroups = async (term, courseId, groupDiff, groups) => {
+    setLoading(true)
+    await syncGroups(term, courseId, groupDiff, groups)
+    setLoading(false)
+  }
+
   return (
     <>
       <Navbar pageTitle={"Group diff"} courseId={courseId} term={term} />
@@ -354,8 +362,8 @@ export const GroupDiff = ({ groupDiff }) => {
         <Button
           variant="contained"
           color="primary"
-          onClick={() => syncGroups(groupDiff, groups)}
-          disabled={disableSyncButton}
+          onClick={() => createSubGroups(term, courseId, groupDiff, groups)}
+          disabled={disableSyncButton || loading}
         >
           {disableSyncButton ? "Fix red boxes to sync / or students in no group" : "Click me to sync"}
         </Button>
@@ -396,7 +404,6 @@ export const getServerSideProps = (async (context) => {
   // groupsGit[2].members.push({ name: { given: "Petter", family: "Rein" }, userName: "pettegre" })
   // groupsGit[2].members.push({ name: { given: "Tore", family: "Stensaker" }, userName: "toretef" })
   // groupsGit[3].members.push({ name: { given: "Petter", family: "Rein" }, userName: "pettegre" })
-
 
   const groupDiff = calculateGroupDiff(groupsGit, groupsBB)
   const usersInNoGroup = checkIfUserInAGroup(courseStudents, checkGroupStatus(groupDiff)[1])
@@ -563,7 +570,7 @@ const checkIfUserInAGroup = (users, usersGroups) => {
   return usersNoGroup
 }
 
-const syncGroups = (initalGroups, updatedGroups) => {
+const syncGroups = async (term, courseId, initalGroups, updatedGroups) => {
   // Funky deepCopy, Javascript is using references for nested elements
   // https://dev.to/samanthaming/how-to-deep-clone-an-array-in-javascript-3cig
   const initalGroupsTmp = JSON.parse(JSON.stringify(initalGroups))
@@ -650,6 +657,85 @@ const syncGroups = (initalGroups, updatedGroups) => {
     })
   })
 
+  if (groupsToDeleteBB && groupsToDeleteBB.length !== 0) {
+    const data = await fetcher(
+      `/api/courses/${term}/${courseId}/blackboard/groups`,
+      {
+        groupIds: groupsToDeleteBB.map(group => group.id),
+      },
+      "DELETE"
+    )
+  }
+
+  if (groupsToCreateBB && groupsToCreateBB.length !== 0) {
+    const data = await fetcher(
+      `/api/courses/${term}/${courseId}/blackboard/groups`,
+      {
+        groupNames: groupsToCreateBB.map(group => group.name),
+      },
+      "POST"
+    )
+  }
+
+  if (groupsToDeleteGit && groupsToDeleteGit.length !== 0) {
+    const data = await fetcher(
+      `/api/courses/${term}/${courseId}/git/groups`,
+      {
+        groupIds: groupsToDeleteGit.map(group => group.id),
+      },
+      "DELETE"
+    )
+  }
+
+  if (groupsToCreateGit && groupsToCreateGit.length !== 0) {
+    const data = await fetcher(
+      `/api/courses/${term}/${courseId}/git/groups`,
+      {
+        groupNames: groupsToCreateGit.map(group => group.names),
+      },
+      "POST"
+    )
+  }
+
+  if (membersToRemoveBB && membersToRemoveBB.length !== 0) {
+    const data = await fetcher(
+      `/api/courses/${term}/${courseId}/blackboard/groups/students`,
+      {
+        students: membersToRemoveBB,
+      },
+      "DELETE"
+    )
+  }
+
+  if (membersToAddBB && membersToAddBB.length !== 0) {
+    const data = await fetcher(
+      `/api/courses/${term}/${courseId}/blackboard/groups/students`,
+      {
+        students: membersToAddBB,
+      },
+      "POST"
+    )
+  }
+
+  if (membersToRemoveGit && membersToRemoveGit.length !== 0) {
+    const data = await fetcher(
+      `/api/courses/${term}/${courseId}/git/groups/students`,
+      {
+        students: membersToRemoveGit,
+      },
+      "DELETE"
+    )
+  }
+
+  if (membersToAddGit && membersToAddGit.length !== 0) {
+    const data = await fetcher(
+      `/api/courses/${term}/${courseId}/git/groups/students`,
+      {
+        students: membersToAddGit,
+      },
+      "POST"
+    )
+  }
   console.log("groups to delete bb", groupsToDeleteBB)
   console.log("groups to create bb", groupsToCreateBB)
   console.log("groups to delete git", groupsToDeleteGit)

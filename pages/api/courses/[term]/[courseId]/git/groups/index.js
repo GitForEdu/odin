@@ -1,24 +1,9 @@
 import { PrismaClient } from "@prisma/client"
 import { getSession } from "next-auth/client"
 import { createGroupGit, deleteGroupGit, getGroupGit, getGroupsGit, getGroupsWithStudentsGit } from "utils/gitlab"
+import isAuthorized from "middelwares/authorized"
 
 const prisma = new PrismaClient()
-
-
-async function Groups(req, res) {
-  if (req.method === "DELETE") {
-    const deletedGroups = await DeleteGroups(req, req.query)
-
-    res.json(deletedGroups)
-  }
-  else if (req.method === "POST") {
-    const createdGroups = await CreateGroups(req, req.query)
-
-    res.json(createdGroups)
-  }
-
-  res.json(await GetGroups(req, req.query))
-}
 
 export async function GetGroups (req, params) {
   const session = await getSession({ req })
@@ -68,7 +53,7 @@ export async function GetGroupsWithMembers (req, params) {
     if (userConnection) {
       const response = await getGroupsWithStudentsGit(connection.gitURL, connection.repoName, userConnection.pat)
       if (!response.message) {
-        return await Promise.all(response).then(groups => groups)
+        return await Promise.all(response).then(groupsGit => groupsGit)
       }
       return response
     }
@@ -153,4 +138,19 @@ async function CreateGroups(req, params) {
   }
 }
 
-export default Groups
+async function groups(req, res) {
+  if (req.method === "DELETE") {
+    const deletedGroups = await DeleteGroups(req, req.query)
+
+    res.json(deletedGroups)
+  }
+  if (req.method === "POST") {
+    const createdGroups = await CreateGroups(req, req.query)
+
+    res.json(createdGroups)
+  }
+
+  res.json(await GetGroups(req, req.query))
+}
+
+export default isAuthorized(groups)
