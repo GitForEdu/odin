@@ -19,82 +19,83 @@ const GroupList = ({ elements }) => {
     const data3 = { title: "Wiki edits", amount: elem.wikiEdits || 17 }
 
     return (
-      <Grid
-        key={index}
-        container
-        direction="row"
-        justify="center"
-        alignItems="center"
-        item
-        xs={12}
-      >
-        <Grid
-          container
-          direction="row"
-          justify="center"
-          alignItems="flex-start"
-          item
-          xs={6}
-        >
-          <Grid
-            item
-            xs={6}
-          >
-            <ListItemText
-              primary={fullName}
-              secondary={elem.user?.userName || elem.userName}
-              secondaryTypographyProps={secondaryTextStyling}
-            />
-          </Grid>
-          <Grid
-            item
-            xs={6}
-          >
-            <Activity
-              data={[0, 1, 2, 3, 2, 2, 3, 2, 3, 1, 1, 3, 3, 2, 1, 0, 0, 2, 2, 1, 0, 3, 2, 1, 0, 1, 3, 2]}
-            />
-          </Grid>
-
-
-        </Grid>
+      <ListItemLink key={index} alignItems="center" href={`groups/${elem.id}`} >
         <Grid
           container
           direction="row"
           justify="center"
           alignItems="center"
           item
-          xs={6}
+          xs={12}
         >
+          <Grid
+            container
+            direction="row"
+            justify="center"
+            alignItems="flex-start"
+            item
+            xs={6}
+          >
+            <Grid
+              item
+              xs={6}
+            >
+              <ListItemText
+                primary={fullName}
+                secondary={elem.user?.userName || elem.userName}
+                secondaryTypographyProps={secondaryTextStyling}
+              />
+            </Grid>
+            <Grid
+              item
+              xs={6}
+            >
+              <Activity
+                data={[0, 1, 2, 3, 2, 2, 3, 2, 3, 1, 1, 3, 3, 2, 1, 0, 0, 2, 2, 1, 0, 3, 2, 1, 0, 1, 3, 2]}
+              />
+            </Grid>
+
+
+          </Grid>
           <Grid
             container
             direction="row"
             justify="center"
             alignItems="center"
             item
-            xs={12}
+            xs={6}
           >
             <Grid
+              container
+              direction="row"
+              justify="center"
+              alignItems="center"
               item
-              xs={4}
+              xs={12}
             >
-              <ListItemText primary={data1.title} secondary={data1.amount}/>
-            </Grid>
-            <Grid
-              item
-              xs={4}
-            >
+              <Grid
+                item
+                xs={4}
+              >
+                <ListItemText primary={data1.title} secondary={data1.amount}/>
+              </Grid>
+              <Grid
+                item
+                xs={4}
+              >
 
-              <ListItemText primary={data2.title} secondary={data2.amount}/>
-            </Grid>
-            <Grid
-              item
-              xs={4}
-            >
-              <ListItemText primary={data3.title} secondary={data3.amount}/>
+                <ListItemText primary={data2.title} secondary={data2.amount}/>
+              </Grid>
+              <Grid
+                item
+                xs={4}
+              >
+                <ListItemText primary={data3.title} secondary={data3.amount}/>
+              </Grid>
             </Grid>
           </Grid>
         </Grid>
-      </Grid>
+      </ListItemLink>
     )
   })
 
