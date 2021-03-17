@@ -8,6 +8,7 @@ import { useState } from "react"
 import fetcher from "utils/fetcher"
 import { Button } from "@material-ui/core"
 import Link from "next/link"
+import { GetGroups, GetGroupsKeyStats } from "pages/api/courses/[term]/[courseId]/git/groups"
 
 
 export const Group = ({ courseGroups, bbGitConnection }) => {
@@ -88,11 +89,17 @@ export const Group = ({ courseGroups, bbGitConnection }) => {
 export const getServerSideProps = (async (context) => {
   const params = context.params
 
-  let courseGroups = await getCourseGroups(context.req, params)
+  let courseGroupsBB = await getCourseGroups(context.req, params)
 
+  let courseGroupsGit = (await GetGroups(context.req, params)).subGroups
+
+  let groupKeyStats = await GetGroupsKeyStats(context.req, params, courseGroupsGit.map(group => group.full_path))
+
+
+  console.log(groupKeyStats)
   const bbGitConnection = await getBBGitConnection(context.req, params)
 
-  if (!courseGroups || !bbGitConnection) {
+  if (!courseGroupsBB || !bbGitConnection) {
     return {
       redirect: {
         destination: "/",
@@ -100,6 +107,11 @@ export const getServerSideProps = (async (context) => {
       },
     }
   }
+
+  let courseGroups = courseGroupsBB.map(group => {
+    const groupGitInfo = groupKeyStats.find(groupGit => groupGit.name === group.name)
+    return { ...groupGitInfo, ...group }
+  })
 
   return {
     props: { courseGroups, bbGitConnection },

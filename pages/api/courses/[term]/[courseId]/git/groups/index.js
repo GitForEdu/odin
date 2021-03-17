@@ -1,9 +1,60 @@
 import { PrismaClient } from "@prisma/client"
 import { getSession } from "next-auth/client"
-import { createGroupGit, deleteGroupGit, getGroupGit, getGroupsGit, getGroupsWithStudentsGit } from "utils/gitlab"
+import { createGroupGit, deleteGroupGit, getGroupGit, getGroupKeyStats, getGroupsGit, getGroupsWithStudentsGit } from "utils/gitlab"
 import isAuthorized from "middelwares/authorized"
 
 const prisma = new PrismaClient()
+
+export async function GetGroupsKeyStats (req, params, groupPaths) {
+
+  const session = await getSession({ req })
+
+  const userName = session.username
+  const courseId = params.courseId
+  const term = params.term
+  const courseFull = `${courseId}-${term}`
+
+  const connection = await prisma.bbGitConnection.findUnique({
+    where: { courseId: courseFull },
+  })
+
+  // console.log("connection? ", connection)
+
+  if (connection) {
+    const userConnection = await prisma.userGitConnection.findUnique({
+      where: { userName_gitURL: { userName: userName, gitURL: connection.gitURL } },
+    })
+    if (userConnection) {
+      const deleteGroupsResponse = groupPaths.map(groupPath => {
+        return getGroupKeyStats(connection.gitURL, userConnection.pat, groupPath)
+      })
+
+      // console.log(deleteGroupResponse)
+      const data = Promise.all(deleteGroupsResponse).then(groupsInfo => {
+        return groupsInfo.map(groupInfo => {
+          const issuesCount = groupInfo.issues.nodes.length
+          let issuesOpen = 0
+          let issuesClosed = 0
+          if (issuesCount > 0) {
+            console.log(groupInfo.issues.nodes)
+            issuesOpen = groupInfo.issues.nodes.filter(issue => issue.state === "opened").length
+            issuesClosed = groupInfo.issues.nodes.filter(issue => issue.state === "closed").length
+          }
+
+          let commitCount = groupInfo.projects.nodes.length
+          if (commitCount > 0) {
+            commitCount = groupInfo.projects.nodes.map(projects => projects.statistics.commitCount).reduce((acc, curr) => acc + curr)
+          }
+          return { name: groupInfo.name, issuesCount: issuesCount, issuesOpen: issuesOpen, issuesClosed, commitCount: commitCount }
+        })
+      })
+
+      return data
+    }
+  }
+
+  return {}
+}
 
 export async function GetGroups (req, params) {
   const session = await getSession({ req })
