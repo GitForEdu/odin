@@ -1,5 +1,5 @@
 import { useRouter } from "next/router"
-import { Button, Grid, useMediaQuery } from "@material-ui/core"
+import { Button, Grid, TextField, useMediaQuery } from "@material-ui/core"
 import Link from "next/link"
 
 import Navbar from "components/Navbar"
@@ -32,7 +32,7 @@ export const Group = ({ courseGroups, bbGitConnection }) => {
   const groupInfo = courseGroups.find(group => group.id = groupId)
   return (
     <>
-      <Navbar pageTitle={"Group information"} courseId={courseId} term={term} />
+      <Navbar pageTitle={`Information - ${groupInfo.name}` || "Group information"} courseId={courseId} term={term} />
       <Grid
         container
         direction="column"
@@ -40,6 +40,39 @@ export const Group = ({ courseGroups, bbGitConnection }) => {
         alignItems="center"
         spacing={2}
       >
+        <form noValidate>
+          <TextField
+            id="startDate"
+            label="Start date"
+            type="date"
+            defaultValue="2021-01-02"
+          />
+          <TextField
+            id="endDate"
+            label="End date"
+            type="date"
+            defaultValue="2021-03-12"
+          />
+        </form>
+        <Grid
+          container
+          direction="row"
+        >
+          <Grid
+            container
+            direction="column"
+          >
+            <h2>Commits</h2>
+            <h2>0</h2>
+          </Grid>
+          <Grid
+            container
+            direction="column"
+          >
+            <h2>Issues</h2>
+            <h2>0</h2>
+          </Grid>
+        </Grid>
         <StudentList elements={groupInfo.members} />
 
         <Link
