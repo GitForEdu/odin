@@ -262,4 +262,17 @@ const getGroupsWithStudentsGit = async (path, courseNameGit, pat) => {
   return parentGroup
 }
 
-export { createGroupGit, getGroupGit, addUserToGroupGit, getUserGit, getCourseUsersGit, addUsersToGroupGit, deleteGroupGit, getGroupsGit, getGroupsWithStudentsGit, removeUserInGroupGit }
+const getGroupProjects = async (path, courseNameGit, groupId, pat) => {
+  const projects = await fetch(`${path}/api/v4/groups/${courseNameGit}/projects`, {
+    method: "GET",
+    headers: {
+      "Content-Type": "application/json",
+      "PRIVATE-TOKEN": pat,
+    },
+  }).then(r => r.json())
+  console.log("projects", projects)
+
+  return projects
+}
+
+export { createGroupGit, getGroupGit, addUserToGroupGit, getUserGit, getCourseUsersGit, addUsersToGroupGit, deleteGroupGit, getGroupsGit, getGroupsWithStudentsGit, removeUserInGroupGit, getGroupProjects }
