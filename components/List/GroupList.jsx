@@ -16,7 +16,7 @@ const GroupList = ({ elements }) => {
     const fullName = `${elem.name}`
     const data1 = { title: "Issues", amount: elem.issuesCount }
     const data2 = { title: "Issues Open", amount: elem.issuesOpen }
-    const data3 = { title: "Commits", amount: elem.commitCount }
+    const data3 = { title: "Commits", amount: elem.commits.length }
 
     return (
       <ListItemLink key={index} alignItems="center" href={`groups/${elem.id}`} >

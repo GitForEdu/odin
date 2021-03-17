@@ -6,15 +6,17 @@ import { getCourseGroups } from "pages/api/courses/[term]/[courseId]/groups"
 import { getBBGitConnection } from "pages/api/courses/[term]/[courseId]/git/createConnection"
 import { useState } from "react"
 import fetcher from "utils/fetcher"
-import { Button } from "@material-ui/core"
+import { Button, TextField } from "@material-ui/core"
 import Link from "next/link"
 import { GetGroups, GetGroupsKeyStats } from "pages/api/courses/[term]/[courseId]/git/groups"
+import DateTimePicker from "@material-ui/lab/DateTimePicker"
 
 
 export const Group = ({ courseGroups, bbGitConnection }) => {
   const router = useRouter()
   const { courseId, term } = router.query
-
+  const [sinceTime, setSinceTime] = useState(new Date(0))
+  const [untilTime, setUntilTime] = useState(new Date((new Date()).valueOf() + 86400000))
   const [loadingCreateSubGroups, setLoadingCreateSubGroups] = useState(false)
 
 
@@ -49,7 +51,35 @@ export const Group = ({ courseGroups, bbGitConnection }) => {
               Go to group creation page
             </Button>
           </Link></>
-        : <GroupList type="groups" elements={courseGroups}/>}
+        : <>
+          <DateTimePicker
+            renderInput={(props) =>
+              <TextField
+                {...props}
+                margin="normal"
+                helperText=""
+              />}
+            label="DateTimePicker"
+            value={sinceTime}
+            onChange={(newValue) => {
+              setSinceTime(newValue)
+            }}
+          />
+          <DateTimePicker
+            renderInput={(props) =>
+              <TextField
+                {...props}
+                margin="normal"
+                helperText=""
+              />}
+            label="DateTimePicker"
+            value={untilTime}
+            onChange={(newValue) => {
+              setUntilTime(newValue)
+            }}
+          />
+          <GroupList type="groups" elements={courseGroups}/>
+        </>}
       {(courseGroups && courseGroups.length !== 0)
       && <>
         <Link href={`/courses/${term}/${courseId}/groups/delete`} passHref>
@@ -95,8 +125,6 @@ export const getServerSideProps = (async (context) => {
 
   let groupKeyStats = await GetGroupsKeyStats(context.req, params, courseGroupsGit.map(group => group.full_path))
 
-
-  console.log(groupKeyStats)
   const bbGitConnection = await getBBGitConnection(context.req, params)
 
   if (!courseGroupsBB || !bbGitConnection) {

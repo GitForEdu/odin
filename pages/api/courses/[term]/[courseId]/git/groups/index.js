@@ -29,27 +29,7 @@ export async function GetGroupsKeyStats (req, params, groupPaths) {
         return getGroupKeyStats(connection.gitURL, userConnection.pat, groupPath)
       })
 
-      // console.log(deleteGroupResponse)
-      const data = Promise.all(deleteGroupsResponse).then(groupsInfo => {
-        return groupsInfo.map(groupInfo => {
-          const issuesCount = groupInfo.issues.nodes.length
-          let issuesOpen = 0
-          let issuesClosed = 0
-          if (issuesCount > 0) {
-            console.log(groupInfo.issues.nodes)
-            issuesOpen = groupInfo.issues.nodes.filter(issue => issue.state === "opened").length
-            issuesClosed = groupInfo.issues.nodes.filter(issue => issue.state === "closed").length
-          }
-
-          let commitCount = groupInfo.projects.nodes.length
-          if (commitCount > 0) {
-            commitCount = groupInfo.projects.nodes.map(projects => projects.statistics.commitCount).reduce((acc, curr) => acc + curr)
-          }
-          return { name: groupInfo.name, issuesCount: issuesCount, issuesOpen: issuesOpen, issuesClosed, commitCount: commitCount }
-        })
-      })
-
-      return data
+      return Promise.all(deleteGroupsResponse)
     }
   }
 

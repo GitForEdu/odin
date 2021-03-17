@@ -11,11 +11,16 @@
     "dbinit": "prisma migrate dev --preview-feature"
   },
   "dependencies": {
-    "@material-ui/core": "^4.11.1",
+    "@emotion/react": "^11.1.5",
+    "@emotion/styled": "^11.1.5",
+    "@material-ui/core": "^5.0.0-alpha.27",
     "@material-ui/icons": "^4.11.2",
+    "@material-ui/lab": "^5.0.0-alpha.27",
     "@prisma/client": "^2.15.0",
     "@svgr/webpack": "^5.5.0",
+    "add": "^2.0.6",
     "clsx": "^1.1.1",
+    "date-fns": "^2.19.0",
     "next": "10.0.3",
     "next-auth": "^3.1.0",
     "node-cache": "^5.1.2",
