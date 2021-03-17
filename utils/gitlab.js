@@ -262,4 +262,68 @@ const getGroupsWithStudentsGit = async (path, courseNameGit, pat) => {
   return parentGroup
 }
 
-export { createGroupGit, getGroupGit, addUserToGroupGit, getUserGit, getCourseUsersGit, addUsersToGroupGit, deleteGroupGit, getGroupsGit, getGroupsWithStudentsGit, removeUserInGroupGit }
+const getGroupProjects = async (path, courseNameGit, groupId, pat) => {
+  const projects = await fetch(`${path}/api/v4/groups/${courseNameGit}/projects`, {
+    method: "GET",
+    headers: {
+      "Content-Type": "application/json",
+      "PRIVATE-TOKEN": pat,
+    },
+  }).then(r => r.json())
+  console.log("projects", projects)
+
+  return projects
+}
+
+const getGroupKeyStats = async (path, pat, fullPathGit) => {
+  const query = `
+  {
+    group(fullPath: "${fullPathGit}") {
+      id
+      name
+      projects (includeSubgroups: true){
+        nodes {
+          createdAt
+          statistics {
+            wikiSize
+            commitCount
+          }
+        }
+      }
+      issues {
+        nodes {
+          createdAt
+          state
+        }
+      }
+      mergeRequests(includeSubgroups: true){
+        nodes {
+          createdAt
+          state
+          commitCount
+        }
+        totalTimeToMerge
+      }
+      milestones {
+        nodes {
+          createdAt
+          state
+        }
+      }
+      
+    }
+  }
+  `
+  const groupStats = await fetch(`${path}/api/graphql`, {
+    method: "POST",
+    headers: {
+      "Content-Type": "application/json",
+      "PRIVATE-TOKEN": pat,
+    },
+    body: JSON.stringify({ query }),
+  }).then(r => r.json()).then(d => d.data.group)
+
+  return groupStats
+}
+
+export { createGroupGit, getGroupGit, addUserToGroupGit, getUserGit, getCourseUsersGit, addUsersToGroupGit, deleteGroupGit, getGroupsGit, getGroupsWithStudentsGit, removeUserInGroupGit, getGroupProjects, getGroupKeyStats }
