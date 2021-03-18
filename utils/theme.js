@@ -65,13 +65,9 @@ theme.components = {
   MuiOutlinedInput: {
     styleOverrides: {
       root: {
-        "&:hover $notchedOutline": {
+        "& input + fieldset": {
           borderColor: theme.palette.primary.main,
-          borderWidth: "2px",
         },
-      },
-      notchedOutline: {
-        borderColor: theme.palette.primary.main,
       },
     },
   },

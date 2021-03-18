@@ -392,42 +392,50 @@ export const Group = ({ courseStudents }) => {
             justifyContent="center"
             alignItems="center"
             item
-            xs={12}
-            sm={4}
-            md={4}
-            xl={2}
           >
-            <Grid item xs={6}>
-              <TextField
-                variant="outlined"
-                color="primary"
-                id="numberOfStudentsPerGroup"
-                label="Students per group"
-                value={numberOfStudentsPerGroup}
-                onChange={handleChangeNumberOfStudentsPerGroup}
-                type="number"
-                InputProps={{
-                  inputProps: {
-                    min: 1,
-                  },
-                }}
-              />
-            </Grid>
-            <Grid item xs={6}>
-              <TextField
-                variant="outlined"
-                color="primary"
-                id="numberOfGroups"
-                label="Number of groups"
-                value={numberOfGroups}
-                onChange={handleChangeNumberOfGroups}
-                type="number"
-                InputProps={{
-                  inputProps: {
-                    min: 1,
-                  },
-                }}
-              />
+            <Grid
+              container
+              direction="row"
+              justifyContent="center"
+              alignItems="center"
+              item
+              xs={12}
+              sm={4}
+              md={4}
+              xl={2}
+            >
+              <Grid item xs={6}>
+                <TextField
+                  variant="outlined"
+                  color="primary"
+                  id="numberOfStudentsPerGroup"
+                  label="Students per group"
+                  value={numberOfStudentsPerGroup}
+                  onChange={handleChangeNumberOfStudentsPerGroup}
+                  type="number"
+                  InputProps={{
+                    inputProps: {
+                      min: 1,
+                    },
+                  }}
+                />
+              </Grid>
+              <Grid item xs={6}>
+                <TextField
+                  variant="outlined"
+                  color="primary"
+                  id="numberOfGroups"
+                  label="Number of groups"
+                  value={numberOfGroups}
+                  onChange={handleChangeNumberOfGroups}
+                  type="number"
+                  InputProps={{
+                    inputProps: {
+                      min: 1,
+                    },
+                  }}
+                />
+              </Grid>
             </Grid>
           </Grid>
         </Grid>
