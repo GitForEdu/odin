@@ -6,7 +6,7 @@ import { getCourseGroups } from "pages/api/courses/[term]/[courseId]/groups"
 import { getBBGitConnection } from "pages/api/courses/[term]/[courseId]/git/createConnection"
 import { useEffect, useState } from "react"
 import fetcher from "utils/fetcher"
-import { Button, TextField } from "@material-ui/core"
+import { Button, Grid, TextField } from "@material-ui/core"
 import Link from "next/link"
 import { GetGroups } from "pages/api/courses/[term]/[courseId]/git/groups"
 import DateTimePicker from "@material-ui/lab/DateTimePicker"
@@ -75,33 +75,98 @@ export const Group = ({ courseGroupsBB, courseGroupsGit, bbGitConnection }) => {
             </Button>
           </Link></>
         : <>
-          <DateTimePicker
-            renderInput={(props) =>
-              <TextField
-                {...props}
-                margin="normal"
-                helperText=""
-              />}
-            label="DateTimePicker"
-            value={sinceTime}
-            onChange={(newValue) => {
-              setSinceTime(newValue)
-            }}
-          />
-          <DateTimePicker
-            renderInput={(props) =>
-              <TextField
-                {...props}
-                margin="normal"
-                helperText=""
-              />}
-            label="DateTimePicker"
-            value={untilTime}
-            onChange={(newValue) => {
-              setUntilTime(newValue)
-            }}
-          />
-          <GroupList type="groups" elements={courseGroups}/>
+          <Grid
+            container
+            direction="column"
+          >
+            <Grid
+              container
+              direction="row"
+              justifyContent="center"
+              alignContent="center"
+              item
+            >
+              <DateTimePicker
+                renderInput={(props) =>
+                  <TextField
+                    {...props}
+                    margin="normal"
+                    helperText=""
+                  />}
+                label="DateTimePicker"
+                value={sinceTime}
+                onChange={(newValue) => {
+                  setSinceTime(newValue)
+                }}
+              />
+              <DateTimePicker
+                renderInput={(props) =>
+                  <TextField
+                    {...props}
+                    margin="normal"
+                    helperText=""
+                  />}
+                label="DateTimePicker"
+                value={untilTime}
+                onChange={(newValue) => {
+                  setUntilTime(newValue)
+                }}
+              />
+            </Grid>
+            <Grid
+              container
+              direction="row"
+              justifyContent="center"
+              alignContent="center"
+              item
+            >
+              <Button
+                variant="contained"
+                color="primary"
+                onClick={() => {
+                  const date = new Date()
+                  date.setDate(date.getDate()-1)
+                  setSinceTime(date)
+                  const dateUntil = new Date()
+                  setUntilTime(dateUntil)
+                }}
+              >
+                Last day
+              </Button>
+              <Button
+                variant="contained"
+                color="primary"
+                onClick={() => {
+                  const date = new Date()
+                  date.setDate(date.getDate()-7)
+                  setSinceTime(date)
+                  const dateUntil = new Date()
+                  setUntilTime(dateUntil)
+                }}
+              >
+                Last week
+              </Button>
+              <Button
+                variant="contained"
+                color="primary"
+                onClick={() => {
+                  const date = new Date()
+                  date.setMonth(date.getMonth()-1)
+                  setSinceTime(date)
+                  const dateUntil = new Date()
+                  setUntilTime(dateUntil)
+                }}
+              >
+                Last month
+              </Button>
+            </Grid>
+            <Grid
+              container
+              item
+            >
+              <GroupList type="groups" elements={courseGroups}/>
+            </Grid>
+          </Grid>
         </>}
       {(courseGroups && courseGroups.length !== 0)
       && <>
