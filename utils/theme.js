@@ -68,6 +68,16 @@ theme.components = {
         "& input + fieldset": {
           borderColor: theme.palette.primary.main,
         },
+        "& fieldset": {
+          borderColor: theme.palette.primary.main,
+        },
+      },
+    },
+  },
+  MuiSvgIcon: {
+    styleOverrides: {
+      root: {
+        color: theme.palette.primary.main,
       },
     },
   },
