@@ -60,7 +60,7 @@ const Dropable = (group, index, students, studentsGroup, onClickListTop) => {
       key={index}
       container
       direction="row"
-      justify="center"
+      justifyContent="center"
       alignItems="center"
       item
       xs={12}
@@ -76,7 +76,7 @@ const Dropable = (group, index, students, studentsGroup, onClickListTop) => {
               onClick={() => onClickListTop(index)}
               container
               direction="row"
-              justify="center"
+              justifyContent="center"
               alignItems="center"
               style={getListTopStyle(group.status, !(group.members.length === 0))}
             >
@@ -94,7 +94,7 @@ const Dropable = (group, index, students, studentsGroup, onClickListTop) => {
               <Grid
                 container
                 direction="row"
-                justify="flex-start"
+                justifyContent="flex-start"
                 alignItems="flex-start"
                 item
                 xs={3}
@@ -102,7 +102,7 @@ const Dropable = (group, index, students, studentsGroup, onClickListTop) => {
                 <Grid
                   container
                   direction="row"
-                  justify="flex-start"
+                  justifyContent="flex-start"
                   alignItems="flex-start"
                   item
                   xs={12}
@@ -110,7 +110,7 @@ const Dropable = (group, index, students, studentsGroup, onClickListTop) => {
                   <Grid
                     container
                     direction="column"
-                    justify="flex-start"
+                    justifyContent="flex-start"
                     alignItems="flex-start"
                     item
                     xs={6}
@@ -131,7 +131,7 @@ const Dropable = (group, index, students, studentsGroup, onClickListTop) => {
                   <Grid
                     container
                     direction="column"
-                    justify="flex-start"
+                    justifyContent="flex-start"
                     alignItems="flex-start"
                     item
                     xs={6}
@@ -162,7 +162,7 @@ const Dropable = (group, index, students, studentsGroup, onClickListTop) => {
             <Grid
               container
               direction="row"
-              justify="center"
+              justifyContent="center"
               alignItems="center"
               style={getListMemberStyle(group.collapsed)}
             >
@@ -179,7 +179,7 @@ const Dropable = (group, index, students, studentsGroup, onClickListTop) => {
                       {...provided.dragHandleProps}
                       container
                       direction="row"
-                      justify="center"
+                      justifyContent="center"
                       alignItems="center"
                       style={getItemStyle(studentsGroup[student.userName]?.group.length > 1 ? "Multiple" : student.found, snapshot.isDragging, provided.draggableProps.style)}
                     >
@@ -202,7 +202,7 @@ const Dropable = (group, index, students, studentsGroup, onClickListTop) => {
                       <Grid
                         container
                         direction="row"
-                        justify="flex-start"
+                        justifyContent="flex-start"
                         alignItems="flex-start"
                         item
                         xs={3}
@@ -210,7 +210,7 @@ const Dropable = (group, index, students, studentsGroup, onClickListTop) => {
                         <Grid
                           container
                           direction="row"
-                          justify="flex-start"
+                          justifyContent="flex-start"
                           alignItems="flex-start"
                           item
                           xs={12}
@@ -218,7 +218,7 @@ const Dropable = (group, index, students, studentsGroup, onClickListTop) => {
                           <Grid
                             container
                             direction="column"
-                            justify="flex-start"
+                            justifyContent="flex-start"
                             alignItems="flex-start"
                             item
                             xs={6}
@@ -239,7 +239,7 @@ const Dropable = (group, index, students, studentsGroup, onClickListTop) => {
                           <Grid
                             container
                             direction="column"
-                            justify="flex-start"
+                            justifyContent="flex-start"
                             alignItems="flex-start"
                             item
                             xs={6}
@@ -341,7 +341,7 @@ export const GroupDiff = ({ groupDiff }) => {
       <Grid
         container
         direction="column"
-        justify="center"
+        justifyContent="center"
         alignItems="center"
         xs={12}
       >
@@ -349,7 +349,7 @@ export const GroupDiff = ({ groupDiff }) => {
         <Grid
           container
           direction="row"
-          justify="center"
+          justifyContent="center"
           alignItems="flex-start"
           item
           xs={12}

@@ -1,4 +1,4 @@
-import { createMuiTheme } from "@material-ui/core"
+import { createMuiTheme } from "@material-ui/core/styles"
 
 
 export const theme = createMuiTheme({
@@ -18,84 +18,87 @@ export const theme = createMuiTheme({
 })
 
 // Props
-theme.props = {
+theme.components = {
   MuiButton: {
-    disableElevation: true,
-  },
-  MuiInputLabel: {
-    shrink: true,
-  },
-  MuiInput: {
-    disableUnderline: true,
-  },
-}
-
-// CSS
-theme.overrides = {
-  MuiButton: {
-    root: {
-      borderRadius: 0,
-      textTransform: "none",
-      margin: "1.0rem 0.5rem 0.5rem 0.5rem",
+    defaultProps: {
+      disableElevation: true,
     },
-    containedPrimary: {
-    },
-    contained: {
+    styleOverrides: {
+      root: {
+        borderRadius: 0,
+        textTransform: "none",
+        margin: "1.0rem 0.5rem 0.5rem 0.5rem",
+      },
+      containedPrimary: {
+      },
+      contained: {
+      },
     },
   },
-
   MuiInputBase: { // Cursor
-    root: {
-      color: "white",
-    },
-  },
-
-  MuiFormLabel: { // TextField Øabel before focus
-    root: {
-      color: "white",
-      "&$focused": {
+    styleOverrides: {
+      root: {
         color: "white",
       },
     },
   },
-
   MuiInputLabel: {
-    root: {
+    defaultProps: {
+      shrink: true,
     },
   },
-
   MuiInput: {
-    root: {
+    defaultProps: {
+      disableUnderline: true,
     },
   },
-
-  MuiOutlinedInput: {
-    root: {
-      "&:hover $notchedOutline": {
-        borderColor: theme.palette.primary.main,
-        borderWidth: "2px",
+  MuiFormLabel: { // TextField Øabel before focus
+    styleOverrides: {
+      root: {
+        color: "white",
+        "&$focused": {
+          color: "white",
+        },
       },
     },
-    notchedOutline: {
-      borderColor: theme.palette.primary.main,
+  },
+  MuiOutlinedInput: {
+    styleOverrides: {
+      root: {
+        "& input + fieldset": {
+          borderColor: theme.palette.primary.main,
+        },
+        "& fieldset": {
+          borderColor: theme.palette.primary.main,
+        },
+      },
     },
   },
-
+  MuiSvgIcon: {
+    styleOverrides: {
+      root: {
+        color: theme.palette.primary.main,
+      },
+    },
+  },
   MuiFormControl: {
-    root: {
-      margin: "1.0rem 0.5rem 0.5rem 0.5rem",
+    styleOverrides: {
+      root: {
+        margin: "1.0rem 0.5rem 0.5rem 0.5rem",
+      },
     },
   },
-
   MuiListItemText: {
-    primary: {
-      color: "white",
-      textAlign: "center",
-    },
-    secondary: {
-      color: "white",
-      textAlign: "center",
-      fontSize: "1.5rem",
+    styleOverrides: {
+      primary: {
+        color: "white",
+        textAlign: "center",
+      },
+      secondary: {
+        color: "white",
+        textAlign: "center",
+        fontSize: "1.5rem",
+      },
     },
   },
 }

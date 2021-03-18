@@ -7,7 +7,7 @@ export const Activity = props => {
     <Grid
       container
       direction="row"
-      justify="flex-start"
+      justifyContent="flex-start"
       alignItems="flex-start"
       item
       xs={12}

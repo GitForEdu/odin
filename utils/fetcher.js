@@ -1,10 +1,14 @@
-const fetcher = (url, data = undefined, method = "GET") =>
-  fetch(window.location.origin + url, {
+const fetcher = (url, data = undefined, method = "GET") => {
+  let headerBody = {
     method: method ? method : data ? "POST" : "GET",
     headers: {
       "Content-Type": "application/json",
     },
-    body: JSON.stringify(data),
-  }).then(r => r.json())
+  }
+  if (method !== "GET") {
+    headerBody.body = JSON.stringify(data)
+  }
+  return fetch(window.location.origin + url, headerBody).then(r => r.json())
+}
 
 export default fetcher

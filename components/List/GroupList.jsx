@@ -16,14 +16,14 @@ const GroupList = ({ elements }) => {
     const fullName = `${elem.name}`
     const data1 = { title: "Issues", amount: elem.issuesCount }
     const data2 = { title: "Issues Open", amount: elem.issuesOpen }
-    const data3 = { title: "Commits", amount: elem.commitCount }
+    const data3 = { title: "Commits", amount: elem.commits.length }
 
     return (
       <ListItemLink key={index} alignItems="center" href={`groups/${elem.id}`} >
         <Grid
           container
           direction="row"
-          justify="center"
+          justifyContent="center"
           alignItems="center"
           item
           xs={12}
@@ -31,7 +31,7 @@ const GroupList = ({ elements }) => {
           <Grid
             container
             direction="row"
-            justify="center"
+            justifyContent="center"
             alignItems="flex-start"
             item
             xs={6}
@@ -50,9 +50,9 @@ const GroupList = ({ elements }) => {
               item
               xs={6}
             >
-              <Activity
+              {/* <Activity
                 data={[0, 1, 2, 3, 2, 2, 3, 2, 3, 1, 1, 3, 3, 2, 1, 0, 0, 2, 2, 1, 0, 3, 2, 1, 0, 1, 3, 2]}
-              />
+              /> */}
             </Grid>
 
 
@@ -60,7 +60,7 @@ const GroupList = ({ elements }) => {
           <Grid
             container
             direction="row"
-            justify="center"
+            justifyContent="center"
             alignItems="center"
             item
             xs={6}
@@ -68,7 +68,7 @@ const GroupList = ({ elements }) => {
             <Grid
               container
               direction="row"
-              justify="center"
+              justifyContent="center"
               alignItems="center"
               item
               xs={12}
@@ -103,7 +103,7 @@ const GroupList = ({ elements }) => {
     <Grid
       container
       direction="column"
-      justify="center"
+      justifyContent="center"
       alignItems="center"
       spacing={2}
     >

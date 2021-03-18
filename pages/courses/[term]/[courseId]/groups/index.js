@@ -4,19 +4,44 @@ import withAuth from "components/withAuth"
 import { useRouter } from "next/router"
 import { getCourseGroups } from "pages/api/courses/[term]/[courseId]/groups"
 import { getBBGitConnection } from "pages/api/courses/[term]/[courseId]/git/createConnection"
-import { useState } from "react"
+import { useEffect, useState } from "react"
 import fetcher from "utils/fetcher"
-import { Button } from "@material-ui/core"
+import { Button, Grid, TextField } from "@material-ui/core"
 import Link from "next/link"
-import { GetGroups, GetGroupsKeyStats } from "pages/api/courses/[term]/[courseId]/git/groups"
+import { GetGroups } from "pages/api/courses/[term]/[courseId]/git/groups"
+import DateTimePicker from "@material-ui/lab/DateTimePicker"
+
+const mergeBBGitKeyStats = async (term, courseId, courseGroupsBB, courseGroupsGit, sinceTime, untilTime) => {
+  const groupKeyStats = await fetcher(
+    `/api/courses/${term}/${courseId}/git/groups/getGroupsKeyStats?since=${sinceTime.toISOString()}&until=${untilTime.toISOString()}&groupPaths=${courseGroupsGit.map(group => group.full_path).join(",")}`,
+    {},
+    "GET"
+  )
+
+  console.log("keyStats", groupKeyStats)
+  let courseGroups = courseGroupsBB.map(group => {
+    const groupGitInfo = groupKeyStats.find(groupGit => groupGit.name === group.name)
+    return { ...groupGitInfo, ...group }
+  })
+
+  return courseGroups
+}
 
 
-export const Group = ({ courseGroups, bbGitConnection }) => {
+export const Group = ({ courseGroupsBB, courseGroupsGit, bbGitConnection }) => {
   const router = useRouter()
   const { courseId, term } = router.query
-
+  const [sinceTime, setSinceTime] = useState(new Date("2020-01-01T00:00:00.000Z"))
+  const [untilTime, setUntilTime] = useState(new Date((new Date()).valueOf() + 86400000))
   const [loadingCreateSubGroups, setLoadingCreateSubGroups] = useState(false)
+  const [courseGroups, setCourseGroups] = useState([])
 
+
+  useEffect(() => {
+    mergeBBGitKeyStats(term, courseId, courseGroupsBB, courseGroupsGit, sinceTime, untilTime).then(data => {
+      setCourseGroups(data)
+    })
+  }, [courseGroupsBB, courseGroupsGit, courseId, sinceTime, term, untilTime])
 
   const createSubGroups = async () => {
     if (courseGroups && courseGroups.length !== 0) {
@@ -49,7 +74,100 @@ export const Group = ({ courseGroups, bbGitConnection }) => {
               Go to group creation page
             </Button>
           </Link></>
-        : <GroupList type="groups" elements={courseGroups}/>}
+        : <>
+          <Grid
+            container
+            direction="column"
+          >
+            <Grid
+              container
+              direction="row"
+              justifyContent="center"
+              alignContent="center"
+              item
+            >
+              <DateTimePicker
+                renderInput={(props) =>
+                  <TextField
+                    {...props}
+                    margin="normal"
+                    helperText=""
+                  />}
+                label="DateTimePicker"
+                value={sinceTime}
+                onChange={(newValue) => {
+                  setSinceTime(newValue)
+                }}
+              />
+              <DateTimePicker
+                renderInput={(props) =>
+                  <TextField
+                    {...props}
+                    margin="normal"
+                    helperText=""
+                  />}
+                label="DateTimePicker"
+                value={untilTime}
+                onChange={(newValue) => {
+                  setUntilTime(newValue)
+                }}
+              />
+            </Grid>
+            <Grid
+              container
+              direction="row"
+              justifyContent="center"
+              alignContent="center"
+              item
+            >
+              <Button
+                variant="contained"
+                color="primary"
+                onClick={() => {
+                  const date = new Date()
+                  date.setDate(date.getDate()-1)
+                  setSinceTime(date)
+                  const dateUntil = new Date()
+                  setUntilTime(dateUntil)
+                }}
+              >
+                Last day
+              </Button>
+              <Button
+                variant="contained"
+                color="primary"
+                onClick={() => {
+                  const date = new Date()
+                  date.setDate(date.getDate()-7)
+                  setSinceTime(date)
+                  const dateUntil = new Date()
+                  setUntilTime(dateUntil)
+                }}
+              >
+                Last week
+              </Button>
+              <Button
+                variant="contained"
+                color="primary"
+                onClick={() => {
+                  const date = new Date()
+                  date.setMonth(date.getMonth()-1)
+                  setSinceTime(date)
+                  const dateUntil = new Date()
+                  setUntilTime(dateUntil)
+                }}
+              >
+                Last month
+              </Button>
+            </Grid>
+            <Grid
+              container
+              item
+            >
+              <GroupList type="groups" elements={courseGroups}/>
+            </Grid>
+          </Grid>
+        </>}
       {(courseGroups && courseGroups.length !== 0)
       && <>
         <Link href={`/courses/${term}/${courseId}/groups/delete`} passHref>
@@ -93,10 +211,6 @@ export const getServerSideProps = (async (context) => {
 
   let courseGroupsGit = (await GetGroups(context.req, params)).subGroups
 
-  let groupKeyStats = await GetGroupsKeyStats(context.req, params, courseGroupsGit.map(group => group.full_path))
-
-
-  console.log(groupKeyStats)
   const bbGitConnection = await getBBGitConnection(context.req, params)
 
   if (!courseGroupsBB || !bbGitConnection) {
@@ -108,13 +222,8 @@ export const getServerSideProps = (async (context) => {
     }
   }
 
-  let courseGroups = courseGroupsBB.map(group => {
-    const groupGitInfo = groupKeyStats.find(groupGit => groupGit.name === group.name)
-    return { ...groupGitInfo, ...group }
-  })
-
   return {
-    props: { courseGroups, bbGitConnection },
+    props: { courseGroupsBB, courseGroupsGit, bbGitConnection },
   }
 })
 
