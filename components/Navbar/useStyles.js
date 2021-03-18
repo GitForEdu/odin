@@ -12,20 +12,20 @@ export const useStyles = makeStyles(theme => ({
     gridArea: "logo",
     display: "flex",
     alignItems: "center",
-    jjustifyContent: "center",
+    justifyContent: "center",
     flexDirection: "column",
   },
   middle: {
     gridArea: "middle",
     display: "flex",
     alignItems: "center",
-    jjustifyContent: "center",
+    justifyContent: "center",
   },
   hamburger: {
     gridArea: "hamburger",
     display: "flex",
     alignItems: "center",
-    jjustifyContent: "center",
+    justifyContent: "center",
   },
   logoimage: {
     height: "2em",

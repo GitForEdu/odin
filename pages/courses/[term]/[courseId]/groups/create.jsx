@@ -14,17 +14,6 @@ import Grid from "@material-ui/core/Grid"
 import Navbar from "components/Navbar"
 
 
-const useStyles = makeStyles((theme) => ({
-  root: {
-    flexGrow: 1,
-  },
-  paper: {
-    padding: theme.spacing(2),
-    textAlign: "center",
-    color: theme.palette.text.secondary,
-  },
-}))
-
 const CSVReaderStyles = (theme) => ({
   dropArea: {
     borderColor: theme.palette.primary.main,
@@ -199,7 +188,6 @@ const GroupListElement = (theme, group) => {
 
 export const Group = ({ courseStudents }) => {
   const theme = useTheme()
-  const classes = useStyles(theme)
   // console.log("courseStudents:", courseStudents)
   const router = useRouter()
   const { courseId, term } = router.query
