@@ -289,7 +289,9 @@ const getProjectCommits = async (path, projectId, pat, since, until) => {
       "Content-Type": "application/json",
       "PRIVATE-TOKEN": pat,
     },
-  }).then(r => r.json())
+  }).then(r => {
+    return r.json()
+  })
 
   return commits
 }
@@ -348,7 +350,6 @@ const getGroupKeyStats = async (path, pat, fullPathGit, since, until) => {
   }
   `
 
-  console.log(query)
   const groupStats = await fetch(`${path}/api/graphql`, {
     method: "POST",
     headers: {
@@ -357,7 +358,6 @@ const getGroupKeyStats = async (path, pat, fullPathGit, since, until) => {
     },
     body: JSON.stringify({ query }),
   }).then(r => r.json()).then(d => {
-    console.log(d)
     const groupInfo = d.data.group
 
     const projects = d.data.group.projects.nodes
@@ -371,15 +371,15 @@ const getGroupKeyStats = async (path, pat, fullPathGit, since, until) => {
 
     let commitCount = groupInfo.projects.nodes.length
     if (commitCount > 0) {
-      commitCount = groupInfo.projects.nodes.map(projects => projects.statistics.commitCount).reduce((acc, curr) => acc + curr)
+      commitCount = groupInfo.projects.nodes.map(project => project.statistics.commitCount).reduce((acc, curr) => acc + curr)
     }
     return { name: groupInfo.name, issuesCount: issuesCount, issuesOpen: issuesOpen, issuesClosed, commitCount: commitCount, projects: projects }
   })
 
   const commits = await Promise.all(groupStats.projects.map(project => {
     return getProjectCommits(path, project.id.replace("gid://gitlab/Project/", ""), pat, since, until)
-  })).then(commits => {
-    return commits.flat()
+  })).then(commitsNestedArray => {
+    return commitsNestedArray.flat()
   })
 
   return { ...groupStats, commits: commits }
