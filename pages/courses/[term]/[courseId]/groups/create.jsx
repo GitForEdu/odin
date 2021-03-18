@@ -8,8 +8,7 @@ import { DragDropContext, Droppable, Draggable } from "react-beautiful-dnd"
 import fetcher from "utils/fetcher"
 import { CSVReader } from "react-papaparse"
 import { Button, TextField, Typography } from "@material-ui/core"
-import { theme } from "utils/theme"
-import { makeStyles } from "@material-ui/core/styles"
+import { makeStyles, useTheme } from "@material-ui/core/styles"
 import Paper from "@material-ui/core/Paper"
 import Grid from "@material-ui/core/Grid"
 import Navbar from "components/Navbar"
@@ -26,7 +25,7 @@ const useStyles = makeStyles((theme) => ({
   },
 }))
 
-const CSVReaderStyles = {
+const CSVReaderStyles = (theme) => ({
   dropArea: {
     borderColor: theme.palette.primary.main,
     borderRadius: 0,
@@ -63,10 +62,10 @@ const CSVReaderStyles = {
   progressBar: {
     backgroundColor: "green",
   },
-}
+})
 
 
-const getItemStyle = (isDragging, draggableStyle) => ({
+const getItemStyle = (theme, isDragging, draggableStyle) => ({
   // some basic styles to make the items look a bit nicer
   userSelect: "none",
   padding: "1rem",
@@ -145,13 +144,13 @@ const moveElementToOtherSubList = (sourceMembers, destinationMemberes, droppable
   return listOfList
 }
 
-const GroupListElement = (group) => {
+const GroupListElement = (theme, group) => {
   return(
     <Grid
       key={group.name}
       container
       direction="row"
-      justify="center"
+      justifyContent="center"
       alignItems="center"
       item
       xs={6}
@@ -175,6 +174,7 @@ const GroupListElement = (group) => {
                     {...provided.draggableProps}
                     {...provided.dragHandleProps}
                     style={getItemStyle(
+                      theme,
                       snapshot.isDragging,
                       provided.draggableProps.style
                     )}>
@@ -198,7 +198,8 @@ const GroupListElement = (group) => {
 }
 
 export const Group = ({ courseStudents }) => {
-  const classes = useStyles()
+  const theme = useTheme()
+  const classes = useStyles(theme)
   // console.log("courseStudents:", courseStudents)
   const router = useRouter()
   const { courseId, term } = router.query
@@ -347,35 +348,35 @@ export const Group = ({ courseStudents }) => {
       <Grid
         container
         direction="row"
-        justify="center"
+        justifyContent="center"
         alignItems="center"
       >
         {/* Upload CSV Container */}
         <Grid
           container
           direction="column"
-          justify="center"
+          justifyContent="center"
           alignItems="center"
           spacing={3}
           item
-          xs={12}
+          xs={10} lg={6} xl={4}
         >
           <Grid item xs={12}>
             <h2>Upload CSV with groups</h2>
           </Grid>
-          <Grid container item xs={10} lg={6} xl={4}>
+          <Grid container item>
             <CSVReader
               onDrop={handleGroups}
-              style={CSVReaderStyles}
+              style={CSVReaderStyles(theme)}
               config={{ header: true }}
             >
               <span>Click to upload group info CSV with data headers</span>
             </CSVReader>
           </Grid>
-          <Grid container item xs={10} lg={6} xl={4}>
+          <Grid container item>
             <CSVReader
               onDrop={handleGroupMembers}
-              style={CSVReaderStyles}
+              style={CSVReaderStyles(theme)}
               config={{ header: true }}
             >
               <span>Click to upload group members CSV with data headers</span>
@@ -389,7 +390,7 @@ export const Group = ({ courseStudents }) => {
         <Grid
           container
           direction="column"
-          justify="center"
+          justifyContent="center"
           alignItems="center"
           item
           xs={12}
@@ -400,7 +401,7 @@ export const Group = ({ courseStudents }) => {
           <Grid
             container
             direction="row"
-            justify="center"
+            justifyContent="center"
             alignItems="center"
             item
             xs={12}
@@ -462,7 +463,7 @@ export const Group = ({ courseStudents }) => {
               <Grid
                 container
                 direction="row"
-                justify="flex-start"
+                justifyContent="flex-start"
                 alignItems="flex-start"
                 spacing={3}
                 item
@@ -470,7 +471,7 @@ export const Group = ({ courseStudents }) => {
                 xl={6}
               >
                 <DragDropContext onDragEnd={onDragEnd}>
-                  {groups.map(group => GroupListElement(group))}
+                  {groups.map(group => GroupListElement(theme, group))}
                 </DragDropContext>
               </Grid>
               <Grid item xs={12}>

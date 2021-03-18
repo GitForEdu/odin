@@ -23,7 +23,7 @@ const GroupList = ({ elements }) => {
         <Grid
           container
           direction="row"
-          justify="center"
+          justifyContent="center"
           alignItems="center"
           item
           xs={12}
@@ -31,7 +31,7 @@ const GroupList = ({ elements }) => {
           <Grid
             container
             direction="row"
-            justify="center"
+            justifyContent="center"
             alignItems="flex-start"
             item
             xs={6}
@@ -60,7 +60,7 @@ const GroupList = ({ elements }) => {
           <Grid
             container
             direction="row"
-            justify="center"
+            justifyContent="center"
             alignItems="center"
             item
             xs={6}
@@ -68,7 +68,7 @@ const GroupList = ({ elements }) => {
             <Grid
               container
               direction="row"
-              justify="center"
+              justifyContent="center"
               alignItems="center"
               item
               xs={12}
@@ -103,7 +103,7 @@ const GroupList = ({ elements }) => {
     <Grid
       container
       direction="column"
-      justify="center"
+      justifyContent="center"
       alignItems="center"
       spacing={2}
     >

@@ -61,17 +61,17 @@ theme.components = {
         },
       },
     },
-    MuiOutlinedInput: {
-      styleOverrides: {
-        root: {
-          "&:hover $notchedOutline": {
-            borderColor: theme.palette.primary.main,
-            borderWidth: "2px",
-          },
-        },
-        notchedOutline: {
+  },
+  MuiOutlinedInput: {
+    styleOverrides: {
+      root: {
+        "&:hover $notchedOutline": {
           borderColor: theme.palette.primary.main,
+          borderWidth: "2px",
         },
+      },
+      notchedOutline: {
+        borderColor: theme.palette.primary.main,
       },
     },
   },
@@ -82,7 +82,6 @@ theme.components = {
       },
     },
   },
-
   MuiListItemText: {
     styleOverrides: {
       primary: {
