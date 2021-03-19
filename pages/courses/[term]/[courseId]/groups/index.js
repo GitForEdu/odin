@@ -164,7 +164,7 @@ export const Group = ({ courseGroupsBB, courseGroupsGit, bbGitConnection }) => {
               container
               item
             >
-              <GroupList type="groups" elements={courseGroups}/>
+              <GroupList type="groups" groups={courseGroups}/>
             </Grid>
           </Grid>
         </>}

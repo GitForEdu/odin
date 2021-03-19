@@ -296,16 +296,43 @@ const getProjectCommits = async (path, projectId, pat, since, until) => {
   return commits
 }
 
+const getProjectBranches = async (path, projectId, pat) => {
+  let fetchUrl = `${path}/api/v4/projects/${projectId}/repository/branches`
+  const branches = await fetch(fetchUrl, {
+    method: "GET",
+    headers: {
+      "Content-Type": "application/json",
+      "PRIVATE-TOKEN": pat,
+    },
+  }).then(r => {
+    return r.json()
+  })
+
+  return branches
+}
+
+const getProjectWikiPages = async (path, projectId, pat) => {
+  let fetchUrl = `${path}/api/v4/projects/${projectId}/wikis`
+  const wikiPages = await fetch(fetchUrl, {
+    method: "GET",
+    headers: {
+      "Content-Type": "application/json",
+      "PRIVATE-TOKEN": pat,
+    },
+  }).then(r => {
+    return r.json()
+  })
+
+  return wikiPages
+}
+
 const getGroupKeyStats = async (path, pat, fullPathGit, since, until) => {
   let issuesInput = ""
-  let mergeRequestsInput = "includeSubgroups: true,"
   if (since) {
     issuesInput = issuesInput + `createdAfter: "${since}",`
-    mergeRequestsInput = mergeRequestsInput + `mergedAfter: "${since}",`
   }
   if (until) {
     issuesInput = issuesInput + `createdBefore: "${until}",`
-    mergeRequestsInput = mergeRequestsInput + `mergedBefore: "${until}",`
   }
   if (issuesInput) {
     issuesInput = `(${issuesInput})`
@@ -318,10 +345,10 @@ const getGroupKeyStats = async (path, pat, fullPathGit, since, until) => {
       projects (includeSubgroups: true){
         nodes {
           id
+          lastActivityAt
           createdAt
           statistics {
             wikiSize
-            commitCount
           }
         }
       }
@@ -329,9 +356,14 @@ const getGroupKeyStats = async (path, pat, fullPathGit, since, until) => {
         nodes {
           createdAt
           state
+          assignees {
+            nodes {
+              username
+            }
+          }
         }
       }
-      mergeRequests(${mergeRequestsInput}){
+      mergeRequests {
         nodes {
           createdAt
           state
@@ -360,29 +392,45 @@ const getGroupKeyStats = async (path, pat, fullPathGit, since, until) => {
   }).then(r => r.json()).then(d => {
     const groupInfo = d.data.group
 
-    const projects = d.data.group.projects.nodes
-    const issuesCount = groupInfo.issues.nodes.length
+    const projects = groupInfo.projects.nodes.filter(project => project.createdAt <= until && project.createdAt >= since)
+    const milestones = groupInfo.milestones.nodes.filter(milestone => milestone.createdAt <= until && milestone.createdAt >= since)
+    const mergeRequests = groupInfo.mergeRequests.nodes.filter(mergeRequest => mergeRequest.createdAt <= until && mergeRequest.createdAt >= since)
+    const issues = groupInfo.issues.nodes
+    const issuesCount = issues.length
+    const totalWikiSize = projects.map(project => project.statistics.wikiSize).reduce((acc, curr) => acc + curr, 0)
     let issuesOpen = 0
     let issuesClosed = 0
     if (issuesCount > 0) {
-      issuesOpen = groupInfo.issues.nodes.filter(issue => issue.state === "opened").length
-      issuesClosed = groupInfo.issues.nodes.filter(issue => issue.state === "closed").length
+      issuesOpen = issues.filter(issue => issue.state === "opened").length
+      issuesClosed = issues.filter(issue => issue.state === "closed").length
     }
 
-    let commitCount = groupInfo.projects.nodes.length
-    if (commitCount > 0) {
-      commitCount = groupInfo.projects.nodes.map(project => project.statistics.commitCount).reduce((acc, curr) => acc + curr)
-    }
-    return { name: groupInfo.name, issuesCount: issuesCount, issuesOpen: issuesOpen, issuesClosed, commitCount: commitCount, projects: projects }
+    return { name: groupInfo.name, issues: issues, issuesCount: issuesCount, issuesOpen: issuesOpen, issuesClosed, projects: projects, milestones: milestones, totalWikiSize: totalWikiSize, mergeRequests: mergeRequests }
   })
 
-  const commits = await Promise.all(groupStats.projects.map(project => {
+  const commitsPromise = Promise.all(groupStats.projects.map(project => {
     return getProjectCommits(path, project.id.replace("gid://gitlab/Project/", ""), pat, since, until)
   })).then(commitsNestedArray => {
     return commitsNestedArray.flat()
   })
 
-  return { ...groupStats, commits: commits }
+  const branchesPromise = Promise.all(groupStats.projects.map(project => {
+    return getProjectBranches(path, project.id.replace("gid://gitlab/Project/", ""), pat, since, until)
+  })).then(branchesNestedArray => {
+    return branchesNestedArray.flat()
+  })
+
+  const wikiPagesPromise = Promise.all(groupStats.projects.map(project => {
+    return getProjectWikiPages(path, project.id.replace("gid://gitlab/Project/", ""), pat, since, until)
+  })).then(wikiPagesNestedArray => {
+    return wikiPagesNestedArray.flat()
+  })
+
+  const commits = await commitsPromise
+  const branches = await branchesPromise
+  const wikiPages = await wikiPagesPromise
+
+  return { ...groupStats, commits: commits, commitsCount: commits.length, branches: branches, wikiPages: wikiPages }
 }
 
 export { createGroupGit, getGroupGit, addUserToGroupGit, getUserGit, getCourseUsersGit, addUsersToGroupGit, deleteGroupGit, getGroupsGit, getGroupsWithStudentsGit, removeUserInGroupGit, getGroupProjects, getGroupKeyStats }

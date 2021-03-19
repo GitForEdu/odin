@@ -3,7 +3,7 @@ import ListItem from "@material-ui/core/ListItem"
 import ListItemText from "@material-ui/core/ListItemText"
 import Activity from "components/Activity"
 
-const GroupList = ({ elements }) => {
+const GroupList = ({ groups }) => {
   const secondaryTextStyling = { style:
     {
       color: "white",
@@ -11,15 +11,14 @@ const GroupList = ({ elements }) => {
     },
   }
 
-  const itemList = elements.map((elem, index) => {
+  const itemList = groups.map((group, index) => {
+    console.log(group)
+    console.log(group.repositories)
     // Gitlab provides full name as elem.name, Blackboard provides name.given and name.family
-    const fullName = `${elem.name}`
-    const data1 = { title: "Issues", amount: elem.issuesCount }
-    const data2 = { title: "Issues Open", amount: elem.issuesOpen }
-    const data3 = { title: "Commits", amount: elem.commits.length }
+    const fullName = `${group.name}`
 
     return (
-      <ListItemLink key={index} alignItems="center" href={`groups/${elem.id}`} >
+      <ListItemLink key={index} alignItems="center" href={`groups/${group.id}`} >
         <Grid
           container
           direction="row"
@@ -31,31 +30,21 @@ const GroupList = ({ elements }) => {
           <Grid
             container
             direction="row"
-            justifyContent="center"
+            justifyContent="flex-start"
             alignItems="flex-start"
             item
-            xs={6}
+            xs={2}
           >
             <Grid
               item
-              xs={6}
+              xs={12}
             >
               <ListItemText
                 primary={fullName}
-                secondary={elem.user?.userName || elem.userName}
+                secondary={group.user?.userName || group.userName}
                 secondaryTypographyProps={secondaryTextStyling}
               />
             </Grid>
-            <Grid
-              item
-              xs={6}
-            >
-              {/* <Activity
-                data={[0, 1, 2, 3, 2, 2, 3, 2, 3, 1, 1, 3, 3, 2, 1, 0, 0, 2, 2, 1, 0, 3, 2, 1, 0, 1, 3, 2]}
-              /> */}
-            </Grid>
-
-
           </Grid>
           <Grid
             container
@@ -63,7 +52,7 @@ const GroupList = ({ elements }) => {
             justifyContent="center"
             alignItems="center"
             item
-            xs={6}
+            xs={10}
           >
             <Grid
               container
@@ -75,22 +64,64 @@ const GroupList = ({ elements }) => {
             >
               <Grid
                 item
-                xs={4}
+                xs
               >
-                <ListItemText primary={data1.title} secondary={data1.amount}/>
+                <ListItemText primary={"Issues"} secondary={group.issues.length}/>
               </Grid>
               <Grid
                 item
-                xs={4}
+                xs
               >
 
-                <ListItemText primary={data2.title} secondary={data2.amount}/>
+                <ListItemText primary={"Unassgined issues"} secondary={group.issues.map(issue => issue.assignees.nodes.length).filter(assigneesCount => assigneesCount === 0).length}/>
               </Grid>
               <Grid
                 item
-                xs={4}
+                xs
               >
-                <ListItemText primary={data3.title} secondary={data3.amount}/>
+                <ListItemText primary={"Commits"} secondary={group.commits.length}/>
+              </Grid>
+              <Grid
+                item
+                xs
+              >
+                <ListItemText primary={"MRs"} secondary={group.mergeRequests.length}/>
+              </Grid>
+              <Grid
+                item
+                xs
+              >
+                <ListItemText primary={"Wikis size"} secondary={group.totalWikiSize}/>
+              </Grid>
+              <Grid
+                item
+                xs
+              >
+                <ListItemText primary={"Wikis pages"} secondary={group.wikiPages.length}/>
+              </Grid>
+              <Grid
+                item
+                xs
+              >
+                <ListItemText primary={"Milestones"} secondary={group.milestones.length}/>
+              </Grid>
+              <Grid
+                item
+                xs
+              >
+                <ListItemText primary={"Projectes"} secondary={group.projects.length}/>
+              </Grid>
+              <Grid
+                item
+                xs
+              >
+                <ListItemText primary={"Branches"} secondary={group.branches.length}/>
+              </Grid>
+              <Grid
+                item
+                xs
+              >
+                <ListItemText primary={"Members"} secondary={group.members.length}/>
               </Grid>
             </Grid>
           </Grid>
