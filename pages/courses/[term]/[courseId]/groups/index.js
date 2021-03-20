@@ -10,6 +10,7 @@ import { Button, Grid, TextField } from "@material-ui/core"
 import Link from "next/link"
 import { GetGroups } from "pages/api/courses/[term]/[courseId]/git/groups"
 import DateTimePicker from "@material-ui/lab/DateTimePicker"
+import EnhancedTable from "components/List/GroupListTable"
 
 const mergeBBGitKeyStats = async (term, courseId, courseGroupsBB, courseGroupsGit, sinceTime, untilTime) => {
   const groupKeyStats = await fetcher(
@@ -164,7 +165,7 @@ export const Group = ({ courseGroupsBB, courseGroupsGit, bbGitConnection }) => {
               container
               item
             >
-              <GroupList type="groups" groups={courseGroups}/>
+              <EnhancedTable groups={courseGroups}/>
             </Grid>
           </Grid>
         </>}
