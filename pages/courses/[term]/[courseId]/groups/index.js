@@ -12,6 +12,8 @@ import { GetGroups } from "pages/api/courses/[term]/[courseId]/git/groups"
 import DatePicker from "@material-ui/lab/DatePicker"
 import EnhancedTable from "components/List/GroupListTable"
 
+const cells = ["Issues", "Commits", "Members", "Branches", "MRs", "Projectes", "Milestones", "Wiki Pages", "Wiki Size", "Unassgined issues"]
+
 const mergeBBGitKeyStats = async (term, courseId, courseGroupsBB, courseGroupsGit, sinceTime, untilTime) => {
   const groupKeyStats = await fetcher(
     `/api/courses/${term}/${courseId}/git/groups/getGroupsKeyStats?since=${sinceTime.toISOString()}&until=${untilTime.toISOString()}&groupPaths=${courseGroupsGit.map(group => group.full_path).join(",")}`,
@@ -172,7 +174,7 @@ export const Group = ({ courseGroupsBB, courseGroupsGit, bbGitConnection }) => {
                   container
                   item
                 >
-                  <EnhancedTable groups={courseGroups}/>
+                  <EnhancedTable groups={courseGroups} cells={cells}/>
                 </Grid>
               </Grid>
             </>}

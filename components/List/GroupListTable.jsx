@@ -23,13 +23,38 @@ import FilterListIcon from "@material-ui/icons/FilterList"
 import { visuallyHidden } from "@material-ui/utils"
 
 
+const tableCells = (row, cells) => {
+  return (
+    <>
+      {cells.map((cell, index) => (
+        <TableCell key={index} align="right">{row[cell.toLowerCase().replace(" ", "")]}</TableCell>
+      ))}
+    </>
+  )
+}
+
+const headCells = (cells) => {
+  const cellList = [{ id: "name", numeric: false, disablePadding: true, label: "Group name" }]
+  cells.forEach(cell => (
+    cellList.push({ id: cell.toLowerCase().replace(" ", ""), numeric: true, disablePadding: false, label: cell })
+  ))
+  return (cellList)
+}
+
 const createData = (group) => {
   return {
     name: group.name,
     issues: group.issues.length,
-    unassgnedIssues: group.issues.map(issue => issue.assignees.nodes.length).filter(assigneesCount => assigneesCount === 0).length,
+    unassginedissues: group.issues.map(issue => issue.assignees.nodes.length).filter(assigneesCount => assigneesCount === 0).length,
     commits: group.commits.length,
-    mergeRequests: group.mergeRequests.length }
+    mrs: group.mergeRequests.length,
+    wikisize: group.totalWikiSize,
+    wikipages: group.wikiPages.length,
+    milestones: group.milestones.length,
+    projectes: group.projects.length,
+    branches: group.branches.length,
+    members: group.members.length,
+  }
 }
 
 const createRows = (groups) => {
@@ -62,12 +87,6 @@ const stableSort = (array, comparator) => {
   return stabilizedThis.map((el) => el[0])
 }
 
-const headCells = [
-  { id: "name", numeric: false, disablePadding: true, label: "Group name" },
-  { id: "issues", numeric: true, disablePadding: false, label: "Issues" },
-  { id: "commits", numeric: true, disablePadding: false, label: "Commits" },
-]
-
 const useStyles = makeStyles((theme) => ({
   root: {
     width: "100%",
@@ -83,7 +102,7 @@ const useStyles = makeStyles((theme) => ({
 }))
 
 const EnhancedTableHead = (props) => {
-  const { classes, order, orderBy, onRequestSort } = props
+  const { classes, order, orderBy, onRequestSort, cells } = props
   const createSortHandler = (property) => (event) => {
     onRequestSort(event, property)
   }
@@ -91,7 +110,7 @@ const EnhancedTableHead = (props) => {
   return (
     <TableHead>
       <TableRow>
-        {headCells.map((headCell) => (
+        {headCells(cells).map((headCell) => (
           <TableCell
             key={headCell.id}
             align={headCell.numeric ? "right" : "left"}
@@ -147,7 +166,7 @@ const EnhancedTableToolbar = () => {
   )
 }
 
-export default function EnhancedTable({ groups }) {
+export default function EnhancedTable({ groups, cells }) {
   const classes = useStyles()
   const rows = createRows(groups)
   const [order, setOrder] = React.useState("asc")
@@ -179,6 +198,7 @@ export default function EnhancedTable({ groups }) {
               order={order}
               orderBy={orderBy}
               onRequestSort={handleRequestSort}
+              cells={cells}
             />
             <TableBody>
               {stableSort(rows, getComparator(order, orderBy))
@@ -190,8 +210,7 @@ export default function EnhancedTable({ groups }) {
                       <TableCell component="th" id={labelId} scope="row">
                         {row.name}
                       </TableCell>
-                      <TableCell align="right">{row.issues}</TableCell>
-                      <TableCell align="right">{row.commits}</TableCell>
+                      {tableCells(row, cells)}
                     </TableRow>
                   )
                 })}
