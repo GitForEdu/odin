@@ -9,7 +9,7 @@ import fetcher from "utils/fetcher"
 import { Button, Grid, TextField } from "@material-ui/core"
 import Link from "next/link"
 import { GetGroups } from "pages/api/courses/[term]/[courseId]/git/groups"
-import DateTimePicker from "@material-ui/lab/DateTimePicker"
+import DatePicker from "@material-ui/lab/DatePicker"
 import EnhancedTable from "components/List/GroupListTable"
 
 const mergeBBGitKeyStats = async (term, courseId, courseGroupsBB, courseGroupsGit, sinceTime, untilTime) => {
@@ -87,27 +87,27 @@ export const Group = ({ courseGroupsBB, courseGroupsGit, bbGitConnection }) => {
               alignContent="center"
               item
             >
-              <DateTimePicker
+              <DatePicker
                 renderInput={(props) =>
                   <TextField
                     {...props}
                     margin="normal"
                     helperText=""
                   />}
-                label="DateTimePicker"
+                label="DatePicker"
                 value={sinceTime}
                 onChange={(newValue) => {
                   setSinceTime(newValue)
                 }}
               />
-              <DateTimePicker
+              <DatePicker
                 renderInput={(props) =>
                   <TextField
                     {...props}
                     margin="normal"
                     helperText=""
                   />}
-                label="DateTimePicker"
+                label="DatePicker"
                 value={untilTime}
                 onChange={(newValue) => {
                   setUntilTime(newValue)
@@ -175,7 +175,6 @@ export const Group = ({ courseGroupsBB, courseGroupsGit, bbGitConnection }) => {
           <Button
             variant="contained"
             color="primary"
-            onClick={createSubGroups}
             disabled={loadingCreateSubGroups}
           >
         Delete groups on Blackboard
@@ -185,7 +184,6 @@ export const Group = ({ courseGroupsBB, courseGroupsGit, bbGitConnection }) => {
           <Button
             variant="contained"
             color="primary"
-            onClick={createSubGroups}
             disabled={loadingCreateSubGroups}
           >
         Delete groupset on Blackboard

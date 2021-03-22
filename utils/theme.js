@@ -14,6 +14,7 @@ export const theme = createMuiTheme({
     selected: {
       main: "green",
     },
+    mode: "dark",
   },
 })
 
@@ -42,42 +43,31 @@ theme.components = {
       },
     },
   },
-  MuiInputLabel: {
-    defaultProps: {
-      shrink: true,
-    },
-  },
+
+  // This wil cause the border to strike through label on inputs...
+  // MuiInputLabel: {
+  //   defaultProps: {
+  //     shrink: true,
+  //   },
+  // },
   MuiInput: {
     defaultProps: {
       disableUnderline: true,
     },
   },
-  MuiFormLabel: { // TextField Øabel before focus
+  MuiFormLabel: { // TextField label before focus & after focus
     styleOverrides: {
       root: {
-        color: "white",
-        "&$focused": {
-          color: "white",
-        },
+        color: "white !important",
       },
     },
   },
   MuiOutlinedInput: {
     styleOverrides: {
       root: {
-        "& input + fieldset": {
+        "& fieldset, &:hover": {
           borderColor: theme.palette.primary.main,
         },
-        "& fieldset": {
-          borderColor: theme.palette.primary.main,
-        },
-      },
-    },
-  },
-  MuiSvgIcon: {
-    styleOverrides: {
-      root: {
-        color: theme.palette.primary.main,
       },
     },
   },
@@ -91,13 +81,49 @@ theme.components = {
   MuiListItemText: {
     styleOverrides: {
       primary: {
-        color: "white",
         textAlign: "center",
       },
       secondary: {
-        color: "white",
         textAlign: "center",
         fontSize: "1.5rem",
+      },
+    },
+  },
+  MuiToolbar: {
+    styleOverrides: {
+      root: {
+        backgroundColor: "grey",
+      },
+    },
+  },
+  MuiTableContainer: {
+    styleOverrides: {
+      root: {
+        backgroundColor: "grey",
+      },
+    },
+  },
+  MuiTableCell: {
+    styleOverrides: {
+      root: {
+        borderBottomColor: "black",
+        color: "white",
+      },
+    },
+  },
+  MuiPaper: {
+    styleOverrides: {
+      root: {
+      },
+    },
+  },
+  MuiTableSortLabel: {
+    styleOverrides: {
+      root: {
+        color: "white",
+        "&$active": {
+          color: "white",
+        },
       },
     },
   },
