@@ -38,9 +38,9 @@ theme.components = {
   },
   MuiInputBase: { // Cursor
     styleOverrides: {
-      root: {
-        color: "white",
-      },
+      // root: {
+      //   color: "white",
+      // },
     },
   },
 
@@ -91,24 +91,24 @@ theme.components = {
   },
   MuiToolbar: {
     styleOverrides: {
-      root: {
-        backgroundColor: "grey",
-      },
+      // root: {
+      //   backgroundColor: "grey",
+      // },
     },
   },
   MuiTableContainer: {
     styleOverrides: {
-      root: {
-        backgroundColor: "grey",
-      },
+      // root: {
+      //   backgroundColor: "grey",
+      // },
     },
   },
   MuiTableCell: {
     styleOverrides: {
-      root: {
-        borderBottomColor: "black",
-        color: "white",
-      },
+      // root: {
+      //   borderBottomColor: "black",
+      //   color: "white",
+      // },
     },
   },
   MuiPaper: {
@@ -120,10 +120,10 @@ theme.components = {
   MuiTableSortLabel: {
     styleOverrides: {
       root: {
-        color: "white",
-        "&$active": {
-          color: "white",
-        },
+        // color: "white",
+        // "&$active": {
+        //   color: "white",
+        // },
       },
     },
   },

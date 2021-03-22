@@ -64,112 +64,119 @@ export const Group = ({ courseGroupsBB, courseGroupsGit, bbGitConnection }) => {
   return (
     <>
       <Navbar pageTitle={"All groups"} courseId={courseId} term={term} />
-      {courseGroups.length === 0
-        ? <>
-          <h1>No groups found on Blackboard</h1>
-          <Link href={`/courses/${term}/${courseId}/groups/create`} passHref>
-            <Button
-              variant="contained"
-              color="primary"
-            >
+      <Grid
+        container
+        direction="row"
+        justifyContent="center"
+        alignItems="center"
+      >
+        <Grid item xs={12} md={8}>
+          {courseGroups.length === 0
+            ? <>
+              <h1>No groups found on Blackboard</h1>
+              <Link href={`/courses/${term}/${courseId}/groups/create`} passHref>
+                <Button
+                  variant="contained"
+                  color="primary"
+                >
               Go to group creation page
-            </Button>
-          </Link></>
-        : <>
-          <Grid
-            container
-            direction="column"
-          >
-            <Grid
-              container
-              direction="row"
-              justifyContent="center"
-              alignContent="center"
-              item
-            >
-              <DatePicker
-                renderInput={(props) =>
-                  <TextField
-                    {...props}
-                    margin="normal"
-                    helperText=""
-                  />}
-                label="DatePicker"
-                value={sinceTime}
-                onChange={(newValue) => {
-                  setSinceTime(newValue)
-                }}
-              />
-              <DatePicker
-                renderInput={(props) =>
-                  <TextField
-                    {...props}
-                    margin="normal"
-                    helperText=""
-                  />}
-                label="DatePicker"
-                value={untilTime}
-                onChange={(newValue) => {
-                  setUntilTime(newValue)
-                }}
-              />
-            </Grid>
-            <Grid
-              container
-              direction="row"
-              justifyContent="center"
-              alignContent="center"
-              item
-            >
-              <Button
-                variant="contained"
-                color="primary"
-                onClick={() => {
-                  const date = new Date()
-                  date.setDate(date.getDate()-1)
-                  setSinceTime(date)
-                  const dateUntil = new Date()
-                  setUntilTime(dateUntil)
-                }}
+                </Button>
+              </Link></>
+            : <>
+              <Grid
+                container
+                direction="column"
               >
+                <Grid
+                  container
+                  direction="row"
+                  justifyContent="center"
+                  alignContent="center"
+                  item
+                >
+                  <DatePicker
+                    renderInput={(props) =>
+                      <TextField
+                        {...props}
+                        margin="normal"
+                        helperText=""
+                      />}
+                    label="DatePicker"
+                    value={sinceTime}
+                    onChange={(newValue) => {
+                      setSinceTime(newValue)
+                    }}
+                  />
+                  <DatePicker
+                    renderInput={(props) =>
+                      <TextField
+                        {...props}
+                        margin="normal"
+                        helperText=""
+                      />}
+                    label="DatePicker"
+                    value={untilTime}
+                    onChange={(newValue) => {
+                      setUntilTime(newValue)
+                    }}
+                  />
+                </Grid>
+                <Grid
+                  container
+                  direction="row"
+                  justifyContent="center"
+                  alignContent="center"
+                  item
+                >
+                  <Button
+                    variant="contained"
+                    color="primary"
+                    onClick={() => {
+                      const date = new Date()
+                      date.setDate(date.getDate()-1)
+                      setSinceTime(date)
+                      const dateUntil = new Date()
+                      setUntilTime(dateUntil)
+                    }}
+                  >
                 Last day
-              </Button>
-              <Button
-                variant="contained"
-                color="primary"
-                onClick={() => {
-                  const date = new Date()
-                  date.setDate(date.getDate()-7)
-                  setSinceTime(date)
-                  const dateUntil = new Date()
-                  setUntilTime(dateUntil)
-                }}
-              >
+                  </Button>
+                  <Button
+                    variant="contained"
+                    color="primary"
+                    onClick={() => {
+                      const date = new Date()
+                      date.setDate(date.getDate()-7)
+                      setSinceTime(date)
+                      const dateUntil = new Date()
+                      setUntilTime(dateUntil)
+                    }}
+                  >
                 Last week
-              </Button>
-              <Button
-                variant="contained"
-                color="primary"
-                onClick={() => {
-                  const date = new Date()
-                  date.setMonth(date.getMonth()-1)
-                  setSinceTime(date)
-                  const dateUntil = new Date()
-                  setUntilTime(dateUntil)
-                }}
-              >
+                  </Button>
+                  <Button
+                    variant="contained"
+                    color="primary"
+                    onClick={() => {
+                      const date = new Date()
+                      date.setMonth(date.getMonth()-1)
+                      setSinceTime(date)
+                      const dateUntil = new Date()
+                      setUntilTime(dateUntil)
+                    }}
+                  >
                 Last month
-              </Button>
-            </Grid>
-            <Grid
-              container
-              item
-            >
-              <EnhancedTable groups={courseGroups}/>
-            </Grid>
-          </Grid>
-        </>}
-      {(courseGroups && courseGroups.length !== 0)
+                  </Button>
+                </Grid>
+                <Grid
+                  container
+                  item
+                >
+                  <EnhancedTable groups={courseGroups}/>
+                </Grid>
+              </Grid>
+            </>}
+          {(courseGroups && courseGroups.length !== 0)
       && <>
         <Link href={`/courses/${term}/${courseId}/groups/delete`} passHref>
           <Button
@@ -199,6 +206,8 @@ export const Group = ({ courseGroupsBB, courseGroupsGit, bbGitConnection }) => {
         Create groups on GitLab
         </Button>}
       </>}
+        </Grid>
+      </Grid>
     </>
   )
 }
