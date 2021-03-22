@@ -21,6 +21,8 @@ import Switch from "@material-ui/core/Switch"
 import DeleteIcon from "@material-ui/icons/Delete"
 import FilterListIcon from "@material-ui/icons/FilterList"
 import { visuallyHidden } from "@material-ui/utils"
+import Link from "next/link"
+import { useRouter } from "next/router"
 
 
 const tableCells = (row, cells) => {
@@ -43,6 +45,7 @@ const headCells = (cells) => {
 
 const createData = (group) => {
   return {
+    id: group.id,
     name: group.name,
     issues: group.issues.length,
     unassginedissues: group.issues.map(issue => issue.assignees.nodes.length).filter(assigneesCount => assigneesCount === 0).length,
@@ -167,6 +170,8 @@ const EnhancedTableToolbar = () => {
 }
 
 export default function EnhancedTable({ groups, cells }) {
+  const router = useRouter()
+  const { courseId, term } = router.query
   const classes = useStyles()
   const rows = createRows(groups)
   const [order, setOrder] = React.useState("asc")
@@ -176,6 +181,10 @@ export default function EnhancedTable({ groups, cells }) {
     const isAsc = orderBy === property && order === "asc"
     setOrder(isAsc ? "desc" : "asc")
     setOrderBy(property)
+  }
+
+  const handleRowClick = (row, courseId, term) => {
+    router.push(`/courses/${term}/${courseId}/groups/${row.id}`)
   }
 
   const handleClick = (event, name) => {
@@ -206,7 +215,7 @@ export default function EnhancedTable({ groups, cells }) {
                   const labelId = `enhanced-table-checkbox-${index}`
 
                   return (
-                    <TableRow key={row.name}>
+                    <TableRow key={index} hover={true} onClick={() => handleRowClick(row, courseId, term)}>
                       <TableCell component="th" id={labelId} scope="row">
                         {row.name}
                       </TableCell>

@@ -127,4 +127,13 @@ theme.components = {
       },
     },
   },
+  MuiTableRow: {
+    styleOverrides: {
+      root: {
+        "&:hover": {
+          cursor: "pointer",
+        },
+      },
+    },
+  },
 }
