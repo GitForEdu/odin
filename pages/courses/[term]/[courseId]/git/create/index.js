@@ -96,8 +96,6 @@ const CreateGit = () => {
     <>
       <Navbar pageTitle={"Create connection to Git repo"} courseId={courseId} term={term} />
       <TextField
-        variant="outlined"
-        color="primary"
         id="GitURL"
         label="GitLab base URL"
         value={gitURL}
@@ -115,8 +113,6 @@ const CreateGit = () => {
       </p>
 
       <TextField
-        variant="outlined"
-        color="primary"
         id="pat"
         label="GitLab personal access token"
         value={pat}

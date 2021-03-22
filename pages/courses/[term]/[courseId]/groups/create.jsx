@@ -406,8 +406,6 @@ export const Group = ({ courseStudents }) => {
             >
               <Grid item xs={6}>
                 <TextField
-                  variant="outlined"
-                  color="primary"
                   id="numberOfStudentsPerGroup"
                   label="Students per group"
                   value={numberOfStudentsPerGroup}
@@ -422,8 +420,6 @@ export const Group = ({ courseStudents }) => {
               </Grid>
               <Grid item xs={6}>
                 <TextField
-                  variant="outlined"
-                  color="primary"
                   id="numberOfGroups"
                   label="Number of groups"
                   value={numberOfGroups}

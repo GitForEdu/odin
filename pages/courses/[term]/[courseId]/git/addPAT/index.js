@@ -49,8 +49,6 @@ const AddGitPat = ({ gitURL }) => {
       </a>
       </p>
       <TextField
-        variant="outlined"
-        color="primary"
         id="pat"
         label="pat"
         value={pat}
