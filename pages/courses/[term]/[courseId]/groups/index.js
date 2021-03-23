@@ -6,13 +6,12 @@ import { getCourseGroups } from "pages/api/courses/[term]/[courseId]/groups"
 import { getBBGitConnection } from "pages/api/courses/[term]/[courseId]/git/createConnection"
 import { useEffect, useState } from "react"
 import fetcher from "utils/fetcher"
-import { Button, Grid, TextField } from "@material-ui/core"
+import { Button, Checkbox, FormControlLabel, Grid, TextField } from "@material-ui/core"
 import Link from "next/link"
 import { GetGroups } from "pages/api/courses/[term]/[courseId]/git/groups"
 import DatePicker from "@material-ui/lab/DatePicker"
 import EnhancedTable from "components/List/GroupListTable"
 
-const cells = ["Issues", "Commits", "Members", "Branches", "MRs", "Projectes", "Milestones", "Wiki Pages", "Wiki Size", "Unassgined issues"]
 
 const mergeBBGitKeyStats = async (term, courseId, courseGroupsBB, courseGroupsGit, sinceTime, untilTime) => {
   const groupKeyStats = await fetcher(
@@ -30,6 +29,7 @@ const mergeBBGitKeyStats = async (term, courseId, courseGroupsBB, courseGroupsGi
   return courseGroups
 }
 
+const cellList = ["Issues", "Commits", "Members", "Branches", "MRs", "Projectes", "Milestones", "Wiki Pages", "Wiki Size", "Unassgined issues"]
 
 export const Group = ({ courseGroupsBB, courseGroupsGit, bbGitConnection }) => {
   const router = useRouter()
@@ -38,6 +38,7 @@ export const Group = ({ courseGroupsBB, courseGroupsGit, bbGitConnection }) => {
   const [untilTime, setUntilTime] = useState(new Date((new Date()).valueOf() + 86400000))
   const [loadingCreateSubGroups, setLoadingCreateSubGroups] = useState(false)
   const [courseGroups, setCourseGroups] = useState([])
+  const [cells, setCells] = useState(["Issues", "Members"])
 
 
   useEffect(() => {
@@ -61,6 +62,18 @@ export const Group = ({ courseGroupsBB, courseGroupsGit, bbGitConnection }) => {
         router.push(`/courses/${term}/${courseId}`)
       }
     }
+  }
+
+  const handleChangeCheckbox = (event) => {
+    const tmpCells = [...cells]
+    const findIndex = cells.findIndex(cell => cell === event.target.name)
+    if (findIndex >= 0) {
+      tmpCells.splice(findIndex, 1)
+    }
+    else {
+      tmpCells.push(event.target.name)
+    }
+    setCells(tmpCells)
   }
 
   return (
@@ -169,6 +182,21 @@ export const Group = ({ courseGroupsBB, courseGroupsGit, bbGitConnection }) => {
                   >
                 Last month
                   </Button>
+                  {cellList.map((cellElement, index) => (
+                    <FormControlLabel
+                      key={index}
+                      control={
+                        <Checkbox
+                          checked={cells.findIndex(cell => cell === cellElement) >= 0}
+                          onChange={handleChangeCheckbox}
+                          name={cellElement}
+                          color="primary"
+                        />
+                      }
+                      label={cellElement}
+                    />
+                  ))}
+
                 </Grid>
                 <Grid
                   container

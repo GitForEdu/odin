@@ -1,4 +1,4 @@
-import React from "react"
+import React, { useState } from "react"
 import PropTypes from "prop-types"
 import clsx from "clsx"
 import { alpha, makeStyles } from "@material-ui/core/styles"
@@ -23,6 +23,8 @@ import FilterListIcon from "@material-ui/icons/FilterList"
 import { visuallyHidden } from "@material-ui/utils"
 import Link from "next/link"
 import { useRouter } from "next/router"
+import TextField from "@material-ui/core/TextField"
+import { Grid } from "@material-ui/core"
 
 
 const tableCells = (row, cells) => {
@@ -150,21 +152,52 @@ const useToolbarStyles = makeStyles((theme) => ({
   },
 }))
 
-const EnhancedTableToolbar = () => {
+const EnhancedTableToolbar = ({ searchVal, handleSearch }) => {
   const classes = useToolbarStyles()
 
   return (
     <Toolbar
       className={clsx(classes.root)}
     >
-      <Typography className={classes.title} variant="h6" id="tableTitle" component="div" align="left">
-          Groups
-      </Typography>
-      <Tooltip title="Filter list">
-        <IconButton aria-label="filter list">
-          <FilterListIcon />
-        </IconButton>
-      </Tooltip>
+      <Grid
+        container
+        direction="row"
+        justifyContent="space-between"
+        alignItems="baseline"
+      >
+
+
+        <Grid
+          item
+        >
+          <TextField
+            id="searchGroupName"
+            label="Search group name"
+            align="left"
+            value={searchVal}
+            onChange={handleSearch}
+            variant="filled"
+            style={{
+              margin: "0",
+            }}
+          />
+
+        </Grid>
+        <Grid
+          container
+          direction="row"
+          justifyContent="flex-end"
+          alignItems="center"
+          item
+          xs={2}
+        >
+          <Tooltip title="Filter list">
+            <IconButton aria-label="filter list">
+              <FilterListIcon />
+            </IconButton>
+          </Tooltip>
+        </Grid>
+      </Grid>
     </Toolbar>
   )
 }
@@ -173,9 +206,10 @@ export default function EnhancedTable({ groups, cells }) {
   const router = useRouter()
   const { courseId, term } = router.query
   const classes = useStyles()
-  const rows = createRows(groups)
-  const [order, setOrder] = React.useState("asc")
-  const [orderBy, setOrderBy] = React.useState("name")
+  const [rows, setRows] = useState(createRows(groups))
+  const [order, setOrder] = useState("asc")
+  const [orderBy, setOrderBy] = useState("name")
+  const [searched, setSearched] = useState("")
 
   const handleRequestSort = (event, property) => {
     const isAsc = orderBy === property && order === "asc"
@@ -183,18 +217,22 @@ export default function EnhancedTable({ groups, cells }) {
     setOrderBy(property)
   }
 
-  const handleRowClick = (row, courseId, term) => {
+  const handleRowClick = (row) => {
     router.push(`/courses/${term}/${courseId}/groups/${row.id}`)
   }
 
-  const handleClick = (event, name) => {
-    console.log("hi, i was clicked")
+  const handleSearch = (event) => {
+    const filteredRows = createRows(groups).filter((row) => {
+      return row.name.toLowerCase().includes(event.target.value.toLowerCase())
+    })
+    setRows(filteredRows)
+    setSearched(event.target.value)
   }
 
   return (
     <div className={classes.root}>
       <Paper className={classes.paper}>
-        <EnhancedTableToolbar />
+        <EnhancedTableToolbar searchVal={searched} handleSearch={handleSearch}/>
         <TableContainer>
           <Table
             className={classes.table}
