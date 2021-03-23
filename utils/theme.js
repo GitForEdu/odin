@@ -12,7 +12,7 @@ export const theme = createMuiTheme({
       disabled: "white",
     },
     selected: {
-      main: "green",
+      main: "#008000", // green
     },
     mode: "dark",
   },

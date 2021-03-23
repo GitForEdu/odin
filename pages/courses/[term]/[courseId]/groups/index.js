@@ -162,7 +162,7 @@ export const Group = ({ courseGroupsBB, courseGroupsGit, bbGitConnection }) => {
                checked={cells.findIndex(cell => cell === cellElement) >= 0}
                onChange={handleChangeCheckbox}
                name={cellElement}
-               color="primary"
+               color="selected"
              />
            }
            label={cellElement}
