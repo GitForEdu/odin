@@ -6,12 +6,24 @@ import { getCourseGroups } from "pages/api/courses/[term]/[courseId]/groups"
 import { getBBGitConnection } from "pages/api/courses/[term]/[courseId]/git/createConnection"
 import { useEffect, useState } from "react"
 import fetcher from "utils/fetcher"
-import { Button, Checkbox, FormControlLabel, Grid, TextField } from "@material-ui/core"
+import { Button, Checkbox, FormControlLabel, Grid, makeStyles, Modal, TextField, Typography } from "@material-ui/core"
 import Link from "next/link"
 import { GetGroups } from "pages/api/courses/[term]/[courseId]/git/groups"
 import DatePicker from "@material-ui/lab/DatePicker"
 import EnhancedTable from "components/List/GroupListTable"
+import CloseIcon from "@material-ui/icons/Close"
 
+
+const useStyles = makeStyles((theme) => ({
+  paper: {
+    position: "absolute",
+    width: 400,
+    backgroundColor: theme.palette.background.paper,
+    border: "2px solid #000",
+    boxShadow: theme.shadows[5],
+    padding: theme.spacing(2, 4, 3),
+  },
+}))
 
 const mergeBBGitKeyStats = async (term, courseId, courseGroupsBB, courseGroupsGit, sinceTime, untilTime) => {
   const groupKeyStats = await fetcher(
@@ -31,6 +43,56 @@ const mergeBBGitKeyStats = async (term, courseId, courseGroupsBB, courseGroupsGi
 
 const cellList = ["Issues", "Commits", "Members", "Branches", "MRs", "Projectes", "Milestones", "Wiki Pages", "Wiki Size", "Unassgined issues"]
 
+const ModalColumns = ({ classes, columnSelectors, handleModal }) => (
+  <div
+    className={classes.paper}
+  >
+    <Grid
+      container
+      direction="row"
+      justifyContent="center"
+      alignItems="center"
+    >
+      <Grid
+        container
+        direction="row"
+        justifyContent="flex-end"
+        alignItems="flex-start"
+      >
+        <Button
+          variant="contained"
+          color="primary"
+          onClick={handleModal}
+        >
+          <CloseIcon />
+        </Button>
+      </Grid>
+      <Grid
+        container
+        direction="row"
+        justifyContent="flex-start"
+        alignItems="flex-start"
+      >
+        {columnSelectors}
+      </Grid>
+      <Grid
+        container
+        direction="row"
+        justifyContent="flex-end"
+        alignItems="flex-end"
+      >
+        <Button
+          variant="contained"
+          color="primary"
+          onClick={handleModal}
+        >
+          Set filters
+        </Button>
+      </Grid>
+    </Grid>
+  </div>
+)
+
 export const Group = ({ courseGroupsBB, courseGroupsGit, bbGitConnection }) => {
   const router = useRouter()
   const { courseId, term } = router.query
@@ -39,6 +101,12 @@ export const Group = ({ courseGroupsBB, courseGroupsGit, bbGitConnection }) => {
   const [loadingCreateSubGroups, setLoadingCreateSubGroups] = useState(false)
   const [courseGroups, setCourseGroups] = useState([])
   const [cells, setCells] = useState(["Issues", "Members"])
+  const [modalState, setModalState] = useState(false)
+  const classes = useStyles()
+
+  const handleModal = () => {
+    setModalState(!modalState)
+  }
 
 
   useEffect(() => {
@@ -75,6 +143,33 @@ export const Group = ({ courseGroupsBB, courseGroupsGit, bbGitConnection }) => {
     }
     setCells(tmpCells)
   }
+
+  const columnSelectors
+     = cellList.map((cellElement, index) => (
+       <Grid
+         key={index}
+         container
+         direction="row"
+         justifyContent="flex-start"
+         alignItems="flex-start"
+
+         item
+         xs={6}
+       >
+         <FormControlLabel
+           control={
+             <Checkbox
+               checked={cells.findIndex(cell => cell === cellElement) >= 0}
+               onChange={handleChangeCheckbox}
+               name={cellElement}
+               color="primary"
+             />
+           }
+           label={cellElement}
+         />
+       </Grid>
+     ))
+
 
   return (
     <>
@@ -182,27 +277,22 @@ export const Group = ({ courseGroupsBB, courseGroupsGit, bbGitConnection }) => {
                   >
                 Last month
                   </Button>
-                  {cellList.map((cellElement, index) => (
-                    <FormControlLabel
-                      key={index}
-                      control={
-                        <Checkbox
-                          checked={cells.findIndex(cell => cell === cellElement) >= 0}
-                          onChange={handleChangeCheckbox}
-                          name={cellElement}
-                          color="primary"
-                        />
-                      }
-                      label={cellElement}
-                    />
-                  ))}
-
                 </Grid>
                 <Grid
                   container
                   item
                 >
-                  <EnhancedTable groups={courseGroups} cells={cells}/>
+                  <Modal
+                    style={{ display:"flex", alignItems:"center", justifyContent:"center" }}
+                    open={modalState}
+                    onClose={handleModal}
+                    aria-labelledby="simple-modal-title"
+                    aria-describedby="simple-modal-description"
+                  >
+                    <ModalColumns classes={classes} columnSelectors={columnSelectors} handleModal={handleModal}/>
+                  </Modal>
+                  <EnhancedTable groups={courseGroups} cells={cells} handleModal={handleModal}/>
+
                 </Grid>
               </Grid>
             </>}

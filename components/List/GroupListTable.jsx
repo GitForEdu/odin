@@ -152,7 +152,7 @@ const useToolbarStyles = makeStyles((theme) => ({
   },
 }))
 
-const EnhancedTableToolbar = ({ searchVal, handleSearch }) => {
+const EnhancedTableToolbar = ({ searchVal, handleSearch, handleModal }) => {
   const classes = useToolbarStyles()
 
   return (
@@ -192,7 +192,7 @@ const EnhancedTableToolbar = ({ searchVal, handleSearch }) => {
           xs={2}
         >
           <Tooltip title="Filter list">
-            <IconButton aria-label="filter list">
+            <IconButton aria-label="filter list" onClick={handleModal}>
               <FilterListIcon />
             </IconButton>
           </Tooltip>
@@ -202,7 +202,7 @@ const EnhancedTableToolbar = ({ searchVal, handleSearch }) => {
   )
 }
 
-export default function EnhancedTable({ groups, cells }) {
+export default function EnhancedTable({ groups, cells, handleModal }) {
   const router = useRouter()
   const { courseId, term } = router.query
   const classes = useStyles()
@@ -232,7 +232,7 @@ export default function EnhancedTable({ groups, cells }) {
   return (
     <div className={classes.root}>
       <Paper className={classes.paper}>
-        <EnhancedTableToolbar searchVal={searched} handleSearch={handleSearch}/>
+        <EnhancedTableToolbar searchVal={searched} handleSearch={handleSearch} handleModal={handleModal}/>
         <TableContainer>
           <Table
             className={classes.table}
@@ -253,7 +253,7 @@ export default function EnhancedTable({ groups, cells }) {
                   const labelId = `enhanced-table-checkbox-${index}`
 
                   return (
-                    <TableRow key={index} hover={true} onClick={() => handleRowClick(row, courseId, term)}>
+                    <TableRow key={index} hover={true} onClick={() => handleRowClick(row)}>
                       <TableCell component="th" id={labelId} scope="row">
                         {row.name}
                       </TableCell>
