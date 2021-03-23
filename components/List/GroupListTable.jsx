@@ -1,4 +1,4 @@
-import React, { useState } from "react"
+import React, { useEffect, useState } from "react"
 import PropTypes from "prop-types"
 import clsx from "clsx"
 import { alpha, makeStyles } from "@material-ui/core/styles"
@@ -222,12 +222,16 @@ export default function EnhancedTable({ groups, cells, handleModal }) {
   }
 
   const handleSearch = (event) => {
-    const filteredRows = createRows(groups).filter((row) => {
-      return row.name.toLowerCase().includes(event.target.value.toLowerCase())
-    })
-    setRows(filteredRows)
     setSearched(event.target.value)
   }
+
+  useEffect(() => {
+    const tmpRows = createRows(groups)
+    const filteredRows = tmpRows.filter((row) => {
+      return row.name.toLowerCase().includes(searched.toLowerCase())
+    })
+    setRows(filteredRows)
+  }, [groups, searched])
 
   return (
     <div className={classes.root}>
