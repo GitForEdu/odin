@@ -195,13 +195,15 @@ const deleteGroupGit = async (path, pat, groupId) => {
 }
 
 const getGroupsGit = async (path, courseNameGit, pat) => {
-  const parentGroup = await fetch(`${path}/api/v4/groups/${courseNameGit}`, {
+  const response = await fetch(`${path}/api/v4/groups/${courseNameGit}`, {
     method: "GET",
     headers: {
       "Content-Type": "application/json",
       "PRIVATE-TOKEN": pat,
     },
-  }).then(r => r.json())
+  })
+
+  const parentGroup = await response.json()
 
   const subGroups = await fetch(`${path}/api/v4/groups/${parentGroup.id}/subgroups`, {
     method: "GET",
@@ -275,25 +277,30 @@ const getGroupProjects = async (path, courseNameGit, groupId, pat) => {
   return projects
 }
 
-const getProjectCommits = async (path, projectId, pat, since, until) => {
-  let fetchUrl = `${path}/api/v4/projects/${projectId}/repository/commits?with_stats=true&all=true`
+const getProjectCommits = async (path, projectId, pat, since, until, page) => {
+  let fetchUrl = `${path}/api/v4/projects/${projectId}/repository/commits?ref_name=master&with_stats=true&all=false&per_page=100&page=${page}`
   if (since) {
     fetchUrl = fetchUrl + `&since="${since}"`
   }
   if (until) {
     fetchUrl = fetchUrl + `&until="${until}"`
   }
-  const commits = await fetch(fetchUrl, {
+  const response = await fetch(fetchUrl, {
     method: "GET",
     headers: {
       "Content-Type": "application/json",
       "PRIVATE-TOKEN": pat,
     },
-  }).then(r => {
-    return r.json()
   })
 
-  return commits
+  let commits = await response.json()
+
+  if (/<([^>]+)>; rel="next"/g.test(response.headers.get("link"))) {
+    page = new URL(/<([^>]+)>; rel="next"/g.exec(response.headers.get("link"))[1]).searchParams.get("page")
+    commits = commits.concat(await getProjectCommits(path, projectId, pat, since, until, page))
+  }
+
+  return commits.filter(commit => commit.parent_ids.length < 2)
 }
 
 const getProjectBranches = async (path, projectId, pat) => {
@@ -326,7 +333,51 @@ const getProjectWikiPages = async (path, projectId, pat) => {
   return wikiPages
 }
 
-const getGroupKeyStats = async (path, pat, fullPathGit, since, until) => {
+const getProjectFiles = async (path, projectId, pat, fileBlame, page) => {
+  let fetchUrl = `${path}/api/v4/projects/${projectId}/repository/tree?recursive=true&per_page=100&page=${page}`
+  const response = await fetch(fetchUrl, {
+    method: "GET",
+    headers: {
+      "Content-Type": "application/json",
+      "PRIVATE-TOKEN": pat,
+    },
+  })
+
+  let files = await response.json()
+
+  if (/<([^>]+)>; rel="next"/g.test(response.headers.get("link"))) {
+    page = new URL(/<([^>]+)>; rel="next"/g.exec(response.headers.get("link"))[1]).searchParams.get("page")
+    files = files.concat(await getProjectFiles(path, projectId, pat, page))
+  }
+
+  files = files.filter(file => file.type === "blob")
+  if (fileBlame) {
+    files = await Promise.all(files.map(file => {
+      return getFileBlameData(path, pat, projectId, file.path).then(r => {
+        return { ...file, blameData: r }
+      })
+    }))
+  }
+
+  return files
+}
+
+const getFileBlameData = async (path, pat, projectId, pathToFile ) => {
+  let fetchUrl = `${path}/api/v4/projects/${projectId}/repository/files/${encodeURIComponent(pathToFile)}/blame?ref=master`
+  const fileBlame = await fetch(fetchUrl, {
+    method: "GET",
+    headers: {
+      "Content-Type": "application/json",
+      "PRIVATE-TOKEN": pat,
+    },
+  }).then(r => {
+    return r.json()
+  })
+
+  return fileBlame
+}
+
+const getGroupKeyStats = async (path, pat, fullPathGit, since, until, fileBlame) => {
   let issuesInput = ""
   if (since) {
     issuesInput = issuesInput + `createdAfter: "${since}",`
@@ -392,12 +443,13 @@ const getGroupKeyStats = async (path, pat, fullPathGit, since, until) => {
   }).then(r => r.json()).then(d => {
     const groupInfo = d.data.group
 
-    const projects = groupInfo.projects.nodes.filter(project => project.createdAt <= until && project.createdAt >= since)
+    const projects = groupInfo.projects.nodes
     const milestones = groupInfo.milestones.nodes.filter(milestone => milestone.createdAt <= until && milestone.createdAt >= since)
     const mergeRequests = groupInfo.mergeRequests.nodes.filter(mergeRequest => mergeRequest.createdAt <= until && mergeRequest.createdAt >= since)
     const issues = groupInfo.issues.nodes
     const issuesCount = issues.length
     const totalWikiSize = projects.map(project => project.statistics.wikiSize).reduce((acc, curr) => acc + curr, 0)
+    //projects.push({ id: "gid://gitlab/Project/6080" })
     let issuesOpen = 0
     let issuesClosed = 0
     if (issuesCount > 0) {
@@ -409,7 +461,7 @@ const getGroupKeyStats = async (path, pat, fullPathGit, since, until) => {
   })
 
   const commitsPromise = Promise.all(groupStats.projects.map(project => {
-    return getProjectCommits(path, project.id.replace("gid://gitlab/Project/", ""), pat, since, until)
+    return getProjectCommits(path, project.id.replace("gid://gitlab/Project/", ""), pat, since, until, 1)
   })).then(commitsNestedArray => {
     return commitsNestedArray.flat()
   })
@@ -426,11 +478,62 @@ const getGroupKeyStats = async (path, pat, fullPathGit, since, until) => {
     return wikiPagesNestedArray.flat()
   })
 
+  const projectFilesPromise = Promise.all(groupStats.projects.map(project => {
+    return getProjectFiles(path, project.id.replace("gid://gitlab/Project/", ""), pat, fileBlame, 1)
+  })).then(projectFilesNestedArray => {
+    return projectFilesNestedArray.flat()
+  })
+
   const commits = await commitsPromise
   const branches = await branchesPromise
   const wikiPages = await wikiPagesPromise
+  const projectFiles = await projectFilesPromise
 
-  return { ...groupStats, commits: commits, commitsCount: commits.length, branches: branches, wikiPages: wikiPages }
+  const contributorStats = {}
+
+  commits.forEach(commit => {
+    const committerEmail = commit.committer_email
+    const commiterName = commit.committer_name
+    const addition = commit.stats.additions
+    const deletions = commit.stats.deletions
+
+    if (contributorStats[committerEmail]) {
+      contributorStats[committerEmail].addition = contributorStats[committerEmail].addition + addition
+      contributorStats[committerEmail].deletions = contributorStats[committerEmail].deletions + deletions
+    }
+    else {
+      contributorStats[committerEmail] = {
+        lines: 0,
+        addition: addition,
+        deletions: deletions,
+        name: commiterName,
+      }
+    }
+  })
+
+  if (fileBlame) {
+    projectFiles.forEach(file => {
+      file.blameData.forEach(bData => {
+        const committerEmail = bData.commit.committer_email
+        const commiterName = bData.commit.committer_name
+        const lines = bData.lines.length
+
+        if (contributorStats[committerEmail]) {
+          contributorStats[committerEmail].lines = contributorStats[committerEmail].lines + lines
+        }
+        else {
+          contributorStats[committerEmail] = {
+            lines: lines,
+            addition: 0,
+            deletions: 0,
+            name: commiterName,
+          }
+        }
+      })
+    })
+  }
+
+  return { ...groupStats, commits: commits, commitsCount: commits.length, branches: branches, wikiPages: wikiPages, contributorStats: contributorStats }
 }
 
 export { createGroupGit, getGroupGit, addUserToGroupGit, getUserGit, getCourseUsersGit, addUsersToGroupGit, deleteGroupGit, getGroupsGit, getGroupsWithStudentsGit, removeUserInGroupGit, getGroupProjects, getGroupKeyStats }

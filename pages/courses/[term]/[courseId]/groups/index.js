@@ -32,8 +32,7 @@ const mergeBBGitKeyStats = async (term, courseId, courseGroupsBB, courseGroupsGi
     "GET"
   )
 
-  console.log("keyStats", groupKeyStats)
-  let courseGroups = courseGroupsBB.map(group => {
+  const courseGroups = courseGroupsBB.map(group => {
     const groupGitInfo = groupKeyStats.find(groupGit => groupGit.name === group.name)
     return { ...groupGitInfo, ...group }
   })
@@ -110,7 +109,7 @@ export const Group = ({ courseGroupsBB, courseGroupsGit, bbGitConnection }) => {
 
 
   useEffect(() => {
-    mergeBBGitKeyStats(term, courseId, courseGroupsBB, courseGroupsGit, sinceTime, untilTime).then(data => {
+    mergeBBGitKeyStats(term, courseId, courseGroupsBB, courseGroupsGit, sinceTime, untilTime, false).then(data => {
       setCourseGroups(data)
     })
   }, [courseGroupsBB, courseGroupsGit, courseId, sinceTime, term, untilTime])

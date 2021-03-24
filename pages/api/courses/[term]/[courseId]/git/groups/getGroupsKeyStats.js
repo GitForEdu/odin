@@ -6,7 +6,7 @@ import isAuthorized from "middelwares/authorized"
 
 const prisma = new PrismaClient()
 
-export async function GetGroupsKeyStats (req, params) {
+export async function GetGroupsKeyStats(req, params) {
 
   const session = await getSession({ req })
 
@@ -16,23 +16,20 @@ export async function GetGroupsKeyStats (req, params) {
   const groupPaths = params.groupPaths.split(",")
   const since = params.since
   const until = params.until
+  const fileBlame = params.fileBlame
   const courseFull = `${courseId}-${term}`
 
   const connection = await prisma.bbGitConnection.findUnique({
     where: { courseId: courseFull },
   })
-
-  // console.log("connection? ", connection)
-
   if (connection) {
     const userConnection = await prisma.userGitConnection.findUnique({
       where: { userName_gitURL: { userName: userName, gitURL: connection.gitURL } },
     })
     if (userConnection) {
       const deleteGroupsResponse = groupPaths.map(groupPath => {
-        return getGroupKeyStats(connection.gitURL, userConnection.pat, groupPath, since, until)
+        return getGroupKeyStats(connection.gitURL, userConnection.pat, groupPath, since, until, fileBlame)
       })
-
       return Promise.all(deleteGroupsResponse)
     }
   }
