@@ -30,9 +30,11 @@ import { Grid } from "@material-ui/core"
 const tableCells = (row, cells) => {
   return (
     <>
-      {cells.map((cell, index) => (
-        <TableCell key={index} align="right">{row[cell.toLowerCase().replace(" ", "")]}</TableCell>
-      ))}
+      {cells.map((cell, index) => {
+        return (
+          <TableCell key={index} align={cell.type === "numeric" ? "right" : "left"}>{row[cell.dataLabel]}</TableCell>
+        )
+      })}
     </>
   )
 }
@@ -40,9 +42,18 @@ const tableCells = (row, cells) => {
 const headCells = (cells) => {
   const cellList = [{ id: "name", numeric: false, disablePadding: true, label: "Group name" }]
   cells.forEach(cell => (
-    cellList.push({ id: cell.toLowerCase().replace(" ", ""), numeric: true, disablePadding: false, label: cell })
+    cellList.push({ id: cell.dataLabel, numeric: cell.type === "numeric", disablePadding: false, label: cell.label })
   ))
   return (cellList)
+}
+
+const formatDate = (dateString) => {
+
+  const date = new Date(dateString)
+  if (date.getDate()) {
+    return `${date.getUTCFullYear()}.${date.getUTCMonth()}.${date.getUTCDate()} - ${date.getUTCHours()}:${date.getUTCMinutes()}`
+  }
+  return "No data"
 }
 
 const createData = (group) => {
@@ -50,15 +61,22 @@ const createData = (group) => {
     id: group.id,
     name: group.name,
     issues: group.issues.length,
-    unassginedissues: group.issues.map(issue => issue.assignees.nodes.length).filter(assigneesCount => assigneesCount === 0).length,
+    unassginedIssues: group.issues.map(issue => issue.assignees.nodes.length).filter(assigneesCount => assigneesCount === 0).length,
     commits: group.commits.length,
-    mrs: group.mergeRequests.length,
-    wikisize: group.totalWikiSize,
-    wikipages: group.wikiPages.length,
+    mergeRequests: group.mergeRequests.length,
+    wikiSize: group.totalWikiSize,
+    wikiPages: group.wikiPages.length,
     milestones: group.milestones.length,
     projectes: group.projects.length,
     branches: group.branches.length,
     members: group.members.length,
+    lastCommit: formatDate(group.commitStats.last),
+    firstCommit: formatDate(group.commitStats.first),
+    lastActivity: formatDate(group.projectStats.lastActivity),
+    linesOfCode: group.projectStats.linesOfCode,
+    numberOfFiles: group.projectStats.numberOfFiles,
+    additions: group.projectStats.additions,
+    deletions: group.projectStats.deletions,
   }
 }
 

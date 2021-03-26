@@ -40,7 +40,25 @@ const mergeBBGitKeyStats = async (term, courseId, courseGroupsBB, courseGroupsGi
   return courseGroups
 }
 
-const cellList = ["Issues", "Commits", "Members", "Branches", "MRs", "Projectes", "Milestones", "Wiki Pages", "Wiki Size", "Unassgined issues"]
+const cellList = [
+  { label: "Issues", type: "numeric", dataLabel: "issues" },
+  { label: "Commits", type: "numeric", dataLabel: "commits" },
+  { label: "Members", type: "numeric", dataLabel: "members" },
+  { label: "Branches", type: "numeric", dataLabel: "branches" },
+  { label: "Merge Requests", type: "numeric", dataLabel: "mergeRequests" },
+  { label: "Projects", type: "numeric", dataLabel: "projects" },
+  { label: "Milestones", type: "numeric", dataLabel: "milestones" },
+  { label: "Wiki Pages", type: "numeric", dataLabel: "wikiPages" },
+  { label: "Wiki Size", type: "numeric", dataLabel: "wikiSize" },
+  { label: "Unassgined Issues", type: "numeric", dataLabel: "unassginedIssues" },
+  { label: "Time of first commit", type: "date", dataLabel: "firstCommit" },
+  { label: "Time of last commit", type: "date", dataLabel: "lastCommit" },
+  { label: "Last Activity in a project", type: "date", dataLabel: "lastActivity" },
+  { label: "Lines of code", type: "numeric", dataLabel: "linesOfCode" },
+  { label: "Number of files", type: "numeric", dataLabel: "numberOfFiles" },
+  { label: "Additions", type: "numeric", dataLabel: "additions" },
+  { label: "Deletions", type: "numeric", dataLabel: "deletions" },
+]
 
 const ModalColumns = ({ classes, columnSelectors, handleModal }) => (
   <div
@@ -99,7 +117,7 @@ export const Group = ({ courseGroupsBB, courseGroupsGit, bbGitConnection }) => {
   const [untilTime, setUntilTime] = useState(new Date((new Date()).valueOf() + 86400000))
   const [loadingCreateSubGroups, setLoadingCreateSubGroups] = useState(false)
   const [courseGroups, setCourseGroups] = useState([])
-  const [cells, setCells] = useState(["Issues", "Members"])
+  const [cells, setCells] = useState([{ label: "Issues", type: "numeric", dataLabel: "issues" }, { label: "Members", type: "numeric", dataLabel: "members" }])
   const [modalState, setModalState] = useState(false)
   const classes = useStyles()
 
@@ -133,12 +151,12 @@ export const Group = ({ courseGroupsBB, courseGroupsGit, bbGitConnection }) => {
 
   const handleChangeCheckbox = (event) => {
     const tmpCells = [...cells]
-    const findIndex = cells.findIndex(cell => cell === event.target.name)
+    const findIndex = cells.findIndex(cell => cell.label === event.target.name)
     if (findIndex >= 0) {
       tmpCells.splice(findIndex, 1)
     }
     else {
-      tmpCells.push(event.target.name)
+      tmpCells.push(cellList.find(cell => cell.label === event.target.name))
     }
     setCells(tmpCells)
   }
@@ -158,13 +176,13 @@ export const Group = ({ courseGroupsBB, courseGroupsGit, bbGitConnection }) => {
          <FormControlLabel
            control={
              <Checkbox
-               checked={cells.findIndex(cell => cell === cellElement) >= 0}
+               checked={cells.findIndex(cell => cell.label === cellElement.label) >= 0}
                onChange={handleChangeCheckbox}
-               name={cellElement}
+               name={cellElement.label}
                color="selected"
              />
            }
-           label={cellElement}
+           label={cellElement.label}
          />
        </Grid>
      ))
