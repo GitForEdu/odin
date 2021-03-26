@@ -491,20 +491,46 @@ const getGroupKeyStats = async (path, pat, fullPathGit, since, until, fileBlame)
 
   const contributorStats = {}
 
+  const commitStats = {}
+
+  const projectStats = {
+    linesOfCode: 0,
+    additions: 0,
+    deletions: 0,
+    numberOfFiles: projectFiles.length,
+  }
+
+  groupStats.projects.forEach(project => {
+    if (!projectStats.lastActivity || projectStats.lastActivity > project.lastActivityAt) {
+      projectStats.lastActivity = project.lastActivityAt
+    }
+  })
+
   commits.forEach(commit => {
     const committerEmail = commit.committer_email
     const commiterName = commit.committer_name
-    const addition = commit.stats.additions
+    const additions = commit.stats.additions
     const deletions = commit.stats.deletions
 
+    projectStats.additions = projectStats.additions + additions
+    projectStats.deletions = projectStats.deletions + deletions
+
+    if (!commitStats.last || commitStats.last < commit.created_at) {
+      commitStats.last = commit.created_at
+    }
+
+    if (!commitStats.first || commitStats.first > commit.created_at) {
+      commitStats.first = commit.created_at
+    }
+
     if (contributorStats[committerEmail]) {
-      contributorStats[committerEmail].addition = contributorStats[committerEmail].addition + addition
+      contributorStats[committerEmail].additions = contributorStats[committerEmail].additions + additions
       contributorStats[committerEmail].deletions = contributorStats[committerEmail].deletions + deletions
     }
     else {
       contributorStats[committerEmail] = {
         lines: 0,
-        addition: addition,
+        addiadditionstion: additions,
         deletions: deletions,
         name: commiterName,
       }
@@ -517,6 +543,8 @@ const getGroupKeyStats = async (path, pat, fullPathGit, since, until, fileBlame)
         const committerEmail = bData.commit.committer_email
         const commiterName = bData.commit.committer_name
         const lines = bData.lines.length
+
+        projectStats.linesOfCode = projectStats.linesOfCode + lines
 
         if (contributorStats[committerEmail]) {
           contributorStats[committerEmail].lines = contributorStats[committerEmail].lines + lines
@@ -533,7 +561,7 @@ const getGroupKeyStats = async (path, pat, fullPathGit, since, until, fileBlame)
     })
   }
 
-  return { ...groupStats, commits: commits, commitsCount: commits.length, branches: branches, wikiPages: wikiPages, contributorStats: contributorStats }
+  return { ...groupStats, commits: commits, commitsCount: commits.length, branches: branches, wikiPages: wikiPages, contributorStats: contributorStats, commitStats: commitStats, projectStats: projectStats }
 }
 
 export { createGroupGit, getGroupGit, addUserToGroupGit, getUserGit, getCourseUsersGit, addUsersToGroupGit, deleteGroupGit, getGroupsGit, getGroupsWithStudentsGit, removeUserInGroupGit, getGroupProjects, getGroupKeyStats }
