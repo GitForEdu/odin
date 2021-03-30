@@ -1,12 +1,16 @@
+import { useEffect, useState } from "react"
 import { useRouter } from "next/router"
-import { Button, Grid, TextField, useMediaQuery } from "@material-ui/core"
+import { Button, Grid, TextField, Typography, useMediaQuery } from "@material-ui/core"
 import Link from "next/link"
+import DatePicker from "@material-ui/lab/DatePicker"
 
 import Navbar from "components/Navbar"
-import StudentList from "components/List/StudentList"
+import StudentList from "components/List/GroupsStudentList"
 import withAuth from "components/withAuth"
-import { getCourseGroups } from "pages/api/courses/[term]/[courseId]/groups"
 import { getBBGitConnection } from "pages/api/courses/[term]/[courseId]/git/createConnection"
+import { getCourseGroup } from "pages/api/courses/[term]/[courseId]/blackboard/groups/[groupId]"
+import fetcher from "utils/fetcher"
+import { getGroupWithMembersGit } from "pages/api/courses/[term]/[courseId]/git/groups/[groupId]"
 
 const getButtonStyle = bigScreen => {
   const baseStyle = {
@@ -25,81 +29,94 @@ const getButtonStyle = bigScreen => {
   }
 }
 
-export const Group = ({ courseGroups, bbGitConnection }) => {
+const mergeBBGitKeyStats = async (term, courseId, groupId, courseGroupsBB, courseGroupGit, sinceTime, untilTime) => {
+  const groupKeyStats = await fetcher(
+    `/api/courses/${term}/${courseId}/git/groups/${groupId}/getGroupKeyStats?since=${sinceTime.toISOString()}&until=${untilTime.toISOString()}&groupPath=${courseGroupGit.full_path}&fileblame=true`,
+    {},
+    "GET"
+  )
+
+  return { ...courseGroupsBB, groupKeyStats }
+}
+
+export const Group = ({ courseGroupBB, courseGroupGit, bbGitConnection }) => {
   const matches = useMediaQuery("(max-width:400px)")
   const router = useRouter()
   const { courseId, term, groupId } = router.query
-  const groupInfo = courseGroups.find(group => group.id = groupId)
+  const [sinceTime, setSinceTime] = useState(new Date("2020-01-01T00:00:00.000Z"))
+  const [untilTime, setUntilTime] = useState(new Date((new Date()).valueOf() + 86400000))
+  const [courseGroup, setCourseGroups] = useState()
+
+  useEffect(() => {
+    mergeBBGitKeyStats(term, courseId, groupId, courseGroupBB, courseGroupGit, sinceTime, untilTime, false).then(data => {
+      setCourseGroups(data)
+    })
+  }, [courseGroupBB, courseId, groupId, sinceTime, term, untilTime])
+  console.log(courseGroup)
   return (
     <>
-      <Navbar pageTitle={`Information - ${groupInfo.name}` || "Group information"} courseId={courseId} term={term} />
+      <Navbar pageTitle={`Information - ${courseGroupBB.name}` || "Group information"} courseId={courseId} term={term} />
       <Grid
         container
-        direction="column"
+        direction="row"
         justifyContent="center"
         alignItems="center"
-        spacing={2}
       >
-        <form noValidate>
-          <TextField
-            id="startDate"
-            label="Start date"
-            type="date"
-            defaultValue="2021-01-02"
-          />
-          <TextField
-            id="endDate"
-            label="End date"
-            type="date"
-            defaultValue="2021-03-12"
-          />
-        </form>
-        <Grid
-          container
-          direction="row"
-        >
+        <Grid item xs={12} md={8}>
           <Grid
             container
             direction="column"
           >
-            <h2>Commits</h2>
-            <h2>0</h2>
-          </Grid>
-          <Grid
-            container
-            direction="column"
-          >
-            <h2>Issues</h2>
-            <h2>0</h2>
+            <Grid
+              container
+              direction="row"
+              justifyContent="center"
+              alignContent="center"
+              item
+            >
+              <DatePicker
+                renderInput={(props) =>
+                  <TextField
+                    {...props}
+                    margin="normal"
+                    helperText=""
+                  />}
+                label="DatePicker"
+                value={sinceTime}
+                onChange={(newValue) => {
+                  setSinceTime(newValue)
+                }}
+              />
+              <DatePicker
+                renderInput={(props) =>
+                  <TextField
+                    {...props}
+                    margin="normal"
+                    helperText=""
+                  />}
+                label="DatePicker"
+                value={untilTime}
+                onChange={(newValue) => {
+                  setUntilTime(newValue)
+                }}
+              />
+            </Grid>
+            {courseGroup !== undefined
+            && <>
+              <Grid
+                container
+                direction="row"
+                justifyContent="center"
+                alignItems="center"
+              >
+                <Typography>
+                  Commits: {courseGroup.groupKeyStats.commits.length}
+                </Typography>
+              </Grid>
+              <StudentList elements={courseGroup.members} />
+            </>}
           </Grid>
         </Grid>
-        <StudentList elements={groupInfo.members} />
-
-        <Link
-          href={`${process.env.NEXT_PUBLIC_BB_PATH}/webapps/blackboard/execute/modulepage/viewGroup?course_id=${courseId}&group_id=${groupId}`}
-          passHref
-        >
-          <Button
-            variant="contained"
-            color="primary"
-            style={getButtonStyle(matches)}
-          >
-            {`${groupInfo.name} in Blackboard`}
-          </Button>
-        </Link>
-
-        <Link
-          href={`${bbGitConnection.gitURL}/${courseId}-${term}/${groupId}`}
-          passHref
-        >
-          <Button
-            variant="contained"
-            color="primary"
-            style={getButtonStyle(matches)}
-          >
-            {`${groupInfo.name} in GitLab`}
-          </Button>
-        </Link>
       </Grid>
     </>
   )
@@ -108,13 +125,13 @@ export const Group = ({ courseGroups, bbGitConnection }) => {
 export const getServerSideProps = (async (context) => {
   const params = context.params
 
-  let courseGroups = await getCourseGroups(context.req, params)
+  const courseGroupBB = await getCourseGroup(context.req, params)
 
-  courseGroups = courseGroups.filter(group => !group.isGroupSet)
+  const courseGroupGit = await getGroupWithMembersGit(context.req, params)
 
   const bbGitConnection = await getBBGitConnection(context.req, params)
 
-  if (!courseGroups || !bbGitConnection) {
+  if (!courseGroupBB || !bbGitConnection) {
     return {
       redirect: {
         destination: "/",
@@ -124,7 +141,7 @@ export const getServerSideProps = (async (context) => {
   }
 
   return {
-    props: { courseGroups, bbGitConnection },
+    props: { courseGroupBB, courseGroupGit, bbGitConnection },
   }
 })
 

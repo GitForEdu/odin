@@ -17,10 +17,11 @@ export const Group = ({ parentRepoWithSubGroups }) => {
   const deleteParentRepo = async (elm) => {
     setLoading(true)
     const data = await fetcher(
-      `/api/courses/${term}/${courseId}/git/deleteGroup`,
+      `/api/courses/${term}/${courseId}/git/group`,
       {
         groupId: elm.id,
-      }
+      },
+      "DELETE"
     )
     setLoading(false)
     console.log("delete group gitlab", data)
@@ -33,10 +34,11 @@ export const Group = ({ parentRepoWithSubGroups }) => {
   const deleteSubGroup = async (elm) => {
     setLoading(true)
     const data = await fetcher(
-      `/api/courses/${term}/${courseId}/git/deleteGroup`,
+      `/api/courses/${term}/${courseId}/git/group`,
       {
         groupId: elm.id,
-      }
+      },
+      "DELETE"
     )
     setLoading(false)
     console.log("delete group gitlab", data)

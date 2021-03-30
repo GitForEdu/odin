@@ -16,10 +16,11 @@ export const GroupSet = ({ courseGroupSet }) => {
   const deleteElm = async (elm) => {
     setLoading(true)
     const data = await fetcher(
-      `/api/courses/${term}/${courseId}/blackboard/deleteGroup`,
+      `/api/courses/${term}/${courseId}/blackboard/group`,
       {
         group: elm,
-      }
+      },
+      "DELETE"
     )
     setLoading(false)
     console.log("delete groupset bb", data)

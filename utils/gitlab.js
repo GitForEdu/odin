@@ -67,6 +67,41 @@ const getUserGit = async (path, pat, userName) => {
   return response
 }
 
+const getGroupWithStudentsGit = async (path, repoPath, pat) => {
+  const group = await fetch(`${path}/api/v4/groups/${repoPath}`, {
+    method: "GET",
+    headers: {
+      "Content-Type": "application/json",
+      "PRIVATE-TOKEN": pat,
+    },
+  }).then(r => r.json())
+
+  const groupMembers = await fetch(`${path}/api/v4/groups/${group.id}/members`, {
+    method: "GET",
+    headers: {
+      "Content-Type": "application/json",
+      "PRIVATE-TOKEN": pat,
+    },
+  }).then(rr => rr.json())
+
+  const fixedGroupMembers = groupMembers.filter(member => member.access_level !== 50).map(member_2 => {
+    const { name, username, ...memberExploded } = member_2
+    const nameArray = name.split(" ")
+    let givenName = name
+    let familyName = ""
+    if (nameArray.length > 1) {
+      givenName = nameArray[0]
+      familyName = nameArray[nameArray.length - 1]
+    }
+    return { ...memberExploded, userName: username, name: { given: givenName, family: familyName } }
+  })
+
+  return {
+    ...group,
+    members: fixedGroupMembers,
+  }
+}
+
 /*
   Access_Level:
   - No access: 0
@@ -564,4 +599,4 @@ const getGroupKeyStats = async (path, pat, fullPathGit, since, until, fileBlame)
   return { ...groupStats, commits: commits, commitsCount: commits.length, branches: branches, wikiPages: wikiPages, contributorStats: contributorStats, commitStats: commitStats, projectStats: projectStats }
 }
 
-export { createGroupGit, getGroupGit, addUserToGroupGit, getUserGit, getCourseUsersGit, addUsersToGroupGit, deleteGroupGit, getGroupsGit, getGroupsWithStudentsGit, removeUserInGroupGit, getGroupProjects, getGroupKeyStats }
+export { createGroupGit, getGroupGit, addUserToGroupGit, getUserGit, getCourseUsersGit, addUsersToGroupGit, deleteGroupGit, getGroupsGit, getGroupsWithStudentsGit, removeUserInGroupGit, getGroupProjects, getGroupKeyStats, getGroupWithStudentsGit }

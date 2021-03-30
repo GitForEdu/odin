@@ -127,24 +127,27 @@ export const Group = ({ courseGroupsBB, courseGroupsGit, bbGitConnection }) => {
 
 
   useEffect(() => {
-    mergeBBGitKeyStats(term, courseId, courseGroupsBB, courseGroupsGit, sinceTime, untilTime, false).then(data => {
-      setCourseGroups(data)
-    })
+    if(courseGroupsGit.length > 0) {
+      mergeBBGitKeyStats(term, courseId, courseGroupsBB, courseGroupsGit, sinceTime, untilTime, false).then(data => {
+        setCourseGroups(data)
+      })
+    }
   }, [courseGroupsBB, courseGroupsGit, courseId, sinceTime, term, untilTime])
 
   const createSubGroups = async () => {
-    if (courseGroups && courseGroups.length !== 0) {
+    if (courseGroupsBB && courseGroupsBB.length !== 0) {
       setLoadingCreateSubGroups(true)
       const data = await fetcher(
         `/api/courses/${term}/${courseId}/git/createSubGroups`,
         {
-          groups: courseGroups,
-        }
+          groups: courseGroupsBB,
+        },
+        "POST"
       )
       setLoadingCreateSubGroups(false)
       // console.log(data)
-      if (data.courseId) {
-        router.push(`/courses/${term}/${courseId}`)
+      if (data) {
+        router.push(`/courses/${term}/${courseId}/groups`)
       }
     }
   }
@@ -198,7 +201,7 @@ export const Group = ({ courseGroupsBB, courseGroupsGit, bbGitConnection }) => {
         alignItems="center"
       >
         <Grid item xs={12} md={8}>
-          {courseGroups.length === 0
+          {courseGroupsBB.length === 0
             ? <>
               <h1>No groups found on Blackboard</h1>
               <Link href={`/courses/${term}/${courseId}/groups/create`} passHref>
@@ -209,110 +212,123 @@ export const Group = ({ courseGroupsBB, courseGroupsGit, bbGitConnection }) => {
               Go to group creation page
                 </Button>
               </Link></>
-            : <>
-              <Grid
-                container
-                direction="column"
-              >
-                <Grid
-                  container
-                  direction="row"
-                  justifyContent="center"
-                  alignContent="center"
-                  item
-                >
-                  <DatePicker
-                    renderInput={(props) =>
-                      <TextField
-                        {...props}
-                        margin="normal"
-                        helperText=""
-                      />}
-                    label="DatePicker"
-                    value={sinceTime}
-                    onChange={(newValue) => {
-                      setSinceTime(newValue)
-                    }}
-                  />
-                  <DatePicker
-                    renderInput={(props) =>
-                      <TextField
-                        {...props}
-                        margin="normal"
-                        helperText=""
-                      />}
-                    label="DatePicker"
-                    value={untilTime}
-                    onChange={(newValue) => {
-                      setUntilTime(newValue)
-                    }}
-                  />
-                </Grid>
-                <Grid
-                  container
-                  direction="row"
-                  justifyContent="center"
-                  alignContent="center"
-                  item
-                >
-                  <Button
+            : courseGroupsGit.length === 0
+              ? <>
+                <h1>No groups found on GitLab</h1>
+                {bbGitConnection.pat
+                  && <Button
                     variant="contained"
                     color="primary"
-                    onClick={() => {
-                      const date = new Date()
-                      date.setDate(date.getDate()-1)
-                      setSinceTime(date)
-                      const dateUntil = new Date()
-                      setUntilTime(dateUntil)
-                    }}
+                    onClick={createSubGroups}
+                    disabled={loadingCreateSubGroups}
                   >
+                  Create groups on GitLab
+                  </Button>}
+              </>
+              : <>
+                <Grid
+                  container
+                  direction="column"
+                >
+                  <Grid
+                    container
+                    direction="row"
+                    justifyContent="center"
+                    alignContent="center"
+                    item
+                  >
+                    <DatePicker
+                      renderInput={(props) =>
+                        <TextField
+                          {...props}
+                          margin="normal"
+                          helperText=""
+                        />}
+                      label="DatePicker"
+                      value={sinceTime}
+                      onChange={(newValue) => {
+                        setSinceTime(newValue)
+                      }}
+                    />
+                    <DatePicker
+                      renderInput={(props) =>
+                        <TextField
+                          {...props}
+                          margin="normal"
+                          helperText=""
+                        />}
+                      label="DatePicker"
+                      value={untilTime}
+                      onChange={(newValue) => {
+                        setUntilTime(newValue)
+                      }}
+                    />
+                  </Grid>
+                  <Grid
+                    container
+                    direction="row"
+                    justifyContent="center"
+                    alignContent="center"
+                    item
+                  >
+                    <Button
+                      variant="contained"
+                      color="primary"
+                      onClick={() => {
+                        const date = new Date()
+                        date.setDate(date.getDate()-1)
+                        setSinceTime(date)
+                        const dateUntil = new Date()
+                        setUntilTime(dateUntil)
+                      }}
+                    >
                 Last day
-                  </Button>
-                  <Button
-                    variant="contained"
-                    color="primary"
-                    onClick={() => {
-                      const date = new Date()
-                      date.setDate(date.getDate()-7)
-                      setSinceTime(date)
-                      const dateUntil = new Date()
-                      setUntilTime(dateUntil)
-                    }}
-                  >
+                    </Button>
+                    <Button
+                      variant="contained"
+                      color="primary"
+                      onClick={() => {
+                        const date = new Date()
+                        date.setDate(date.getDate()-7)
+                        setSinceTime(date)
+                        const dateUntil = new Date()
+                        setUntilTime(dateUntil)
+                      }}
+                    >
                 Last week
-                  </Button>
-                  <Button
-                    variant="contained"
-                    color="primary"
-                    onClick={() => {
-                      const date = new Date()
-                      date.setMonth(date.getMonth()-1)
-                      setSinceTime(date)
-                      const dateUntil = new Date()
-                      setUntilTime(dateUntil)
-                    }}
-                  >
+                    </Button>
+                    <Button
+                      variant="contained"
+                      color="primary"
+                      onClick={() => {
+                        const date = new Date()
+                        date.setMonth(date.getMonth()-1)
+                        setSinceTime(date)
+                        const dateUntil = new Date()
+                        setUntilTime(dateUntil)
+                      }}
+                    >
                 Last month
-                  </Button>
-                </Grid>
-                <Grid
-                  container
-                  item
-                >
-                  <Modal
-                    style={{ display:"flex", alignItems:"center", justifyContent:"center" }}
-                    open={modalState}
-                    onClose={handleModal}
-                    aria-labelledby="simple-modal-title"
-                    aria-describedby="simple-modal-description"
+                    </Button>
+                  </Grid>
+                  <Grid
+                    container
+                    item
                   >
-                    <ModalColumns classes={classes} columnSelectors={columnSelectors} handleModal={handleModal}/>
-                  </Modal>
-                  <EnhancedTable groups={courseGroups} cells={cells} handleModal={handleModal}/>
+                    <Modal
+                      style={{ display:"flex", alignItems:"center", justifyContent:"center" }}
+                      open={modalState}
+                      onClose={handleModal}
+                      aria-labelledby="simple-modal-title"
+                      aria-describedby="simple-modal-description"
+                    >
+                      <ModalColumns classes={classes} columnSelectors={columnSelectors} handleModal={handleModal}/>
+                    </Modal>
+                    <EnhancedTable groups={courseGroups} cells={cells} handleModal={handleModal}/>
 
+                  </Grid>
                 </Grid>
-              </Grid>
-            </>}
+              </>}
           {(courseGroups && courseGroups.length !== 0)
       && <>
         <Link href={`/courses/${term}/${courseId}/groups/delete`} passHref>
@@ -333,15 +349,6 @@ export const Group = ({ courseGroupsBB, courseGroupsGit, bbGitConnection }) => {
         Delete groupset on Blackboard
           </Button>
         </Link>
-        {bbGitConnection.pat
-        && <Button
-          variant="contained"
-          color="primary"
-          onClick={createSubGroups}
-          disabled={loadingCreateSubGroups}
-        >
-        Create groups on GitLab
-        </Button>}
       </>}
         </Grid>
       </Grid>
@@ -352,9 +359,9 @@ export const Group = ({ courseGroupsBB, courseGroupsGit, bbGitConnection }) => {
 export const getServerSideProps = (async (context) => {
   const params = context.params
 
-  let courseGroupsBB = await getCourseGroups(context.req, params)
+  const courseGroupsBB = await getCourseGroups(context.req, params)
 
-  let courseGroupsGit = (await GetGroups(context.req, params)).subGroups
+  const courseGroupsGit = (await GetGroups(context.req, params)).subGroups
 
   const bbGitConnection = await getBBGitConnection(context.req, params)
 

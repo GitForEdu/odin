@@ -3,9 +3,9 @@ import { createGroupsetBB, createGroupInGroupsetBB, addStudentToGroupWithUserIdB
 import isAuthorized from "middelwares/authorized"
 
 
-const createGroupsFunc = async (groupsToCreate, groupSet, courseId, bbToken) => {
+const createGroupsFunc = async (groupsToCreate, groupSet, courseId, term, bbToken) => {
   const bbGroups = groupsToCreate.map(groupToCreate => {
-    const bbGroup = createGroupInGroupsetBB(courseId, groupSet.id, groupToCreate.id, bbToken).then(group => {
+    const bbGroup = createGroupInGroupsetBB(courseId, term, groupSet.id, groupToCreate.name, bbToken).then(group => {
       const members = groupToCreate.members
       const resultMembersAdd = members.map(student => {
         if(group.id) {
@@ -25,6 +25,7 @@ const createGroupsFunc = async (groupsToCreate, groupSet, courseId, bbToken) => 
 
 async function createBBGroups(req, params) {
   const courseId = params.courseId
+  const term = params.term
 
   const body = req.body
 
@@ -34,7 +35,7 @@ async function createBBGroups(req, params) {
   const bbToken = await getAccessToken()
   const groupSet = await createGroupsetBB(courseId, bbToken)
   if (groupSet.id) {
-    return createGroupsFunc(groupsToCreate, groupSet, courseId, bbToken)
+    return createGroupsFunc(groupsToCreate, groupSet, courseId, term, bbToken)
   }
   else {
     console.log("Feil i laging av blackboard grupper", groupSet)

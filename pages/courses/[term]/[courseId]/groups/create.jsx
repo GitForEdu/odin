@@ -271,10 +271,11 @@ export const Group = ({ courseStudents }) => {
     if (groups && groups.length !== 0) {
       setLoadingCreateGroups(true)
       const data = await fetcher(
-        `/api/courses/${term}/${courseId}/blackboard/createGroups`,
+        `/api/courses/${term}/${courseId}/blackboard/groupsAndGroupset`,
         {
           groups: groups,
-        }
+        },
+        "POST"
       )
       setLoadingCreateGroups(false)
       console.log("create groups bb", data)

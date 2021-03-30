@@ -236,7 +236,7 @@ export default function EnhancedTable({ groups, cells, handleModal }) {
   }
 
   const handleRowClick = (row) => {
-    router.push(`/courses/${term}/${courseId}/groups/${row.id}`)
+    router.push(`/courses/${term}/${courseId}/groups/${row.name.replace(" ", "_")}`)
   }
 
   const handleSearch = (event) => {

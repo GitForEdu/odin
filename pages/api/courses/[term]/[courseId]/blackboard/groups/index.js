@@ -3,9 +3,9 @@ import { deleteGroupBB, createGroupInGroupsetBB, getCourseGroupsWithGroupsetBB }
 import isAuthorized from "middelwares/authorized"
 
 
-const createGroupsFunc = async (groupNames, groupSet, courseId, bbToken) => {
+const createGroupsFunc = async (groupNames, groupSet, courseId, term, bbToken) => {
   const bbGroups = groupNames.map(groupName => {
-    const bbGroup = createGroupInGroupsetBB(courseId, groupSet.id, groupName, bbToken)
+    const bbGroup = createGroupInGroupsetBB(courseId, term, groupSet.id, groupName, bbToken)
     return bbGroup
   })
   return Promise.all(bbGroups)
@@ -13,6 +13,7 @@ const createGroupsFunc = async (groupNames, groupSet, courseId, bbToken) => {
 
 async function createBBGroups(req, params) {
   const courseId = params.courseId
+  const term = params.term
 
   const body = req.body
 
@@ -22,7 +23,7 @@ async function createBBGroups(req, params) {
   const bbToken = await getAccessToken()
   const groupSet = getCourseGroupsWithGroupsetBB(courseId, bbToken).filter(group => group.isGroupSet)[0]
   if (groupSet.id) {
-    return createGroupsFunc(groupNames, groupSet, courseId, bbToken)
+    return createGroupsFunc(groupNames, groupSet, courseId, term, bbToken)
   }
   else {
     console.log("Feil i laging av blackboard grupper", groupSet)
