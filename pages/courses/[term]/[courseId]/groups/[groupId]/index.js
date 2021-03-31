@@ -35,7 +35,7 @@ const mergeBBGitKeyStats = async (term, courseId, groupId, courseGroupsBB, cours
     {},
     "GET"
   )
-
+  console.log(groupKeyStats)
   return { ...courseGroupsBB, groupKeyStats }
 }
 
@@ -52,7 +52,7 @@ export const Group = ({ courseGroupBB, courseGroupGit, bbGitConnection }) => {
       setCourseGroups(data)
     })
   }, [courseGroupBB, courseId, groupId, sinceTime, term, untilTime])
-  console.log(courseGroup)
+
   return (
     <>
       <Navbar pageTitle={`Information - ${courseGroupBB.name}` || "Group information"} courseId={courseId} term={term} />
@@ -62,7 +62,7 @@ export const Group = ({ courseGroupBB, courseGroupGit, bbGitConnection }) => {
         justifyContent="center"
         alignItems="center"
       >
-        <Grid item xs={12} md={8}>
+        <Grid item xs={10} md={8}>
           <Grid
             container
             direction="column"
@@ -112,6 +112,9 @@ export const Group = ({ courseGroupBB, courseGroupGit, bbGitConnection }) => {
                 <Typography>
                   Commits: {courseGroup.groupKeyStats.commits.length}
                 </Typography>
+                <Typography>
+                  Pull requests: {courseGroup.groupKeyStats.mergeRequests.length}
+                </Typography>
               </Grid>
               <StudentList elements={courseGroup.members} />
             </>}
@@ -127,7 +130,11 @@ export const getServerSideProps = (async (context) => {
 
   const courseGroupBB = await getCourseGroup(context.req, params)
 
+  courseGroupBB.members.push({ name: { given: "Petter", family: "Rein" }, userName: "pettegre" })
+
   const courseGroupGit = await getGroupWithMembersGit(context.req, params)
+
+  courseGroupGit.members.push({ name: { given: "Petter", family: "Rein" }, userName: "pettegre" })
 
   const bbGitConnection = await getBBGitConnection(context.req, params)
 

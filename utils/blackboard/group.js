@@ -11,7 +11,7 @@
 * A list of groups and groupsets
 */
 const getCourseGroupsWithGroupsetBB = (courseId, bbToken) => {
-  const response = fetch(`${process.env.BB_API}/learn/api/public/v1/courses/${courseId}/groups`, {
+  const response = fetch(`${process.env.BB_API}/learn/api/public/v2/courses/${courseId}/groups`, {
     method: "GET",
     headers: new Headers({
       "Authorization" : `Bearer ${bbToken}`,
@@ -44,6 +44,40 @@ const getCourseGroupsBB = async (courseId, bbToken) => {
   return groups
 }
 
+/*
+* Get group
+*
+* Params
+* courseId: the id of the course following blackboard syntaks (_56_1 in test env)
+* groupId: the id of the group you want to get or externalID
+* bbToken: token to communicate with blackboard
+*
+* Return
+* A group
+*/
+const getCourseGroupBB = async (courseId, groupId, bbToken) => {
+  const group = fetch(`${process.env.BB_API}/learn/api/public/v2/courses/${courseId}/groups/${groupId}`, {
+    method: "GET",
+    headers: new Headers({
+      "Authorization" : `Bearer ${bbToken}`,
+      "Content-Type": "application/x-www-form-urlencoded",
+    }),
+  }).then(r => r.json())
+
+  return group
+}
+
+/*
+* Get group users
+*
+* Params
+* courseId: the id of the course following blackboard syntaks (_56_1 in test env)
+* groupId: the id of the group you want to get
+* bbToken: token to communicate with blackboard
+*
+* Return
+* A list of members in group
+*/
 const getCourseGroupUsersBB = (courseId, groupId, bbToken) => {
   const response = fetch(`${process.env.BB_API}/learn/api/public/v1/courses/${courseId}/groups/${groupId}/users`, {
     method: "GET",
@@ -197,6 +231,7 @@ const deleteGroupsetBB = async (courseId, groupId, bbToken) => {
 export {
   getCourseGroupsWithGroupsetBB,
   getCourseGroupsBB,
+  getCourseGroupBB,
   getCourseGroupUsersBB,
   createGroupsetBB,
   createGroupInGroupsetBB,

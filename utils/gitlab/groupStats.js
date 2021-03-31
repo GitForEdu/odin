@@ -153,6 +153,11 @@ const getGroupKeyStats = async (path, pat, fullPathGit, since, until, fileBlame)
           createdAt
           state
           commitCount
+          author {
+            username
+            publicEmail
+            name
+          }
         }
         totalTimeToMerge
       }
@@ -225,6 +230,8 @@ const getGroupKeyStats = async (path, pat, fullPathGit, since, until, fileBlame)
 
   const contributorStats = {}
 
+  const contributorStatsUserName = {}
+
   const commitStats = {}
 
   const projectStats = {
@@ -237,6 +244,22 @@ const getGroupKeyStats = async (path, pat, fullPathGit, since, until, fileBlame)
   groupStats.projects.forEach(project => {
     if (!projectStats.lastActivity || projectStats.lastActivity > project.lastActivityAt) {
       projectStats.lastActivity = project.lastActivityAt
+    }
+  })
+
+  groupStats.mergeRequests.forEach(mergeRequest => {
+    const commiterUsername = mergeRequest.author.username
+    const commiterName = mergeRequest.author.name
+
+    if (contributorStatsUserName[commiterUsername]) {
+      contributorStatsUserName[commiterUsername].mergeRequest = contributorStatsUserName[commiterUsername].mergeRequest.push(mergeRequest)
+    }
+    else {
+      contributorStatsUserName[commiterUsername] = {
+        name: commiterName,
+        userName: commiterUsername,
+        mergeRequest: [mergeRequest],
+      }
     }
   })
 
@@ -260,6 +283,7 @@ const getGroupKeyStats = async (path, pat, fullPathGit, since, until, fileBlame)
     if (contributorStats[committerEmail]) {
       contributorStats[committerEmail].additions = contributorStats[committerEmail].additions + additions
       contributorStats[committerEmail].deletions = contributorStats[committerEmail].deletions + deletions
+      contributorStats[committerEmail].commits = contributorStats[committerEmail].commits + 1
     }
     else {
       contributorStats[committerEmail] = {
@@ -267,6 +291,9 @@ const getGroupKeyStats = async (path, pat, fullPathGit, since, until, fileBlame)
         addiadditionstion: additions,
         deletions: deletions,
         name: commiterName,
+        userName: committerEmail.split("@")[0],
+        commits: 1,
+        mergeRequest: [],
       }
     }
   })
@@ -289,11 +316,16 @@ const getGroupKeyStats = async (path, pat, fullPathGit, since, until, fileBlame)
             addition: 0,
             deletions: 0,
             name: commiterName,
+            userName: committerEmail.split("@")[0],
+            commits: 0,
+            mergeRequest: [],
           }
         }
       })
     })
   }
+
+  console.log(contributorStatsUserName)
 
   return { ...groupStats, commits: commits, commitsCount: commits.length, branches: branches, wikiPages: wikiPages, contributorStats: contributorStats, commitStats: commitStats, projectStats: projectStats }
 }

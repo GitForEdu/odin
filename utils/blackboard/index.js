@@ -5,6 +5,7 @@ import {
 import {
   getCourseGroupsWithGroupsetBB,
   getCourseGroupsBB,
+  getCourseGroupBB,
   getCourseGroupUsersBB,
   createGroupsetBB,
   createGroupInGroupsetBB,
@@ -26,6 +27,7 @@ export {
   getCoursesBB,
   getCourseGroupsWithGroupsetBB,
   getCourseGroupsBB,
+  getCourseGroupBB,
   getCourseGroupUsersBB,
   createGroupsetBB,
   createGroupInGroupsetBB,
