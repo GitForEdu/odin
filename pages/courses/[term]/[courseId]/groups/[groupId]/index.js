@@ -29,13 +29,68 @@ const getButtonStyle = bigScreen => {
   }
 }
 
+const mergeUsersAndStats = (group, courseGroupGit) => {
+  const membersBB = group.members
+  const membersGit = courseGroupGit.members
+  const contributorsStats = Object.values(group.groupKeyStats.contributorStats)
+
+  const mergedMembers = []
+
+  membersBB.forEach(member => {
+    const memberGitIndex = membersGit.findIndex(memberGit => memberGit.userName === member.userName)
+    if (memberGitIndex >= 0) {
+      mergedMembers.push(member)
+      membersGit.splice(memberGitIndex, 1)
+    }
+    else {
+      mergedMembers.push(member)
+    }
+  })
+
+  membersGit.forEach(member => {
+    mergedMembers.push(member)
+  })
+
+  mergedMembers.forEach(member => {
+    const memberIndex = contributorsStats.findIndex(contributorStats => contributorStats.userName === member.userName)
+    if (memberIndex >= 0) {
+      const stats = contributorsStats[memberIndex]
+      const memberMergedIndex = mergedMembers.findIndex(mergedMember => mergedMember.userName === member.userName)
+      mergedMembers[memberMergedIndex] = {
+        ...stats,
+        ...member,
+      }
+      contributorsStats.splice(memberIndex, 1)
+    }
+  })
+
+  contributorsStats.forEach(member => {
+    const name = member.name.split(" ")
+    mergedMembers.push({
+      userName: member.userName,
+      name: {
+        given: name[0],
+        family: name[name.length - 1],
+      },
+      commits: member.commits,
+      lines: member.lines,
+      additions: member.additions,
+      deletions: member.deletions,
+      mergeRequests: member.mergeRequests,
+    })
+  })
+
+  group.members = mergedMembers
+
+  return group
+}
+
 const mergeBBGitKeyStats = async (term, courseId, groupId, courseGroupsBB, courseGroupGit, sinceTime, untilTime) => {
   const groupKeyStats = await fetcher(
     `/api/courses/${term}/${courseId}/git/groups/${groupId}/getGroupKeyStats?since=${sinceTime.toISOString()}&until=${untilTime.toISOString()}&groupPath=${courseGroupGit.full_path}&fileblame=true`,
     {},
     "GET"
   )
-  console.log(groupKeyStats)
   return { ...courseGroupsBB, groupKeyStats }
 }
 
@@ -49,9 +104,9 @@ export const Group = ({ courseGroupBB, courseGroupGit, bbGitConnection }) => {
 
   useEffect(() => {
     mergeBBGitKeyStats(term, courseId, groupId, courseGroupBB, courseGroupGit, sinceTime, untilTime, false).then(data => {
-      setCourseGroups(data)
+      setCourseGroups(mergeUsersAndStats(data, courseGroupGit))
     })
-  }, [courseGroupBB, courseId, groupId, sinceTime, term, untilTime])
+  }, [courseGroupBB, courseGroupGit, courseId, groupId, sinceTime, term, untilTime])
 
   return (
     <>
@@ -130,11 +185,7 @@ export const getServerSideProps = (async (context) => {
 
   const courseGroupBB = await getCourseGroup(context.req, params)
 
-  courseGroupBB.members.push({ name: { given: "Petter", family: "Rein" }, userName: "pettegre" })
-
   const courseGroupGit = await getGroupWithMembersGit(context.req, params)
-
-  courseGroupGit.members.push({ name: { given: "Petter", family: "Rein" }, userName: "pettegre" })
 
   const bbGitConnection = await getBBGitConnection(context.req, params)
 

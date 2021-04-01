@@ -8,12 +8,15 @@ import { Grid } from "@material-ui/core"
 import ExpandMoreIcon from "@material-ui/icons/ExpandMore"
 
 
-const Student = ({ name }) => {
+const Student = ({ student }) => {
   const [expanded, setExpanded] = useState(false)
 
   const handleChange = () => () => {
     setExpanded(!expanded)
   }
+
+  // Gitlab provides full name as student.name, Blackboard provides student.name.given and student.name.family
+  const name = student.user ? `${student.user.name.given} ${student.user.name.family}` : `${student.name.given} ${student.name.family}`
 
   return (
     <Grid
@@ -37,7 +40,7 @@ const Student = ({ name }) => {
               xs={4}
             >
               <Typography>
-                {name}
+                Commits: {student.commits ? student.commits : 0}
               </Typography>
             </Grid>
             <Grid
@@ -45,7 +48,7 @@ const Student = ({ name }) => {
               xs={4}
             >
               <Typography>
-                {name}
+                Additions: {student.additions ? student.additions : 0}
               </Typography>
             </Grid>
             <Grid
@@ -53,7 +56,7 @@ const Student = ({ name }) => {
               xs={4}
             >
               <Typography>
-                {name}
+                Merge requests: {student.mergeRequests ? student.mergeRequests.length : 0}
               </Typography>
             </Grid>
           </Grid>
@@ -67,11 +70,9 @@ const Student = ({ name }) => {
 const StudentList = ({ elements }) => {
 
   const studentList = elements.map((elem, index) => {
-    // Gitlab provides full name as elem.name, Blackboard provides name.given and name.family
-    const fullName = elem.user ? `${elem.user.name.given} ${elem.user.name.family}` : `${elem.name.given} ${elem.name.family}`
 
     return (
-      <Student key={index} name={fullName} />
+      <Student key={index} student={elem} />
     )
   })
 

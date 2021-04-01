@@ -1,3 +1,55 @@
+// Helpers
+
+const mergeContributorDicts = (dictEmail, dictUserName) => {
+  const arrayEmail = Object.values(dictEmail)
+  const arrayUserName = Object.values(dictUserName)
+  const contributorStats = {}
+
+  arrayEmail.forEach(user => {
+    const userNameIndex = arrayUserName.findIndex(userUserName => userUserName.name === user.name)
+    if (userNameIndex >= 0) {
+      const userNameStats = arrayUserName[userNameIndex]
+      contributorStats[userNameStats.userName] = {
+        userName: userNameStats.userName,
+        name: user.name,
+        commits: user.commits,
+        lines: user.lines,
+        additions: user.additions,
+        deletions: user.deletions,
+        mergeRequests: userNameStats.mergeRequests,
+      }
+      arrayUserName.splice(userNameIndex, 1)
+    }
+    else {
+      contributorStats[user.name] = {
+        userName: undefined,
+        name: user.name,
+        commits: user.commits,
+        lines: user.lines,
+        additions: user.additions,
+        deletions: user.deletions,
+        mergeRequests: [],
+      }
+    }
+  })
+
+  arrayUserName.forEach(user => {
+    contributorStats[user.userName] = {
+      userName: user.userName,
+      name: user.name,
+      commits: 0,
+      lines: 0,
+      additions:0,
+      deletions: 0,
+      mergeRequests: user.mergeRequests,
+    }
+  })
+
+  return contributorStats
+}
+
+// Stats
+
 const getGroupProjects = async (path, courseNameGit, groupId, pat) => {
   const projects = await fetch(`${path}/api/v4/groups/${courseNameGit}/projects`, {
     method: "GET",
@@ -228,7 +280,7 @@ const getGroupKeyStats = async (path, pat, fullPathGit, since, until, fileBlame)
   const wikiPages = await wikiPagesPromise
   const projectFiles = await projectFilesPromise
 
-  const contributorStats = {}
+  const contributorStatsEmail = {}
 
   const contributorStatsUserName = {}
 
@@ -252,13 +304,13 @@ const getGroupKeyStats = async (path, pat, fullPathGit, since, until, fileBlame)
     const commiterName = mergeRequest.author.name
 
     if (contributorStatsUserName[commiterUsername]) {
-      contributorStatsUserName[commiterUsername].mergeRequest = contributorStatsUserName[commiterUsername].mergeRequest.push(mergeRequest)
+      contributorStatsUserName[commiterUsername].mergeRequests = contributorStatsUserName[commiterUsername].mergeRequests.push(mergeRequest)
     }
     else {
       contributorStatsUserName[commiterUsername] = {
         name: commiterName,
         userName: commiterUsername,
-        mergeRequest: [mergeRequest],
+        mergeRequests: [mergeRequest],
       }
     }
   })
@@ -280,20 +332,19 @@ const getGroupKeyStats = async (path, pat, fullPathGit, since, until, fileBlame)
       commitStats.first = commit.created_at
     }
 
-    if (contributorStats[committerEmail]) {
-      contributorStats[committerEmail].additions = contributorStats[committerEmail].additions + additions
-      contributorStats[committerEmail].deletions = contributorStats[committerEmail].deletions + deletions
-      contributorStats[committerEmail].commits = contributorStats[committerEmail].commits + 1
+    if (contributorStatsEmail[committerEmail]) {
+      contributorStatsEmail[committerEmail].additions = contributorStatsEmail[committerEmail].additions + additions
+      contributorStatsEmail[committerEmail].deletions = contributorStatsEmail[committerEmail].deletions + deletions
+      contributorStatsEmail[committerEmail].commits = contributorStatsEmail[committerEmail].commits + 1
     }
     else {
-      contributorStats[committerEmail] = {
-        lines: 0,
-        addiadditionstion: additions,
-        deletions: deletions,
+      contributorStatsEmail[committerEmail] = {
         name: commiterName,
         userName: committerEmail.split("@")[0],
         commits: 1,
-        mergeRequest: [],
+        lines: 0,
+        additions: additions,
+        deletions: deletions,
       }
     }
   })
@@ -307,25 +358,24 @@ const getGroupKeyStats = async (path, pat, fullPathGit, since, until, fileBlame)
 
         projectStats.linesOfCode = projectStats.linesOfCode + lines
 
-        if (contributorStats[committerEmail]) {
-          contributorStats[committerEmail].lines = contributorStats[committerEmail].lines + lines
+        if (contributorStatsEmail[committerEmail]) {
+          contributorStatsEmail[committerEmail].lines = contributorStatsEmail[committerEmail].lines + lines
         }
         else {
-          contributorStats[committerEmail] = {
-            lines: lines,
-            addition: 0,
-            deletions: 0,
+          contributorStatsEmail[committerEmail] = {
             name: commiterName,
             userName: committerEmail.split("@")[0],
             commits: 0,
-            mergeRequest: [],
+            lines: lines,
+            additions: 0,
+            deletions: 0,
           }
         }
       })
     })
   }
 
-  console.log(contributorStatsUserName)
+  const contributorStats = mergeContributorDicts(contributorStatsEmail, contributorStatsUserName)
 
   return { ...groupStats, commits: commits, commitsCount: commits.length, branches: branches, wikiPages: wikiPages, contributorStats: contributorStats, commitStats: commitStats, projectStats: projectStats }
 }
