@@ -25,6 +25,7 @@ import Link from "next/link"
 import { useRouter } from "next/router"
 import TextField from "@material-ui/core/TextField"
 import { Grid } from "@material-ui/core"
+import { formatDate } from "utils/format"
 
 
 const tableCells = (row, cells) => {
@@ -45,15 +46,6 @@ const headCells = (cells) => {
     cellList.push({ id: cell.dataLabel, numeric: cell.type === "numeric", disablePadding: false, label: cell.label })
   ))
   return (cellList)
-}
-
-const formatDate = (dateString) => {
-
-  const date = new Date(dateString)
-  if (date.getDate()) {
-    return `${date.getUTCFullYear()}.${date.getUTCMonth()}.${date.getUTCDate()} - ${date.getUTCHours()}:${date.getUTCMinutes()}`
-  }
-  return "No data"
 }
 
 const createData = (group) => {

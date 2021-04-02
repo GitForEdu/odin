@@ -235,8 +235,20 @@ const getGroupKeyStats = async (path, pat, fullPathGit, since, until, fileBlame)
     const groupInfo = d.data.group
 
     const projects = groupInfo.projects.nodes
-    const milestones = groupInfo.milestones.nodes.filter(milestone => milestone.createdAt <= until && milestone.createdAt >= since)
-    const mergeRequests = groupInfo.mergeRequests.nodes.filter(mergeRequest => mergeRequest.createdAt <= until && mergeRequest.createdAt >= since)
+    let milestones = groupInfo.milestones.nodes
+    let mergeRequests = groupInfo.mergeRequests.nodes
+    if (until && since) {
+      milestones = groupInfo.milestones.nodes.filter(milestone => milestone.createdAt <= until && milestone.createdAt >= since)
+      mergeRequests = groupInfo.mergeRequests.nodes.filter(mergeRequest => mergeRequest.createdAt <= until && mergeRequest.createdAt >= since)
+    }
+    else if (until) {
+      milestones = groupInfo.milestones.nodes.filter(milestone => milestone.createdAt <= until)
+      mergeRequests = groupInfo.mergeRequests.nodes.filter(mergeRequest => mergeRequest.createdAt <= until)
+    }
+    else if (since) {
+      milestones = groupInfo.milestones.nodes.filter(milestone => milestone.createdAt >= since)
+      mergeRequests = groupInfo.mergeRequests.nodes.filter(mergeRequest => mergeRequest.createdAt >= since)
+    }
     const issues = groupInfo.issues.nodes
     const issuesCount = issues.length
     const totalWikiSize = projects.map(project => project.statistics.wikiSize).reduce((acc, curr) => acc + curr, 0)

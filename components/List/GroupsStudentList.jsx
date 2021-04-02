@@ -37,23 +37,24 @@ const Student = ({ student }) => {
           >
             <Grid
               item
-              xs={4}
+              xs={6}
+              md={4}
             >
               <Typography>
                 Commits: {student.commits ? student.commits : 0}
               </Typography>
             </Grid>
             <Grid
-              item
-              xs={4}
+              xs={6}
+              md={4}
             >
               <Typography>
                 Additions: {student.additions ? student.additions : 0}
               </Typography>
             </Grid>
             <Grid
-              item
-              xs={4}
+              xs={6}
+              md={4}
             >
               <Typography>
                 Merge requests: {student.mergeRequests ? student.mergeRequests.length : 0}

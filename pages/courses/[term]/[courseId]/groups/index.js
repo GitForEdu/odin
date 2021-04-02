@@ -200,7 +200,7 @@ export const Group = ({ courseGroupsBB, courseGroupsGit, bbGitConnection }) => {
         justifyContent="center"
         alignItems="center"
       >
-        <Grid item xs={12} md={8}>
+        <Grid item xs={10} md={10}>
           {courseGroupsBB.length === 0
             ? <>
               <h1>No groups found on Blackboard</h1>
@@ -237,95 +237,154 @@ export const Group = ({ courseGroupsBB, courseGroupsGit, bbGitConnection }) => {
                     alignContent="center"
                     item
                   >
-                    <DatePicker
-                      renderInput={(props) =>
-                        <TextField
-                          {...props}
-                          margin="normal"
-                          helperText=""
-                        />}
-                      label="DatePicker"
-                      value={sinceTime}
-                      onChange={(newValue) => {
-                        setSinceTime(newValue)
-                      }}
-                    />
-                    <DatePicker
-                      renderInput={(props) =>
-                        <TextField
-                          {...props}
-                          margin="normal"
-                          helperText=""
-                        />}
-                      label="DatePicker"
-                      value={untilTime}
-                      onChange={(newValue) => {
-                        setUntilTime(newValue)
-                      }}
-                    />
-                  </Grid>
-                  <Grid
-                    container
-                    direction="row"
-                    justifyContent="center"
-                    alignContent="center"
-                    item
-                  >
-                    <Button
-                      variant="contained"
-                      color="primary"
-                      onClick={() => {
-                        const date = new Date()
-                        date.setDate(date.getDate()-1)
-                        setSinceTime(date)
-                        const dateUntil = new Date()
-                        setUntilTime(dateUntil)
-                      }}
+                    <Grid
+                      container
+                      direction="row"
+                      justifyContent="center"
+                      alignContent="center"
+                      item
                     >
+                      <Grid
+                        item
+                        xs={6}
+                        md={3}
+                      >
+                        <DatePicker
+                          renderInput={(props) =>
+                            <TextField
+                              {...props}
+                              margin="normal"
+                              helperText=""
+                            />}
+                          label="DatePicker"
+                          value={sinceTime}
+                          onChange={(newValue) => {
+                            setSinceTime(newValue)
+                          }}
+                        />
+                      </Grid>
+                      <Grid
+                        item
+                        xs={6}
+                        md={3}
+                      >
+                        <DatePicker
+                          renderInput={(props) =>
+                            <TextField
+                              {...props}
+                              margin="normal"
+                              helperText=""
+                            />}
+                          label="DatePicker"
+                          value={untilTime}
+                          onChange={(newValue) => {
+                            setUntilTime(newValue)
+                          }}
+                        />
+                      </Grid>
+                    </Grid>
+                    <Grid
+                      container
+                      direction="row"
+                      justifyContent="center"
+                      alignContent="center"
+                      item
+                    >
+                      <Grid
+                        item
+                        xs={3}
+                        md={3}
+                      >
+                      </Grid>
+                      <Grid
+                        container
+                        direction="row"
+                        justifyContent="center"
+                        alignContent="center"
+                        item
+                        xs={12}
+                        md={6}
+                      >
+                        <Grid
+                          item
+                          xs={3}
+                          md={4}
+                        >
+                          <Button
+                            variant="contained"
+                            color="primary"
+                            onClick={() => {
+                              const date = new Date()
+                              date.setDate(date.getDate()-1)
+                              setSinceTime(date)
+                              const dateUntil = new Date()
+                              setUntilTime(dateUntil)
+                            }}
+                          >
                 Last day
-                    </Button>
-                    <Button
-                      variant="contained"
-                      color="primary"
-                      onClick={() => {
-                        const date = new Date()
-                        date.setDate(date.getDate()-7)
-                        setSinceTime(date)
-                        const dateUntil = new Date()
-                        setUntilTime(dateUntil)
-                      }}
-                    >
+                          </Button>
+                        </Grid>
+                        <Grid
+                          item
+                          xs={3}
+                          md={4}
+                        >
+                          <Button
+                            variant="contained"
+                            color="primary"
+                            onClick={() => {
+                              const date = new Date()
+                              date.setDate(date.getDate()-7)
+                              setSinceTime(date)
+                              const dateUntil = new Date()
+                              setUntilTime(dateUntil)
+                            }}
+                          >
                 Last week
-                    </Button>
-                    <Button
-                      variant="contained"
-                      color="primary"
-                      onClick={() => {
-                        const date = new Date()
-                        date.setMonth(date.getMonth()-1)
-                        setSinceTime(date)
-                        const dateUntil = new Date()
-                        setUntilTime(dateUntil)
-                      }}
-                    >
+                          </Button>
+                        </Grid>
+                        <Grid
+                          item
+                          xs={3}
+                          md={4}
+                        >
+                          <Button
+                            variant="contained"
+                            color="primary"
+                            onClick={() => {
+                              const date = new Date()
+                              date.setMonth(date.getMonth()-1)
+                              setSinceTime(date)
+                              const dateUntil = new Date()
+                              setUntilTime(dateUntil)
+                            }}
+                          >
                 Last month
-                    </Button>
-                  </Grid>
-                  <Grid
-                    container
-                    item
-                  >
-                    <Modal
-                      style={{ display:"flex", alignItems:"center", justifyContent:"center" }}
-                      open={modalState}
-                      onClose={handleModal}
-                      aria-labelledby="simple-modal-title"
-                      aria-describedby="simple-modal-description"
+                          </Button>
+                        </Grid>
+                      </Grid>
+                      <Grid
+                        item
+                        xs={3}
+                        md={3}
+                      ></Grid>
+                    </Grid>
+                    <Grid
+                      container
+                      item
                     >
-                      <ModalColumns classes={classes} columnSelectors={columnSelectors} handleModal={handleModal}/>
-                    </Modal>
-                    <EnhancedTable groups={courseGroups} cells={cells} handleModal={handleModal}/>
+                      <Modal
+                        style={{ display:"flex", alignItems:"center", justifyContent:"center" }}
+                        open={modalState}
+                        onClose={handleModal}
+                        aria-labelledby="simple-modal-title"
+                        aria-describedby="simple-modal-description"
+                      >
+                        <ModalColumns classes={classes} columnSelectors={columnSelectors} handleModal={handleModal}/>
+                      </Modal>
+                      <EnhancedTable groups={courseGroups} cells={cells} handleModal={handleModal}/>
 
+                    </Grid>
                   </Grid>
                 </Grid>
               </>}
