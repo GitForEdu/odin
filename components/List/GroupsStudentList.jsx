@@ -1,4 +1,4 @@
-import { useState } from "react"
+import { useEffect, useState } from "react"
 import { withStyles } from "@material-ui/core/styles"
 import Accordion from "@material-ui/core/Accordion"
 import AccordionSummary from "@material-ui/core/AccordionSummary"
@@ -8,12 +8,16 @@ import { Grid } from "@material-ui/core"
 import ExpandMoreIcon from "@material-ui/icons/ExpandMore"
 
 
-const Student = ({ student }) => {
+const Student = ({ student, expandAll }) => {
   const [expanded, setExpanded] = useState(false)
 
   const handleChange = () => () => {
     setExpanded(!expanded)
   }
+
+  useEffect(() => {
+    setExpanded(expandAll)
+  }, [expandAll])
 
   // Gitlab provides full name as student.name, Blackboard provides student.name.given and student.name.family
   const name = student.user ? `${student.user.name.given} ${student.user.name.family}` : `${student.name.given} ${student.name.family}`
@@ -68,12 +72,12 @@ const Student = ({ student }) => {
 }
 
 
-const StudentList = ({ elements }) => {
+const StudentList = ({ elements, expandAll }) => {
 
   const studentList = elements.map((elem, index) => {
 
     return (
-      <Student key={index} student={elem} />
+      <Student key={index} student={elem} expandAll={expandAll}/>
     )
   })
 

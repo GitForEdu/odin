@@ -103,13 +103,18 @@ export const Group = ({ courseGroupBB, courseGroupGit, bbGitConnection }) => {
   const [untilTime, setUntilTime] = useState(new Date((new Date()).valueOf() + 86400000))
   const [courseGroup, setCourseGroups] = useState()
   const [compareGroupSwitch, setCompareGroupSwitch] = useState(false)
+  const [expandAll, setExpandAll] = useState(false)
 
   const handleChange = (event) => {
     setCompareGroupSwitch(!compareGroupSwitch)
   }
 
+  const handleChangeExpandAll = () => {
+    setExpandAll(!expandAll)
+  }
+
   useEffect(() => {
-    mergeBBGitKeyStats(term, courseId, groupId, courseGroupBB, courseGroupGit, sinceTime, untilTime, false).then(data => {
+    mergeBBGitKeyStats(term, courseId, groupId, courseGroupBB, courseGroupGit, sinceTime, untilTime).then(data => {
       setCourseGroups(mergeUsersAndStats(data, courseGroupGit))
     })
   }, [courseGroupBB, courseGroupGit, courseId, groupId, sinceTime, term, untilTime])
@@ -189,10 +194,26 @@ export const Group = ({ courseGroupBB, courseGroupGit, bbGitConnection }) => {
                 item
               >
                 <Grid
+                  container
+                  direction="row"
+                  justifyContent="flex-start"
+                  alignContent="center"
                   item
-                  xs={0}
+                  xs={12}
                   md={3}
                 >
+                  <FormControlLabel
+                    labelPlacement="start"
+                    control={
+                      <Switch
+                        checked={expandAll}
+                        onChange={handleChangeExpandAll}
+                        name="switchExpandMembers"
+                        color="primary"
+                      />
+                    }
+                    label="Expand all members"
+                  />
                 </Grid>
                 <Grid
                   container
@@ -376,7 +397,7 @@ export const Group = ({ courseGroupBB, courseGroupGit, bbGitConnection }) => {
                   </Typography>
                 </Grid>
               </Grid>
-              <StudentList elements={courseGroup.members} />
+              <StudentList elements={courseGroup.members} expandAll={expandAll} />
             </>}
           </Grid>
         </Grid>
