@@ -128,7 +128,7 @@ export const Group = ({ courseGroupsBB, courseGroupsGit, bbGitConnection }) => {
 
   useEffect(() => {
     if(courseGroupsGit.length > 0) {
-      mergeBBGitKeyStats(term, courseId, courseGroupsBB, courseGroupsGit, sinceTime, untilTime, false).then(data => {
+      mergeBBGitKeyStats(term, courseId, courseGroupsBB, courseGroupsGit, sinceTime, untilTime).then(data => {
         setCourseGroups(data)
       })
     }

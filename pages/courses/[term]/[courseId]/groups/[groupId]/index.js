@@ -95,6 +95,15 @@ const mergeBBGitKeyStats = async (term, courseId, groupId, courseGroupsBB, cours
   return { ...courseGroupsBB, groupKeyStats }
 }
 
+const getGroupsstats = async (term, courseId, sinceTime, untilTime) => {
+  const groupsStats = await fetcher(
+    `/api/courses/${term}/${courseId}/git/groups/stats?since=${sinceTime.toISOString()}&until=${untilTime.toISOString()}&fileblame=true`,
+    {},
+    "GET"
+  )
+  return groupsStats
+}
+
 export const Group = ({ courseGroupBB, courseGroupGit, bbGitConnection }) => {
   const matches = useMediaQuery("(max-width:400px)")
   const router = useRouter()
@@ -104,14 +113,23 @@ export const Group = ({ courseGroupBB, courseGroupGit, bbGitConnection }) => {
   const [courseGroup, setCourseGroups] = useState()
   const [compareGroupSwitch, setCompareGroupSwitch] = useState(false)
   const [expandAll, setExpandAll] = useState(false)
+  const [groupsStats, setGroupsStats] = useState()
 
-  const handleChange = (event) => {
+  const handleChangeGroupsStats = () => {
     setCompareGroupSwitch(!compareGroupSwitch)
   }
 
   const handleChangeExpandAll = () => {
     setExpandAll(!expandAll)
   }
+
+  useEffect(() => {
+    if (compareGroupSwitch) {
+      getGroupsstats(term, courseId, sinceTime, untilTime).then(data => {
+        setGroupsStats(data)
+      })
+    }
+  }, [compareGroupSwitch, courseId, term, sinceTime, untilTime])
 
   useEffect(() => {
     mergeBBGitKeyStats(term, courseId, groupId, courseGroupBB, courseGroupGit, sinceTime, untilTime).then(data => {
@@ -298,7 +316,7 @@ export const Group = ({ courseGroupBB, courseGroupGit, bbGitConnection }) => {
                     control={
                       <Switch
                         checked={compareGroupSwitch}
-                        onChange={handleChange}
+                        onChange={handleChangeGroupsStats}
                         name="switchCompareGroups"
                         color="primary"
                       />
@@ -397,6 +415,94 @@ export const Group = ({ courseGroupBB, courseGroupGit, bbGitConnection }) => {
                   </Typography>
                 </Grid>
               </Grid>
+              {groupsStats
+              && <Grid
+                container
+                direction="row"
+                justifyContent="center"
+                alignItems="center"
+                style={{
+                  padding: "2rem",
+                }}
+                spacing={2}
+              >
+                <Grid
+                  container
+                  direction="column"
+                  justifyContent="center"
+                  alignItems="flex-start"
+                  item
+                  xs={12}
+                  md={3}
+                >
+                  <Typography>
+                  Projects: {groupsStats.averageProjects}
+                  </Typography>
+                  <Typography>
+                  Commits: {groupsStats.averageCommits}
+                  </Typography>
+                  <Typography>
+                  Branches: {groupsStats.averageBranches}
+                  </Typography>
+                </Grid>
+                <Grid
+                  container
+                  direction="column"
+                  justifyContent="center"
+                  alignItems="flex-start"
+                  item
+                  xs={12}
+                  md={3}
+                >
+                  <Typography>
+                  Issues: {groupsStats.averageIssues}
+                  </Typography>
+                  <Typography>
+                  Issues open: {groupsStats.averageIssuesOpen}
+                  </Typography>
+                  <Typography>
+                  Issues closed: {groupsStats.averageIssuesClosed}
+                  </Typography>
+                </Grid>
+                <Grid
+                  container
+                  direction="column"
+                  justifyContent="center"
+                  alignItems="flex-start"
+                  item
+                  xs={12}
+                  md={3}
+                >
+                  <Typography>
+                  Pull requests: {groupsStats.averageMergeRequests}
+                  </Typography>
+                  <Typography>
+                  Pull requests open: {groupsStats.averageMergeRequestsOpen}
+                  </Typography>
+                  <Typography>
+                  Pull requests closed: {groupsStats.averageMergeRequestsClosed}
+                  </Typography>
+                </Grid>
+                <Grid
+                  container
+                  direction="column"
+                  justifyContent="center"
+                  alignItems="flex-start"
+                  item
+                  xs={12}
+                  md={3}
+                >
+                  <Typography>
+                  Last activity: {formatDate(groupsStats.lastActivity)}
+                  </Typography>
+                  <Typography>
+                  Additions: {groupsStats.averageAdditions}
+                  </Typography>
+                  <Typography>
+                  Deletions: {groupsStats.averageDeletions}
+                  </Typography>
+                </Grid>
+              </Grid>}
               <StudentList elements={courseGroup.members} expandAll={expandAll} />
             </>}
           </Grid>
