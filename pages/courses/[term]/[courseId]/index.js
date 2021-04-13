@@ -241,7 +241,7 @@ export const getServerSideProps = (async (context) => {
 
   const courseGroupsBB = await getCourseGroups(context.req, params)
 
-  const courseGroupsGit = (await GetGroups(context.req, params)).subGroups
+  const courseGroupsGit = (await GetGroups(context.req, params))?.subGroups
 
   const bbGitConnection = await getBBGitConnection(context.req, params)
 

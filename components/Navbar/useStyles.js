@@ -38,4 +38,17 @@ export const useStyles = makeStyles(theme => ({
   hamburgerButton: {
     color: "white",
   },
+  list: {
+    width: 250,
+    height: "100%",
+  },
+  fullList: {
+    width: "auto",
+  },
+  menuButton: {
+    marginRight: theme.spacing(2),
+  },
+  hide: {
+    display: "none",
+  },
 }))

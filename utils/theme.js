@@ -14,6 +14,9 @@ export const theme = createMuiTheme({
     selected: {
       main: "#008000", // green
     },
+    error: {
+      main: "#8b0000",
+    },
     mode: "dark",
   },
 })

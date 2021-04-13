@@ -1,14 +1,15 @@
 import { useEffect, useState } from "react"
-import { makeStyles, withStyles } from "@material-ui/core/styles"
+import { makeStyles, useTheme, withStyles } from "@material-ui/core/styles"
 import Accordion from "@material-ui/core/Accordion"
 import AccordionSummary from "@material-ui/core/AccordionSummary"
 import AccordionDetails from "@material-ui/core/AccordionDetails"
 import Typography from "@material-ui/core/Typography"
 import { Grid } from "@material-ui/core"
 import ExpandMoreIcon from "@material-ui/icons/ExpandMore"
+import clsx from "clsx"
 
-const AccordionStyles = makeStyles({
-  root: {
+const useStyles = makeStyles(theme => ({
+  accordion: {
     border: "1px solid rgba(0, 0, 0, .125)",
     boxShadow: "none",
     "&:not(:last-child)": {
@@ -21,11 +22,7 @@ const AccordionStyles = makeStyles({
       margin: "auto",
     },
   },
-  expanded: {},
-})
-
-const AccordionSummaryStyles = makeStyles({
-  root: {
+  accordionSummary: {
     backgroundColor: "rgba(0, 0, 0, .03)",
     borderBottom: "1px solid rgba(0, 0, 0, .125)",
     marginBottom: -1,
@@ -34,22 +31,22 @@ const AccordionSummaryStyles = makeStyles({
       minHeight: 56,
     },
   },
+  accordionDetails: {
+    padding: theme.spacing(2),
+  },
   content: {
     "&$expanded": {
       margin: "12px 0",
     },
   },
   expanded: {},
-})
-
-const AccordionDetailsStyles = makeStyles((theme) => ({
-  root: {
-    padding: theme.spacing(2),
-  },
 }))
 
 
 const Student = ({ student, expandAll }) => {
+  const theme = useTheme()
+  const classes = useStyles(theme)
+  console.log(classes.accordion)
   const [expanded, setExpanded] = useState(false)
 
   const handleChange = () => () => {
@@ -68,11 +65,11 @@ const Student = ({ student, expandAll }) => {
       item
       xs={12}
     >
-      <Accordion square expanded={expanded} onChange={handleChange()}>
-        <AccordionSummary aria-controls="panel1d-content" id="panel1d-header" expandIcon={<ExpandMoreIcon />}>
+      <Accordion className={clsx(classes.accordion, classes.expanded)} square expanded={expanded} onChange={handleChange()}>
+        <AccordionSummary className={clsx(classes.accordionSummary, classes.expanded, classes.content)} aria-controls="panel1d-content" id="panel1d-header" expandIcon={<ExpandMoreIcon />}>
           <Typography>{name}</Typography>
         </AccordionSummary>
-        <AccordionDetails>
+        <AccordionDetails className={clsx(classes.accordionDetails, classes.expanded)}>
           <Grid
             container
             direction="row"
