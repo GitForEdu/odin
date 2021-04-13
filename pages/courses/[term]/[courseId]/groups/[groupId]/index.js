@@ -129,6 +129,9 @@ export const Group = ({ courseGroupBB, courseGroupGit, bbGitConnection }) => {
         setGroupsStats(data)
       })
     }
+    else {
+      setGroupsStats()
+    }
   }, [compareGroupSwitch, courseId, term, sinceTime, untilTime])
 
   useEffect(() => {
@@ -330,6 +333,19 @@ export const Group = ({ courseGroupBB, courseGroupGit, bbGitConnection }) => {
             && <>
               <Grid
                 container
+                direction="column"
+                justifyContent="center"
+                alignItems="flex-start"
+                item
+                xs={12}
+                md={3}
+              >
+                <Typography>
+                  Stats for this group
+                </Typography>
+              </Grid>
+              <Grid
+                container
                 direction="row"
                 justifyContent="center"
                 alignItems="center"
@@ -416,16 +432,7 @@ export const Group = ({ courseGroupBB, courseGroupGit, bbGitConnection }) => {
                 </Grid>
               </Grid>
               {groupsStats
-              && <Grid
-                container
-                direction="row"
-                justifyContent="center"
-                alignItems="center"
-                style={{
-                  padding: "2rem",
-                }}
-                spacing={2}
-              >
+              && <>
                 <Grid
                   container
                   direction="column"
@@ -436,73 +443,111 @@ export const Group = ({ courseGroupBB, courseGroupGit, bbGitConnection }) => {
                   md={3}
                 >
                   <Typography>
+                  Average stats for other groups
+                  </Typography>
+                </Grid>
+                <Grid
+                  container
+                  direction="row"
+                  justifyContent="center"
+                  alignItems="center"
+                  style={{
+                    padding: "2rem",
+                  }}
+                  spacing={2}
+                >
+                  <Grid
+                    container
+                    direction="column"
+                    justifyContent="center"
+                    alignItems="flex-start"
+                    item
+                    xs={12}
+                    md={3}
+                  >
+                    <Typography>
                   Projects: {groupsStats.averageProjects}
-                  </Typography>
-                  <Typography>
+                    </Typography>
+                    <Typography>
                   Commits: {groupsStats.averageCommits}
-                  </Typography>
-                  <Typography>
+                    </Typography>
+                    <Typography>
                   Branches: {groupsStats.averageBranches}
-                  </Typography>
-                </Grid>
-                <Grid
-                  container
-                  direction="column"
-                  justifyContent="center"
-                  alignItems="flex-start"
-                  item
-                  xs={12}
-                  md={3}
-                >
-                  <Typography>
+                    </Typography>
+                  </Grid>
+                  <Grid
+                    container
+                    direction="column"
+                    justifyContent="center"
+                    alignItems="flex-start"
+                    item
+                    xs={12}
+                    md={3}
+                  >
+                    <Typography>
                   Issues: {groupsStats.averageIssues}
-                  </Typography>
-                  <Typography>
+                    </Typography>
+                    <Typography>
                   Issues open: {groupsStats.averageIssuesOpen}
-                  </Typography>
-                  <Typography>
+                    </Typography>
+                    <Typography>
                   Issues closed: {groupsStats.averageIssuesClosed}
-                  </Typography>
-                </Grid>
-                <Grid
-                  container
-                  direction="column"
-                  justifyContent="center"
-                  alignItems="flex-start"
-                  item
-                  xs={12}
-                  md={3}
-                >
-                  <Typography>
+                    </Typography>
+                  </Grid>
+                  <Grid
+                    container
+                    direction="column"
+                    justifyContent="center"
+                    alignItems="flex-start"
+                    item
+                    xs={12}
+                    md={3}
+                  >
+                    <Typography>
                   Pull requests: {groupsStats.averageMergeRequests}
-                  </Typography>
-                  <Typography>
+                    </Typography>
+                    <Typography>
                   Pull requests open: {groupsStats.averageMergeRequestsOpen}
-                  </Typography>
-                  <Typography>
+                    </Typography>
+                    <Typography>
                   Pull requests closed: {groupsStats.averageMergeRequestsClosed}
-                  </Typography>
-                </Grid>
-                <Grid
-                  container
-                  direction="column"
-                  justifyContent="center"
-                  alignItems="flex-start"
-                  item
-                  xs={12}
-                  md={3}
-                >
-                  <Typography>
+                    </Typography>
+                  </Grid>
+                  <Grid
+                    container
+                    direction="column"
+                    justifyContent="center"
+                    alignItems="flex-start"
+                    item
+                    xs={12}
+                    md={3}
+                  >
+                    <Typography>
                   Last activity: {formatDate(groupsStats.lastActivity)}
-                  </Typography>
-                  <Typography>
+                    </Typography>
+                    <Typography>
                   Additions: {groupsStats.averageAdditions}
-                  </Typography>
-                  <Typography>
+                    </Typography>
+                    <Typography>
                   Deletions: {groupsStats.averageDeletions}
-                  </Typography>
+                    </Typography>
+                  </Grid>
                 </Grid>
-              </Grid>}
+              </>
+              }
+              <Grid
+                container
+                direction="column"
+                justifyContent="center"
+                alignItems="flex-start"
+                item
+                xs={12}
+                md={3}
+              >
+                <Typography>
+                  Members of this group
+                </Typography>
+              </Grid>
               <StudentList elements={courseGroup.members} expandAll={expandAll} />
             </>}
           </Grid>
