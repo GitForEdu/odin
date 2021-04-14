@@ -145,9 +145,22 @@ const CourseDashboard = ({ session, courseGroupsBB, courseGroupsGit, bbGitConnec
           </Grid>
           <Grid
             container
-            direction="row"
+            direction="column"
             justifyContent="center"
-            alignItems="center"
+            alignItems="flex-start"
+            item
+            xs={12}
+            md={3}
+          >
+            <Typography>
+                  Stats for all groups
+            </Typography>
+          </Grid>
+          <Grid
+            container
+            direction="row"
+            justifyContent="flex-start"
+            alignItems="flex-start"
             style={{
               padding: "2rem",
             }}
@@ -160,6 +173,7 @@ const CourseDashboard = ({ session, courseGroupsBB, courseGroupsGit, bbGitConnec
               alignItems="flex-start"
               item
               xs={12}
+              sm={4}
               md={3}
             >
               <Typography>
@@ -179,6 +193,7 @@ const CourseDashboard = ({ session, courseGroupsBB, courseGroupsGit, bbGitConnec
               alignItems="flex-start"
               item
               xs={12}
+              sm={4}
               md={3}
             >
               <Typography>
@@ -198,6 +213,7 @@ const CourseDashboard = ({ session, courseGroupsBB, courseGroupsGit, bbGitConnec
               alignItems="flex-start"
               item
               xs={12}
+              sm={4}
               md={3}
             >
               <Typography>
@@ -213,10 +229,11 @@ const CourseDashboard = ({ session, courseGroupsBB, courseGroupsGit, bbGitConnec
             <Grid
               container
               direction="column"
-              justifyContent="center"
+              justifyContent="flex-start"
               alignItems="flex-start"
               item
               xs={12}
+              sm={4}
               md={3}
             >
               <Typography>
