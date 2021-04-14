@@ -76,7 +76,8 @@ const CreateGit = () => {
       {
         gitURL: removeLastSlash(addhttps(gitURL)),
         pat: pat,
-      }
+      },
+      "POST"
     )
     setLoading(false)
 
