@@ -58,24 +58,12 @@ export async function getCourseGroupsWithGroupset(req, params) {
   const indexCourse = userCourses.findIndex(course => course.id === courseId)
 
   if (indexCourse !== -1 && userCourses[indexCourse].role === "Instructor") {
-    const courseGroups = await getCourseGroupsWithGroupsetBB(courseId, bbToken)
-    if (!courseGroups.message) {
-      const courseGroupsWithUsers = Promise.all(courseGroups.map(courseGroup => {
-        return getCourseGroupUsersBB(courseId, courseGroup.id, bbToken).then(courseGroupUsers => {
-          return Promise.all(courseGroupUsers.map(user => {
-            return getUserWithUserIdBB(user.userId, bbToken).then(r => {
-              return r})
-          })).then(r => {
-            return { ...courseGroup, members: r }
-          })
-        })
-      })).then(r => {
-        return r
-      })
-      return courseGroupsWithUsers
+    const courseGroupsWithGroupset = await getCourseGroupsWithGroupsetBB(courseId, bbToken)
+    if (!courseGroupsWithGroupset.message) {
+      return courseGroupsWithGroupset
     }
     else {
-      console.log(courseGroups)
+      console.log(courseGroupsWithGroupset)
       // TODO: Fix error handling here
       return []
     }

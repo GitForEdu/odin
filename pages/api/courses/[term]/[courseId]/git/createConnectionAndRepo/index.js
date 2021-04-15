@@ -1,12 +1,15 @@
 import { PrismaClient } from "@prisma/client"
 import isAuthorized from "middelwares/authorized"
 import { getSession } from "next-auth/client"
-import { createGroupGit } from "utils/gitlab"
+import getAccessToken from "utils/bb_token_cache"
+import { getCourseUsersExpandedBB } from "utils/blackboard"
+import { addUsersToGroupGit, createGroupGit, getUserGit } from "utils/gitlab"
 
 const prisma = new PrismaClient()
 
 export async function createBBGitRepoConnection(req, params) {
   const session = await getSession({ req })
+  const bbToken = await getAccessToken()
   const userName = session.username
 
   const courseId = params.courseId
@@ -35,6 +38,19 @@ export async function createBBGitRepoConnection(req, params) {
       // Create conn if not exsists allready and the group was created on Gitlab
       const connection = await prisma.bbGitConnection.create({
         data: { courseId: courseFull, gitURL: body.gitURL, repoName: legalGitName },
+      })
+
+      // add rest of ta's to main group
+      const courseUsers = (await getCourseUsersExpandedBB(courseId, bbToken)).filter(user => user.courseRoleId !== "Student")
+
+      // TODO_ remove mock data here
+      courseUsers.push({ userName: "pettegre" })
+      courseUsers.push({ userName: "torestef" })
+
+      await Promise.all(courseUsers.map(member => {
+        return getUserGit(connection.gitURL, body.pat, member.userName)
+      })).then(members => {
+        addUsersToGroupGit(connection.gitURL, group.id, body.pat, members.filter(member => !member.message).map(member => member.id), 50)
       })
 
       if (connection) {

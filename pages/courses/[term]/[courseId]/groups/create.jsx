@@ -12,6 +12,7 @@ import { makeStyles, useTheme } from "@material-ui/core/styles"
 import Paper from "@material-ui/core/Paper"
 import Grid from "@material-ui/core/Grid"
 import Navbar from "components/Navbar"
+import DragIndicatorIcon from "@material-ui/icons/DragIndicator"
 
 
 const CSVReaderStyles = (theme) => ({
@@ -167,13 +168,29 @@ const GroupListElement = (theme, group) => {
                       snapshot.isDragging,
                       provided.draggableProps.style
                     )}>
-                    <Typography>
-                      {`${member.user.name.given} ${member.user.name.family}`}
-                    </Typography>
+                    <Grid
+                      container
+                      direction="row"
+                      justifyContent="center"
+                      alignItems="center"
+                    >
+                      <Grid item xs={1}>
+                        <DragIndicatorIcon />
+                      </Grid>
+                      <Grid
+                        item
+                        xs={10}
+                      >
+                        <Typography>
+                          {`${member.user.name.given} ${member.user.name.family}`}
+                        </Typography>
 
-                    <Typography>
-                      {`${member.user.userName}`}
-                    </Typography>
+                        <Typography>
+                          {`${member.user.userName}`}
+                        </Typography>
+                      </Grid>
+                      <Grid item xs={1}></Grid>
+                    </Grid>
                   </div>
                 )}
               </Draggable>
@@ -271,10 +288,11 @@ export const Group = ({ courseStudents }) => {
     if (groups && groups.length !== 0) {
       setLoadingCreateGroups(true)
       const data = await fetcher(
-        `/api/courses/${term}/${courseId}/blackboard/createGroups`,
+        `/api/courses/${term}/${courseId}/blackboard/groupsAndGroupset`,
         {
           groups: groups,
-        }
+        },
+        "POST"
       )
       setLoadingCreateGroups(false)
       console.log("create groups bb", data)
@@ -385,6 +403,7 @@ export const Group = ({ courseStudents }) => {
         >
           <Grid item xs={12}>
             <h2>Create random groups from the studentlist of Blackboard</h2>
+            <h3>Number of students: {courseStudents.length}</h3>
           </Grid>
           <Grid
             container
@@ -406,8 +425,6 @@ export const Group = ({ courseStudents }) => {
             >
               <Grid item xs={6}>
                 <TextField
-                  variant="outlined"
-                  color="primary"
                   id="numberOfStudentsPerGroup"
                   label="Students per group"
                   value={numberOfStudentsPerGroup}
@@ -422,8 +439,6 @@ export const Group = ({ courseStudents }) => {
               </Grid>
               <Grid item xs={6}>
                 <TextField
-                  variant="outlined"
-                  color="primary"
                   id="numberOfGroups"
                   label="Number of groups"
                   value={numberOfGroups}

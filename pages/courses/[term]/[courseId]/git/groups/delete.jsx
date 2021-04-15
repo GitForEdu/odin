@@ -5,6 +5,7 @@ import { ListDelete } from "components/List"
 import { useState } from "react"
 import { useRouter } from "next/router"
 import Navbar from "components/Navbar"
+import { Grid } from "@material-ui/core"
 
 
 export const Group = ({ parentRepoWithSubGroups }) => {
@@ -17,10 +18,11 @@ export const Group = ({ parentRepoWithSubGroups }) => {
   const deleteParentRepo = async (elm) => {
     setLoading(true)
     const data = await fetcher(
-      `/api/courses/${term}/${courseId}/git/deleteGroup`,
+      `/api/courses/${term}/${courseId}/git/group`,
       {
         groupId: elm.id,
-      }
+      },
+      "DELETE"
     )
     setLoading(false)
     console.log("delete group gitlab", data)
@@ -33,10 +35,11 @@ export const Group = ({ parentRepoWithSubGroups }) => {
   const deleteSubGroup = async (elm) => {
     setLoading(true)
     const data = await fetcher(
-      `/api/courses/${term}/${courseId}/git/deleteGroup`,
+      `/api/courses/${term}/${courseId}/git/group`,
       {
         groupId: elm.id,
-      }
+      },
+      "DELETE"
     )
     setLoading(false)
     console.log("delete group gitlab", data)
@@ -50,14 +53,18 @@ export const Group = ({ parentRepoWithSubGroups }) => {
   return (
     <>
       <Navbar pageTitle={"Delete groups Gitlab"} courseId={courseId} term={term} />
-      <h1>Main repo</h1>
-      <ListDelete elements={[parentRepo]} deleteFunc={deleteParentRepo} disabled={loading}>
+      <Grid
+        container
+        direction="row"
+        justifyContent="center"
+        alignItems="center"
+      >
+        <h1>Main repo</h1>
+        <ListDelete elements={[parentRepo]} deleteFunc={deleteParentRepo} disabled={loading} />
 
-      </ListDelete>
-      <h1>Groups in main repo</h1>
-      <ListDelete elements={subGroups} deleteFunc={deleteSubGroup} disabled={loading}>
-
-      </ListDelete>
+        <h1>Groups in main repo</h1>
+        <ListDelete elements={subGroups} deleteFunc={deleteSubGroup} disabled={loading}/>
+      </Grid>
     </>
   )
 }

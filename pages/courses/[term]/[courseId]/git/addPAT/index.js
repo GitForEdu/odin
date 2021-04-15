@@ -24,7 +24,8 @@ const AddGitPat = ({ gitURL }) => {
       `/api/courses/${term}/${courseId}/git/addPAT`,
       {
         pat: pat,
-      }
+      },
+      "POST"
     )
     setLoading(false)
 
@@ -49,8 +50,6 @@ const AddGitPat = ({ gitURL }) => {
       </a>
       </p>
       <TextField
-        variant="outlined"
-        color="primary"
         id="pat"
         label="pat"
         value={pat}

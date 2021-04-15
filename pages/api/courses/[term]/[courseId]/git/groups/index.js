@@ -27,7 +27,10 @@ export async function GetGroups (req, params) {
     if (userConnection) {
       const groupsGit = await getGroupsGit(connection.gitURL, connection.repoName, userConnection.pat)
       // console.log(groupsGit)
-      return groupsGit
+      if (!groupsGit.message) {
+        return groupsGit
+      }
+      return { subGroups: [] }
     }
   }
   console.log("ingen connection")

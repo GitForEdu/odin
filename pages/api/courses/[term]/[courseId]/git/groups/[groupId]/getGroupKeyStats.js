@@ -6,14 +6,14 @@ import isAuthorized from "middelwares/authorized"
 
 const prisma = new PrismaClient()
 
-export async function GetGroupsKeyStats(req, params) {
+export async function GetGroupKeyStats(req, params) {
 
   const session = await getSession({ req })
 
   const userName = session.username
   const courseId = params.courseId
   const term = params.term
-  const groupPaths = params.groupPaths.split(",")
+  const groupPath = params.groupPath
   const since = params.since
   const until = params.until
   const fileBlame = params.fileBlame
@@ -27,10 +27,7 @@ export async function GetGroupsKeyStats(req, params) {
       where: { userName_gitURL: { userName: userName, gitURL: connection.gitURL } },
     })
     if (userConnection) {
-      const deleteGroupsResponse = groupPaths.map(groupPath => {
-        return getGroupKeyStats(connection.gitURL, userConnection.pat, groupPath, since, until, fileBlame)
-      })
-      return Promise.all(deleteGroupsResponse)
+      return await getGroupKeyStats(connection.gitURL, userConnection.pat, groupPath, since, until, fileBlame)
     }
   }
 
@@ -38,8 +35,8 @@ export async function GetGroupsKeyStats(req, params) {
 }
 
 
-async function groupsKeyStats(req, res) {
-  res.json(await GetGroupsKeyStats(req, req.query))
+async function groupKeyStats(req, res) {
+  res.json(await GetGroupKeyStats(req, req.query))
 }
 
-export default isAuthorized(groupsKeyStats)
+export default isAuthorized(groupKeyStats)
