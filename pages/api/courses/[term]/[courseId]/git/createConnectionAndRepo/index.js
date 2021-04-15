@@ -7,6 +7,36 @@ import { addUsersToGroupGit, createGroupGit, getUserGit } from "utils/gitlab"
 
 const prisma = new PrismaClient()
 
+const createConn = async (body, courseFull, legalGitName, userName) => {
+  // Create conn if not exsists allready and the group was created on Gitlab
+  const connection = await prisma.bbGitConnection.create({
+    data: { courseId: courseFull, gitURL: body.gitURL, repoName: legalGitName },
+  })
+
+  if (connection) {
+    const userConnection = await prisma.userGitConnection.findUnique({
+      where: { userName_gitURL: { userName: userName, gitURL: connection.gitURL } },
+    })
+    if(!userConnection) {
+      // Also save userconnection now, if it not allready was there
+      const newUserConnection = await prisma.userGitConnection.create({
+        data: { pat: body.pat, userName: userName, gitURL: body.gitURL },
+      })
+      if (newUserConnection) {
+        return connection
+      }
+    }
+    else {
+      // userConnection was found, no need to create
+      return connection
+    }
+  }
+  else {
+    // Cannot create connection in db for some reason
+    return { error: "errorCreateBBBGitConn" }
+  }
+}
+
 export async function createBBGitRepoConnection(req, params) {
   const session = await getSession({ req })
   const bbToken = await getAccessToken()
@@ -35,11 +65,6 @@ export async function createBBGitRepoConnection(req, params) {
       group = await createGroupGit(body.gitURL, legalGitName, body.pat, undefined)
     }
     if (group.id) {
-      // Create conn if not exsists allready and the group was created on Gitlab
-      const connection = await prisma.bbGitConnection.create({
-        data: { courseId: courseFull, gitURL: body.gitURL, repoName: legalGitName },
-      })
-
       // add rest of ta's to main group
       const courseUsers = (await getCourseUsersExpandedBB(courseId, bbToken)).filter(user => user.courseRoleId !== "Student")
 
@@ -48,38 +73,17 @@ export async function createBBGitRepoConnection(req, params) {
       courseUsers.push({ userName: "torestef" })
 
       await Promise.all(courseUsers.map(member => {
-        return getUserGit(connection.gitURL, body.pat, member.userName)
+        return getUserGit(body.gitURL, body.pat, member.userName)
       })).then(members => {
-        addUsersToGroupGit(connection.gitURL, group.id, body.pat, members.filter(member => !member.message).map(member => member.id), 50)
+        addUsersToGroupGit(body.gitURL, group.id, body.pat, members.filter(member => !member.message).map(member => member.id), 50)
       })
 
-      if (connection) {
-        const userConnection = await prisma.userGitConnection.findUnique({
-          where: { userName_gitURL: { userName: userName, gitURL: connection.gitURL } },
-        })
-        if(!userConnection) {
-          // Also save userconnection now, if it not allready was there
-          const newUserConnection = await prisma.userGitConnection.create({
-            data: { pat: body.pat, userName: userName, gitURL: body.gitURL },
-          })
-          if (newUserConnection) {
-            return connection
-          }
-        }
-        else {
-          // userConnection was found, no need to create
-          return connection
-        }
-      }
-      else {
-        // Cannot create connection in db for some reason
-        return { error: "errorCreateBBBGitConn" }
-      }
+      return createConn(body, courseFull, courseId, legalGitName, bbToken, userName, group)
     }
     if (group.message) {
       // TODO: Check if it was because group allready exsits, and maybe we have access to it and we still can create conn?
       // Cannot create parent group on GitLab
-      return group
+      return createConn(body, courseFull, courseId, legalGitName, bbToken, userName, group)
     }
   }
   else {
