@@ -39,9 +39,57 @@ export const Navbar = props => {
         style={{ height: "80%", width: "100%" }}
         container
         direction="row"
-        justifyContent="center"
-        alignItems="baseline"
+        justifyContent="flex-start"
+        alignItems="flex-start"
       >
+        <Grid
+          item
+          xs={12}
+        >
+          <Link href={"/courses"} passHref>
+            <Button
+              variant="contained"
+              color="primary"
+            >
+        Back to courses
+            </Button>
+          </Link>
+        </Grid>
+        <Grid
+          item
+          xs={12}
+        >
+          <Button
+            variant="contained"
+            color="primary"
+          >
+              Edit your pat for this course
+          </Button>
+        </Grid>
+        <Grid
+          item
+          xs={12}
+        >
+          <Button
+            variant="contained"
+            color="primary"
+          >
+              Edit git hosting instance for this course
+          </Button>
+        </Grid>
+        <Grid
+          item
+          xs={12}
+        >
+          <Link href={`/courses/${term}/${courseId}/groups/diff`} passHref>
+            <Button
+              variant="contained"
+              color="primary"
+            >
+              Check status or edit groups
+            </Button>
+          </Link>
+        </Grid>
         <Grid
           item
           xs={12}

@@ -24,7 +24,8 @@ const AddGitPat = ({ gitURL }) => {
       `/api/courses/${term}/${courseId}/git/addPAT`,
       {
         pat: pat,
-      }
+      },
+      "POST"
     )
     setLoading(false)
 

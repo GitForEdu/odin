@@ -17,6 +17,7 @@ import { useRouter } from "next/router"
 import Navbar from "components/Navbar"
 import { Fragment } from "react"
 import fetcher from "utils/fetcher"
+import DragIndicatorIcon from "@material-ui/icons/DragIndicator"
 
 
 const getListStyle = isDraggingOver => ({
@@ -185,7 +186,13 @@ const Dropable = (group, index, students, studentsGroup, onClickListTop) => {
                     >
                       <Grid
                         item
-                        xs={8}
+                        xs={2}
+                      >
+                        <DragIndicatorIcon />
+                      </Grid>
+                      <Grid
+                        item
+                        xs={7}
 
                       >
                         <Typography align="left">
@@ -259,10 +266,6 @@ const Dropable = (group, index, students, studentsGroup, onClickListTop) => {
                           </Grid>
                         </Grid>
                       </Grid>
-                      <Grid
-                        item
-                        xs={1}
-                      />
                     </Grid>
                   )}
                 </Draggable>
@@ -330,7 +333,7 @@ export const GroupDiff = ({ groupDiff }) => {
 
   const createSubGroups = async (term, courseId, groupDiff, groups) => {
     setLoading(true)
-    await syncGroups(term, courseId, groupDiff, groups)
+    await syncGroups(term, courseId, groupDiff, groups, router)
     setLoading(false)
   }
 
@@ -346,6 +349,7 @@ export const GroupDiff = ({ groupDiff }) => {
         xs={12}
       >
         {!groups.length && "no groups"}
+        <h1>Move group members, fix errors, then sync to blackboard & Gitlab</h1>
         <Grid
           container
           direction="row"
@@ -570,7 +574,7 @@ const checkIfUserInAGroup = (users, usersGroups) => {
   return usersNoGroup
 }
 
-const syncGroups = async (term, courseId, initalGroups, updatedGroups) => {
+const syncGroups = async (term, courseId, initalGroups, updatedGroups, router) => {
   // Funky deepCopy, Javascript is using references for nested elements
   // https://dev.to/samanthaming/how-to-deep-clone-an-array-in-javascript-3cig
   const initalGroupsTmp = JSON.parse(JSON.stringify(initalGroups))
@@ -691,7 +695,7 @@ const syncGroups = async (term, courseId, initalGroups, updatedGroups) => {
     const data = await fetcher(
       `/api/courses/${term}/${courseId}/git/groups`,
       {
-        groupNames: groupsToCreateGit.map(group => group.names),
+        groupNames: groupsToCreateGit.map(group => group.name),
       },
       "POST"
     )
@@ -744,6 +748,7 @@ const syncGroups = async (term, courseId, initalGroups, updatedGroups) => {
   console.log("students to add bb", membersToAddBB)
   console.log("students to remove gitlab", membersToRemoveGit)
   console.log("students to add gitlab", membersToAddGit)
+  router.push(`/courses/${term}/${courseId}/groups`)
 }
 
 const disableSyncButtonCheck = (studentsGroup, groups) => {

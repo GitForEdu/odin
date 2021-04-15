@@ -136,6 +136,15 @@ const CourseDashboard = ({ session, courseGroupsBB, courseGroupsGit, bbGitConnec
               Show groups
               </Button>
             </Link>
+            <Link href={`/courses/${term}/${courseId}/ta`} passHref>
+              <Button
+                variant="contained"
+                color="primary"
+                style={getButtonStyle(matches)}
+              >
+                Show ta&apos;s
+              </Button>
+            </Link>
             {bbGitConnection.error
               ? <CreateGitConnectionLink />
               : !bbGitConnection.pat

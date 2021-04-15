@@ -1,6 +1,5 @@
-import ListItem from "@material-ui/core/ListItem"
 import ListItemText from "@material-ui/core/ListItemText"
-import { Button } from "@material-ui/core"
+import { Button, Grid } from "@material-ui/core"
 
 
 const primaryTextStyling = { style:
@@ -10,34 +9,40 @@ const primaryTextStyling = { style:
   },
 }
 
-const secondaryTextStyling = { style:
-  {
-    color: "white",
-    textAlign: "center",
-    fontSize: "1.5rem",
-  },
-}
 
 const ListDelete = ({ elements, deleteFunc, disabled }) => {
   const itemList = elements.map(elem => {
     return (
-      <ListItemLink key={elem.id} alignItems="center" >
-        <ListItemText
-          primary={elem.name}
-          secondary={elem.username ? elem.username : elem.id}
-          primaryTypographyProps={primaryTextStyling}
-          secondaryTypographyProps={primaryTextStyling}
-        />
-        <Button
-          variant="contained"
-          color="primary"
-          disabled={disabled}
-          onClick={() => deleteFunc(elem)}
+      <Grid
+        key={elem.id}
+        container
+        item
+      >
+        <Grid item xs={2}></Grid>
+        <Grid
+          item
+          xs={8}
         >
+          <ListItemText
+            primary={elem.name}
+            primaryTypographyProps={primaryTextStyling}
+            secondaryTypographyProps={primaryTextStyling}
+          />
+        </Grid>
+        <Grid
+          item
+          xs={2}
+        >
+          <Button
+            variant="contained"
+            color="primary"
+            disabled={disabled}
+            onClick={() => deleteFunc(elem)}
+          >
             Delete
-        </Button>
-
-      </ListItemLink>
+          </Button>
+        </Grid>
+      </Grid>
     )
   })
 
@@ -48,8 +53,5 @@ const ListDelete = ({ elements, deleteFunc, disabled }) => {
   )
 }
 
-const ListItemLink = (props) => {
-  return <ListItem button component="a" {...props} />
-}
 
 export default ListDelete
