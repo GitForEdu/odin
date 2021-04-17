@@ -11,7 +11,6 @@ import fetcher from "utils/fetcher"
 import { getCourseGroups } from "pages/api/courses/[term]/[courseId]/groups"
 import { GetGroups } from "pages/api/courses/[term]/[courseId]/git/groups"
 
-
 const getButtonStyle = bigScreen => {
   const baseStyle = {
     width: "90%",
@@ -265,10 +264,6 @@ const CourseDashboard = ({ session, courseGroupsBB, courseGroupsGit, bbGitConnec
 export const getServerSideProps = (async (context) => {
   const params = context.params
 
-  const courseGroupsBB = await getCourseGroups(context.req, params)
-
-  const courseGroupsGit = (await GetGroups(context.req, params))?.subGroups
-
   const bbGitConnection = await getBBGitConnection(context.req, params)
 
   if (bbGitConnection.gitURL && !bbGitConnection.pat) {
@@ -288,6 +283,10 @@ export const getServerSideProps = (async (context) => {
       },
     }
   }
+
+  const courseGroupsBB = await getCourseGroups(context.req, params)
+
+  const courseGroupsGit = (await GetGroups(context.req, params))?.subGroups
 
   return {
     props: { courseGroupsBB, courseGroupsGit, bbGitConnection },
