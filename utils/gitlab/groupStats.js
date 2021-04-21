@@ -17,6 +17,7 @@ const mergeContributorDicts = (dictEmail, dictUserName) => {
         additions: user.additions,
         deletions: user.deletions,
         mergeRequests: userNameStats.mergeRequests,
+        issues: userNameStats.issues,
       }
       arrayUserName.splice(userNameIndex, 1)
     }
@@ -29,6 +30,7 @@ const mergeContributorDicts = (dictEmail, dictUserName) => {
         additions: user.additions,
         deletions: user.deletions,
         mergeRequests: [],
+        issues: [],
       }
     }
   })
@@ -42,6 +44,7 @@ const mergeContributorDicts = (dictEmail, dictUserName) => {
       additions:0,
       deletions: 0,
       mergeRequests: user.mergeRequests,
+      issues: user.issues,
     }
   })
 
@@ -323,8 +326,29 @@ const getGroupKeyStats = async (path, pat, fullPathGit, since, until, fileBlame)
         name: commiterName,
         userName: commiterUsername,
         mergeRequests: [mergeRequest],
+        issues: [],
       }
     }
+  })
+
+  groupStats.issues.forEach(issue => {
+    issue.assignees.nodes.forEach(assigne => {
+      const assigneUsername = assigne.username
+      const assigneName = assigne.name
+
+      if (contributorStatsUserName[assigneUsername]) {
+        const tmpArray = contributorStatsUserName[assigneUsername].issues
+        tmpArray.push({ createdAt: issue.createdAt, state: issue.state })
+        contributorStatsUserName[assigneUsername].issues = tmpArray
+      }
+      else {
+        contributorStatsUserName[assigneUsername] = {
+          name: assigneName,
+          userName: assigneUsername,
+          issues: [{ createdAt: issue.createdAt, state: issue.state }],
+        }
+      }
+    })
   })
 
   commits.forEach(commit => {

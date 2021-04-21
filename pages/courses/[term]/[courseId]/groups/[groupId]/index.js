@@ -12,6 +12,15 @@ import { getCourseGroup } from "pages/api/courses/[term]/[courseId]/blackboard/g
 import fetcher from "utils/fetcher"
 import { getGroupWithMembersGit } from "pages/api/courses/[term]/[courseId]/git/groups/[groupId]"
 import { formatDate } from "utils/format"
+import Highcharts from "highcharts"
+import HighchartsExporting from "highcharts/modules/exporting"
+import HighchartsReact from "highcharts-react-official"
+import DarkUnica from "highcharts/themes/dark-unica"
+
+if (typeof Highcharts === "object") {
+  HighchartsExporting(Highcharts)
+  DarkUnica(Highcharts)
+}
 
 const getButtonStyle = bigScreen => {
   const baseStyle = {
@@ -28,6 +37,147 @@ const getButtonStyle = bigScreen => {
       width: "30%",
     })
   }
+}
+
+const optionsCommits = (contributorStats) => {
+
+  const data = Object.entries(contributorStats).filter(([key, value]) => value.commits > 0).map(
+    ([key, value]) => ({
+      name: value.name,
+      y: value.commits,
+    })
+  )
+  return ({
+    chart: {
+      plotBackgroundColor: null,
+      plotBorderWidth: null,
+      plotShadow: false,
+      type: "pie",
+    },
+    title: {
+      text: "Commits % member",
+    },
+    tooltip: {
+      pointFormat: "{series.name}: <b>{point.percentage:.1f}%</b>",
+    },
+    accessibility: {
+      point: {
+        valueSuffix: "%",
+      },
+    },
+    plotOptions: {
+      pie: {
+        allowPointSelect: true,
+        cursor: "pointer",
+        dataLabels: {
+          enabled: false,
+        },
+        showInLegend: true,
+      },
+    },
+    exporting: {
+      enabled: false,
+    },
+    series: [{
+      name: "Commits",
+      colorByPoint: true,
+      data: data,
+    }],
+  })
+}
+
+const optionsMergeRequests = (contributorStats) => {
+
+  const data = Object.entries(contributorStats).filter(([key, value]) => value.mergeRequests.length > 0).map(
+    ([key, value]) => ({
+      name: value.name,
+      y: value.mergeRequests.length,
+    })
+  )
+  return ({
+    chart: {
+      plotBackgroundColor: null,
+      plotBorderWidth: null,
+      plotShadow: false,
+      type: "pie",
+    },
+    title: {
+      text: "MergeRequests % member",
+    },
+    tooltip: {
+      pointFormat: "{series.name}: <b>{point.percentage:.1f}%</b>",
+    },
+    accessibility: {
+      point: {
+        valueSuffix: "%",
+      },
+    },
+    plotOptions: {
+      pie: {
+        allowPointSelect: true,
+        cursor: "pointer",
+        dataLabels: {
+          enabled: false,
+        },
+        showInLegend: true,
+      },
+    },
+    exporting: {
+      enabled: false,
+    },
+    series: [{
+      name: "MergeRequests",
+      colorByPoint: true,
+      data: data,
+    }],
+  })
+}
+
+const optionsIssues = (contributorStats) => {
+
+  const data = Object.entries(contributorStats).filter(([key, value]) => value.issues.length > 0).map(
+    ([key, value]) => ({
+      name: value.name,
+      y: value.issues.length,
+    })
+  )
+  return ({
+    chart: {
+      plotBackgroundColor: null,
+      plotBorderWidth: null,
+      plotShadow: false,
+      type: "pie",
+    },
+    title: {
+      text: "Issues assigned % member",
+    },
+    tooltip: {
+      pointFormat: "{series.name}: <b>{point.percentage:.1f}%</b>",
+    },
+    accessibility: {
+      point: {
+        valueSuffix: "%",
+      },
+    },
+    plotOptions: {
+      pie: {
+        allowPointSelect: true,
+        cursor: "pointer",
+        dataLabels: {
+          enabled: false,
+        },
+        showInLegend: true,
+      },
+    },
+    exporting: {
+      enabled: false,
+    },
+    series: [{
+      name: "Issues",
+      colorByPoint: true,
+      data: data,
+    }],
+  })
 }
 
 const mergeUsersAndStats = (group, courseGroupGit) => {
@@ -535,6 +685,71 @@ export const Group = ({ courseGroupBB, courseGroupGit, bbGitConnection }) => {
                 </Grid>
               </>
               }
+              <Grid
+                container
+                direction="row"
+                justifyContent="space-between"
+                alignItems="center"
+                item
+                xs={12}
+                md={3}
+
+              >
+                <Grid
+                  container
+                  direction="column"
+                  justifyContent="center"
+                  alignItems="flex-start"
+                  item
+                  xs={12}
+                  md={3}
+                  style={{
+                    overflow: "hidden",
+                  }}
+                >
+                  <HighchartsReact
+                    highcharts={Highcharts}
+                    containerProps={{ style: { width: "100%", height: "100%" } }}
+                    options={optionsCommits(courseGroup.groupKeyStats.contributorStats)}
+                  />
+                </Grid>
+                <Grid
+                  container
+                  direction="column"
+                  justifyContent="center"
+                  alignItems="flex-start"
+                  item
+                  xs={12}
+                  md={3}
+                  style={{
+                    overflow: "hidden",
+                  }}
+                >
+                  <HighchartsReact
+                    highcharts={Highcharts}
+                    containerProps={{ style: { width: "100%", height: "100%" } }}
+                    options={optionsMergeRequests(courseGroup.groupKeyStats.contributorStats)}
+                  />
+                </Grid>
+                <Grid
+                  container
+                  direction="column"
+                  justifyContent="center"
+                  alignItems="flex-start"
+                  item
+                  xs={12}
+                  md={3}
+                  style={{
+                    overflow: "hidden",
+                  }}
+                >
+                  <HighchartsReact
+                    highcharts={Highcharts}
+                    containerProps={{ style: { width: "100%", height: "100%" } }}
+                    options={optionsIssues(courseGroup.groupKeyStats.contributorStats)}
+                  />
+                </Grid>
+              </Grid>
               <Grid
                 container
                 direction="column"
