@@ -42,8 +42,6 @@ const useStyles = makeStyles(theme => ({
 
 
 const Student = ({ student, expandAll, groupStats }) => {
-  console.log(student)
-  console.log(groupStats)
   const theme = useTheme()
   const classes = useStyles(theme)
 

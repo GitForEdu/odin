@@ -35,33 +35,69 @@ const calcultateGitStats = async (term, courseId, courseGroupsBB, courseGroupsGi
     "GET"
   )
 
+  let membersBB = 0
+
+  courseGroupsBB.forEach(groupBB => {
+    membersBB = membersBB + groupBB.members.length
+  })
+  const averageMembersBB = membersBB / courseGroupsBB.length
+
   let commits = 0
-  let issues = 0
-  let mergeRequests = 0
+  let issues = []
+  let mergeRequests = []
   let additions = 0
   let deletions = 0
   let branches = 0
   let projects = 0
+  let membersGit = 0
+  let groupMostCommitsCount = null
+  let groupMostCommits = ""
+  let groupFewestCommits = ""
+  let groupFewestCommitsCount = null
+  let groupMostIssuesCount = null
+  let groupMostIssues = ""
+  let groupFewestIssues = ""
+  let groupFewestIssuesCount = null
 
   groupKeyStats.forEach(groupStats => {
-    console.log(groupStats)
     commits = commits + groupStats.commits.length
-    issues = issues + groupStats.issues.length
-    mergeRequests = mergeRequests + groupStats.mergeRequests.length
+    issues = [...issues, ...groupStats.issues]
+    mergeRequests = [...mergeRequests, ...groupStats.mergeRequests]
     additions = additions + groupStats.projectStats.additions
     deletions = deletions + groupStats.projectStats.deletions
     branches = branches + groupStats.branches.length
     projects = projects + groupStats.projects.length
+    membersGit = membersGit + groupStats.members.length
+
+    if ((groupStats.commits.length > groupMostCommitsCount) || (groupStats.commits.length && !groupFewestCommitsCount)) {
+      groupMostCommitsCount = groupStats.commits.length
+      groupMostCommits = groupStats.name
+    }
+    if ((groupStats.commits.length < groupFewestCommitsCount) || (groupStats.commits.length && !groupFewestCommitsCount)) {
+      groupFewestCommitsCount = groupStats.commits.length
+      groupFewestCommits = groupStats.name
+    }
+    if ((groupStats.issues.length > groupMostIssuesCount) || (groupStats.issues.length && !groupFewestIssuesCount)) {
+      groupMostIssuesCount = groupStats.issues.length
+      groupMostIssues = groupStats.name
+    }
+    if ((groupStats.issues.length < groupFewestIssuesCount) || (groupStats.issues.length && !groupFewestIssuesCount)) {
+      groupFewestIssuesCount = groupStats.issues.length
+      groupFewestIssues = groupStats.name
+    }
   })
 
   const groups = groupKeyStats.length
   const averageCommits = commits / groups
-  const averageIssues = issues / groups
-  const averageMergeRequests = mergeRequests / groups
+  const averageIssues = issues.length / groups
+  const averageMergeRequests = mergeRequests.length / groups
   const averageAdditions = additions / groups
   const averageDeletions = deletions / groups
   const averageBranches = branches / groups
   const averageProjects = projects / groups
+  const averageMembersGit = membersGit / groups
+  const averageOpenIssues = issues.filter(issue => issue.state === "opened").length / groups
+  const averageOpenMergeRequests = mergeRequests.filter(mergeRequests => mergeRequests.state === "opened").length / groups
 
   return {
     commits: commits,
@@ -78,6 +114,18 @@ const calcultateGitStats = async (term, courseId, courseGroupsBB, courseGroupsGi
     averageBranches: averageBranches.toFixed(2),
     projects: projects,
     averageProjects: averageProjects.toFixed(2),
+    averageMembersBB: averageMembersBB.toFixed(2),
+    averageMembersGit: averageMembersGit.toFixed(2),
+    groupFewestCommits: groupFewestCommits,
+    groupFewestCommitsCount: groupFewestCommitsCount,
+    groupMostCommits: groupMostCommits,
+    groupMostCommitsCount: groupMostCommitsCount,
+    groupFewestIssues: groupFewestIssues,
+    groupFewestIssuesCount: groupFewestIssuesCount,
+    groupMostIssues: groupMostIssues,
+    groupMostIssuesCount: groupMostIssuesCount,
+    averageOpenIssues: averageOpenIssues.toFixed(2),
+    averageOpenMergeRequests: averageOpenMergeRequests.toFixed(2),
   }
 }
 
@@ -96,7 +144,7 @@ const CourseDashboard = ({ session, courseGroupsBB, courseGroupsGit, bbGitConnec
       })
     }
   }, [courseGroupsBB, courseGroupsGit, courseId, term])
-
+  console.log(stats)
   return (
     <>
       <Navbar pageTitle={"Dashboard"} courseId={courseId} term={term} />
@@ -116,6 +164,9 @@ const CourseDashboard = ({ session, courseGroupsBB, courseGroupsGit, bbGitConnec
             direction="column"
             justifyContent="center"
             alignItems="center"
+            style={{
+              margin: "0 0 1rem 0",
+            }}
           >
             <Link href={`/courses/${term}/${courseId}/students`} passHref>
               <Button
@@ -158,7 +209,11 @@ const CourseDashboard = ({ session, courseGroupsBB, courseGroupsGit, bbGitConnec
             alignItems="flex-start"
             item
             xs={12}
-            md={3}
+            md={12}
+            style={{
+              backgroundColor: "#424242",
+              padding: "1rem 0rem 1rem 0.5rem",
+            }}
           >
             <Typography>
                   Stats for all groups
@@ -170,9 +225,10 @@ const CourseDashboard = ({ session, courseGroupsBB, courseGroupsGit, bbGitConnec
             justifyContent="flex-start"
             alignItems="flex-start"
             style={{
-              padding: "2rem",
+              margin: "0rem 0rem 1rem 0rem",
+              padding: "0rem 0rem 1rem 0rem",
+              backgroundColor: "#424242",
             }}
-            spacing={2}
           >
             <Grid
               container
@@ -183,14 +239,29 @@ const CourseDashboard = ({ session, courseGroupsBB, courseGroupsGit, bbGitConnec
               xs={12}
               sm={4}
               md={3}
+              style={{
+                padding: "0rem 0rem 1rem 0rem",
+              }}
             >
-              <Typography>
+              <Typography
+                style={{
+                  padding: "0rem 0rem 0rem 2rem",
+                }}
+              >
                   Projects: {stats.projects}
               </Typography>
-              <Typography>
+              <Typography
+                style={{
+                  padding: "0rem 0rem 0rem 2rem",
+                }}
+              >
                   Commits: {stats.commits}
               </Typography>
-              <Typography>
+              <Typography
+                style={{
+                  padding: "0rem 0rem 0rem 2rem",
+                }}
+              >
                   Branches: {stats.branches}
               </Typography>
             </Grid>
@@ -203,15 +274,30 @@ const CourseDashboard = ({ session, courseGroupsBB, courseGroupsGit, bbGitConnec
               xs={12}
               sm={4}
               md={3}
+              style={{
+                padding: "0rem 0rem 1rem 0rem",
+              }}
             >
-              <Typography>
-                  Issues: {stats.issues}
+              <Typography
+                style={{
+                  padding: "0rem 0rem 0rem 2rem",
+                }}
+              >
+                  Issues: {stats.issues ? stats.issues.length : 0}
               </Typography>
-              <Typography>
+              <Typography
+                style={{
+                  padding: "0rem 0rem 0rem 2rem",
+                }}
+              >
                   Average Issues: {stats.averageIssues}
               </Typography>
-              <Typography>
-                  Average Issues: {stats.averageIssues}
+              <Typography
+                style={{
+                  padding: "0rem 0rem 0rem 2rem",
+                }}
+              >
+                  Average open Issues: {stats.averageOpenIssues}
               </Typography>
             </Grid>
             <Grid
@@ -223,15 +309,30 @@ const CourseDashboard = ({ session, courseGroupsBB, courseGroupsGit, bbGitConnec
               xs={12}
               sm={4}
               md={3}
+              style={{
+                padding: "0rem 0rem 1rem 0rem",
+              }}
             >
-              <Typography>
-                  Pull requests: {stats.mergeRequests}
+              <Typography
+                style={{
+                  padding: "0rem 0rem 0rem 2rem",
+                }}
+              >
+                  Pull requests: {stats.mergeRequests ? stats.mergeRequests.length : 0}
               </Typography>
-              <Typography>
+              <Typography
+                style={{
+                  padding: "0rem 0rem 0rem 2rem",
+                }}
+              >
                   Average Pull requests: {stats.averageMergeRequests}
               </Typography>
-              <Typography>
-                  Average Pull requests: {stats.averageMergeRequests}
+              <Typography
+                style={{
+                  padding: "0rem 0rem 0rem 2rem",
+                }}
+              >
+                  Average Open PR's: {stats.averageOpenMergeRequests}
               </Typography>
             </Grid>
             <Grid
@@ -243,15 +344,170 @@ const CourseDashboard = ({ session, courseGroupsBB, courseGroupsGit, bbGitConnec
               xs={12}
               sm={4}
               md={3}
+              style={{
+                padding: "0rem 0rem 1rem 0rem",
+              }}
             >
-              <Typography>
+              <Typography
+                style={{
+                  padding: "0rem 0rem 0rem 2rem",
+                }}
+              >
                   Average Additions: {stats.averageAdditions}
               </Typography>
-              <Typography>
+              <Typography
+                style={{
+                  padding: "0rem 0rem 0rem 2rem",
+                }}
+              >
                   Additions: {stats.additions}
               </Typography>
-              <Typography>
+              <Typography
+                style={{
+                  padding: "0rem 0rem 0rem 2rem",
+                }}
+              >
                   Deletions: {stats.deletions}
+              </Typography>
+            </Grid>
+            <Grid
+              container
+              direction="column"
+              justifyContent="flex-start"
+              alignItems="flex-start"
+              item
+              xs={12}
+              sm={4}
+              md={3}
+              style={{
+                padding: "0rem 0rem 1rem 0rem",
+              }}
+            >
+              <Typography
+                style={{
+                  padding: "0rem 0rem 0rem 2rem",
+                }}
+              >
+                  Most commits: {stats.groupMostCommits}
+              </Typography>
+              <Typography
+                style={{
+                  padding: "0rem 0rem 0rem 2rem",
+                }}
+              >
+                  Most commits count: {stats.groupMostCommitsCount}
+              </Typography>
+            </Grid>
+            <Grid
+              container
+              direction="column"
+              justifyContent="flex-start"
+              alignItems="flex-start"
+              item
+              xs={12}
+              sm={4}
+              md={3}
+              style={{
+                padding: "0rem 0rem 1rem 0rem",
+              }}
+            >
+              <Typography
+                style={{
+                  padding: "0rem 0rem 0rem 2rem",
+                }}
+              >
+                  Fewest commits: {stats.groupFewestCommits}
+              </Typography>
+              <Typography
+                style={{
+                  padding: "0rem 0rem 0rem 2rem",
+                }}
+              >
+                  Fewest commits count: {stats.groupFewestCommitsCount}
+              </Typography>
+            </Grid>
+            <Grid
+              container
+              direction="column"
+              justifyContent="flex-start"
+              alignItems="flex-start"
+              item
+              xs={12}
+              sm={4}
+              md={3}
+              style={{
+                padding: "0rem 0rem 1rem 0rem",
+              }}
+            >
+              <Typography
+                style={{
+                  padding: "0rem 0rem 0rem 2rem",
+                }}
+              >
+                  Most issues: {stats.groupMostIssues}
+              </Typography>
+              <Typography
+                style={{
+                  padding: "0rem 0rem 0rem 2rem",
+                }}
+              >
+                  Most issues count: {stats.groupMostIssuesCount}
+              </Typography>
+            </Grid>
+            <Grid
+              container
+              direction="column"
+              justifyContent="flex-start"
+              alignItems="flex-start"
+              item
+              xs={12}
+              sm={4}
+              md={3}
+              style={{
+                padding: "0rem 0rem 1rem 0rem",
+              }}
+            >
+              <Typography
+                style={{
+                  padding: "0rem 0rem 0rem 2rem",
+                }}
+              >
+                  Fewest issues: {stats.groupFewestIssues}
+              </Typography>
+              <Typography
+                style={{
+                  padding: "0rem 0rem 0rem 2rem",
+                }}
+              >
+                  Fewest issues count: {stats.groupFewestIssuesCount}
+              </Typography>
+            </Grid>
+            <Grid
+              container
+              direction="column"
+              justifyContent="flex-start"
+              alignItems="flex-start"
+              item
+              xs={12}
+              sm={4}
+              md={3}
+              style={{
+                padding: "0rem 0rem 1rem 0rem",
+              }}
+            >
+              <Typography
+                style={{
+                  padding: "0rem 0rem 0rem 2rem",
+                }}
+              >
+                  Members per group BB: {stats.averageMembersBB}
+              </Typography>
+              <Typography
+                style={{
+                  padding: "0rem 0rem 0rem 2rem",
+                }}
+              >
+                  Members per group Git: {stats.averageMembersGit}
               </Typography>
             </Grid>
           </Grid>

@@ -222,7 +222,11 @@ const getGroupKeyStats = async (path, pat, fullPathGit, since, until, fileBlame)
           state
         }
       }
-      
+      groupMembers {
+        nodes {
+          id
+        }
+      }
     }
   }
   `
@@ -263,7 +267,7 @@ const getGroupKeyStats = async (path, pat, fullPathGit, since, until, fileBlame)
       issuesClosed = issues.filter(issue => issue.state === "closed").length
     }
 
-    return { name: groupInfo.name, issues: issues, issuesCount: issuesCount, issuesOpen: issuesOpen, issuesClosed, projects: projects, milestones: milestones, totalWikiSize: totalWikiSize, mergeRequests: mergeRequests }
+    return { name: groupInfo.name, issues: issues, issuesCount: issuesCount, issuesOpen: issuesOpen, issuesClosed, projects: projects, milestones: milestones, totalWikiSize: totalWikiSize, mergeRequests: mergeRequests, members: groupInfo.groupMembers.nodes }
   })
 
   const commitsPromise = Promise.all(groupStats.projects.map(project => {
