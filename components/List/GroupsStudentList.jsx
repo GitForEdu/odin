@@ -19,7 +19,7 @@ const useStyles = makeStyles(theme => ({
       display: "none",
     },
     "&$expanded": {
-      margin: "auto",
+      // margin: "auto",
     },
   },
   accordionSummary: {
@@ -27,26 +27,26 @@ const useStyles = makeStyles(theme => ({
     borderBottom: "1px solid rgba(0, 0, 0, .125)",
     marginBottom: -1,
     minHeight: 56,
-    "&$expanded": {
-      minHeight: 56,
-    },
+
   },
   accordionDetails: {
     padding: theme.spacing(2),
   },
   content: {
     "&$expanded": {
-      margin: "12px 0",
+      // margin: "0 0",
     },
   },
   expanded: {},
 }))
 
 
-const Student = ({ student, expandAll }) => {
+const Student = ({ student, expandAll, groupStats }) => {
+  console.log(student)
+  console.log(groupStats)
   const theme = useTheme()
   const classes = useStyles(theme)
-  console.log(classes.accordion)
+
   const [expanded, setExpanded] = useState(false)
 
   const handleChange = () => () => {
@@ -60,12 +60,22 @@ const Student = ({ student, expandAll }) => {
   // Gitlab provides full name as student.name, Blackboard provides student.name.given and student.name.family
   const name = student.user ? `${student.user.name.given} ${student.user.name.family}` : `${student.name.given} ${student.name.family}`
 
+  const precCommits = ((student.commits / groupStats.issues.length) * 100).toFixed(0)
+  const checkedPrecCommits = isNaN(precCommits) ? 0 : precCommits
+
+  const precAdditions = ((student.additions / groupStats.projectStats.additions) * 100).toFixed(0)
+  const checkedAdditions = isNaN(precAdditions) ? 0 : precAdditions
+
+  const precMergeRequests = student.mergeRequests && ((student.mergeRequests.length / groupStats.mergeRequests.length) * 100).toFixed(0)
+  const checkedMergeRequests = isNaN(precMergeRequests) ? 0 : precMergeRequests
+
+
   return (
     <Grid
       item
       xs={12}
     >
-      <Accordion className={clsx(classes.accordion, classes.expanded)} square expanded={expanded} onChange={handleChange()}>
+      <Accordion className={clsx(classes.accordion, classes.expanded)} disableGutters elevation={0} square expanded={expanded} onChange={handleChange()}>
         <AccordionSummary className={clsx(classes.accordionSummary, classes.expanded, classes.content)} aria-controls="panel1d-content" id="panel1d-header" expandIcon={<ExpandMoreIcon />}>
           <Typography>{name}</Typography>
         </AccordionSummary>
@@ -78,29 +88,79 @@ const Student = ({ student, expandAll }) => {
             item
           >
             <Grid
+              container
+              direction="column"
+              justifyContent="center"
+              alignContent="center"
               item
               xs={6}
               md={4}
             >
-              <Typography>
-                Commits: {student.commits ? student.commits : 0}
-              </Typography>
+              <Grid>
+                <Typography>
+                  {student.commits ? student.commits : 0}
+                </Typography>
+              </Grid>
+              <Grid>
+                <Typography>
+                Commits
+                </Typography>
+              </Grid>
+              <Grid>
+                <Typography>
+                  {checkedPrecCommits}% of group total
+                </Typography>
+              </Grid>
             </Grid>
             <Grid
+              container
+              direction="column"
+              justifyContent="center"
+              alignContent="center"
+              item
               xs={6}
               md={4}
             >
-              <Typography>
-                Additions: {student.additions ? student.additions : 0}
-              </Typography>
+              <Grid>
+                <Typography>
+                  {student.additions ? student.additions : 0}
+                </Typography>
+              </Grid>
+              <Grid>
+                <Typography>
+                Additions
+                </Typography>
+              </Grid>
+              <Grid>
+                <Typography>
+                  {checkedAdditions}% of group total
+                </Typography>
+              </Grid>
             </Grid>
             <Grid
+              container
+              direction="column"
+              justifyContent="center"
+              alignContent="center"
+              item
               xs={6}
               md={4}
             >
-              <Typography>
-                Merge requests: {student.mergeRequests ? student.mergeRequests.length : 0}
-              </Typography>
+              <Grid>
+                <Typography>
+                  {student.mergeRequests ? student.mergeRequests.length : 0}
+                </Typography>
+              </Grid>
+              <Grid>
+                <Typography>
+                Merge requests
+                </Typography>
+              </Grid>
+              <Grid>
+                <Typography>
+                  {checkedMergeRequests}% of group total
+                </Typography>
+              </Grid>
             </Grid>
           </Grid>
         </AccordionDetails>
@@ -110,12 +170,12 @@ const Student = ({ student, expandAll }) => {
 }
 
 
-const StudentList = ({ elements, expandAll }) => {
+const StudentList = ({ elements, expandAll, groupStats }) => {
 
   const studentList = elements.map((elem, index) => {
 
     return (
-      <Student key={index} student={elem} expandAll={expandAll}/>
+      <Student key={index} student={elem} expandAll={expandAll} groupStats={groupStats}/>
     )
   })
 

@@ -298,6 +298,9 @@ export const Group = ({ courseGroupBB, courseGroupGit, bbGitConnection }) => {
         direction="row"
         justifyContent="center"
         alignItems="center"
+        style={{
+          padding: "0 0 2rem 0",
+        }}
       >
         <Grid item xs={10} md={10}>
           <Grid
@@ -489,6 +492,10 @@ export const Group = ({ courseGroupBB, courseGroupGit, bbGitConnection }) => {
                 item
                 xs={12}
                 md={3}
+                style={{
+                  backgroundColor: "#424242",
+                  padding: "1rem 0rem 1rem 0.5rem",
+                }}
               >
                 <Typography>
                   Stats for this group
@@ -500,9 +507,10 @@ export const Group = ({ courseGroupBB, courseGroupGit, bbGitConnection }) => {
                 justifyContent="center"
                 alignItems="center"
                 style={{
-                  padding: "2rem",
+                  margin: "0rem 0rem 1rem 0rem",
+                  padding: "0rem 0rem 1rem 0rem",
+                  backgroundColor: "#424242",
                 }}
-                spacing={2}
               >
                 <Grid
                   container
@@ -513,13 +521,25 @@ export const Group = ({ courseGroupBB, courseGroupGit, bbGitConnection }) => {
                   xs={12}
                   md={3}
                 >
-                  <Typography>
+                  <Typography
+                    style={{
+                      padding: "0rem 0rem 0rem 2rem",
+                    }}
+                  >
                   Projects: {courseGroup.groupKeyStats.projects.length}
                   </Typography>
-                  <Typography>
+                  <Typography
+                    style={{
+                      padding: "0rem 0rem 0rem 2rem",
+                    }}
+                  >
                   Commits: {courseGroup.groupKeyStats.commits.length}
                   </Typography>
-                  <Typography>
+                  <Typography
+                    style={{
+                      padding: "0rem 0rem 0rem 2rem",
+                    }}
+                  >
                   Branches: {courseGroup.groupKeyStats.branches.length}
                   </Typography>
                 </Grid>
@@ -532,13 +552,25 @@ export const Group = ({ courseGroupBB, courseGroupGit, bbGitConnection }) => {
                   xs={12}
                   md={3}
                 >
-                  <Typography>
+                  <Typography
+                    style={{
+                      padding: "0rem 0rem 0rem 2rem",
+                    }}
+                  >
                   Issues: {courseGroup.groupKeyStats.issues.length}
                   </Typography>
-                  <Typography>
+                  <Typography
+                    style={{
+                      padding: "0rem 0rem 0rem 2rem",
+                    }}
+                  >
                   Issues open: {courseGroup.groupKeyStats.issues.filter(issue => issue.state === "opened").length}
                   </Typography>
-                  <Typography>
+                  <Typography
+                    style={{
+                      padding: "0rem 0rem 0rem 2rem",
+                    }}
+                  >
                   Issues closed: {courseGroup.groupKeyStats.issues.filter(issue => issue.state === "closed").length}
                   </Typography>
                 </Grid>
@@ -551,13 +583,25 @@ export const Group = ({ courseGroupBB, courseGroupGit, bbGitConnection }) => {
                   xs={12}
                   md={3}
                 >
-                  <Typography>
+                  <Typography
+                    style={{
+                      padding: "0rem 0rem 0rem 2rem",
+                    }}
+                  >
                   Pull requests: {courseGroup.groupKeyStats.mergeRequests.length}
                   </Typography>
-                  <Typography>
+                  <Typography
+                    style={{
+                      padding: "0rem 0rem 0rem 2rem",
+                    }}
+                  >
                   Pull requests open: {courseGroup.groupKeyStats.mergeRequests.filter(mr => mr.state === "opened").length}
                   </Typography>
-                  <Typography>
+                  <Typography
+                    style={{
+                      padding: "0rem 0rem 0rem 2rem",
+                    }}
+                  >
                   Pull requests closed: {courseGroup.groupKeyStats.mergeRequests.filter(mr => mr.state === "closed").length}
                   </Typography>
                 </Grid>
@@ -570,13 +614,25 @@ export const Group = ({ courseGroupBB, courseGroupGit, bbGitConnection }) => {
                   xs={12}
                   md={3}
                 >
-                  <Typography>
+                  <Typography
+                    style={{
+                      padding: "0rem 0rem 0rem 2rem",
+                    }}
+                  >
                   Last activity: {formatDate(courseGroup.groupKeyStats.projectStats.lastActivity)}
                   </Typography>
-                  <Typography>
+                  <Typography
+                    style={{
+                      padding: "0rem 0rem 0rem 2rem",
+                    }}
+                  >
                   Additions: {courseGroup.groupKeyStats.projectStats.additions}
                   </Typography>
-                  <Typography>
+                  <Typography
+                    style={{
+                      padding: "0rem 0rem 0rem 2rem",
+                    }}
+                  >
                   Deletions: {courseGroup.groupKeyStats.projectStats.deletions}
                   </Typography>
                 </Grid>
@@ -591,6 +647,10 @@ export const Group = ({ courseGroupBB, courseGroupGit, bbGitConnection }) => {
                   item
                   xs={12}
                   md={3}
+                  style={{
+                    backgroundColor: "#424242",
+                    padding: "1rem 0rem 1rem 0.5rem",
+                  }}
                 >
                   <Typography>
                   Average stats for other groups
@@ -602,9 +662,10 @@ export const Group = ({ courseGroupBB, courseGroupGit, bbGitConnection }) => {
                   justifyContent="center"
                   alignItems="center"
                   style={{
-                    padding: "2rem",
+                    margin: "0rem 0rem 1rem 0rem",
+                    padding: "0rem 0rem 1rem 0rem",
+                    backgroundColor: "#424242",
                   }}
-                  spacing={2}
                 >
                   <Grid
                     container
@@ -615,13 +676,25 @@ export const Group = ({ courseGroupBB, courseGroupGit, bbGitConnection }) => {
                     xs={12}
                     md={3}
                   >
-                    <Typography>
+                    <Typography
+                      style={{
+                        padding: "0rem 0rem 0rem 2rem",
+                      }}
+                    >
                   Projects: {groupsStats.averageProjects}
                     </Typography>
-                    <Typography>
+                    <Typography
+                      style={{
+                        padding: "0rem 0rem 0rem 2rem",
+                      }}
+                    >
                   Commits: {groupsStats.averageCommits}
                     </Typography>
-                    <Typography>
+                    <Typography
+                      style={{
+                        padding: "0rem 0rem 0rem 2rem",
+                      }}
+                    >
                   Branches: {groupsStats.averageBranches}
                     </Typography>
                   </Grid>
@@ -634,13 +707,25 @@ export const Group = ({ courseGroupBB, courseGroupGit, bbGitConnection }) => {
                     xs={12}
                     md={3}
                   >
-                    <Typography>
+                    <Typography
+                      style={{
+                        padding: "0rem 0rem 0rem 2rem",
+                      }}
+                    >
                   Issues: {groupsStats.averageIssues}
                     </Typography>
-                    <Typography>
+                    <Typography
+                      style={{
+                        padding: "0rem 0rem 0rem 2rem",
+                      }}
+                    >
                   Issues open: {groupsStats.averageIssuesOpen}
                     </Typography>
-                    <Typography>
+                    <Typography
+                      style={{
+                        padding: "0rem 0rem 0rem 2rem",
+                      }}
+                    >
                   Issues closed: {groupsStats.averageIssuesClosed}
                     </Typography>
                   </Grid>
@@ -653,13 +738,25 @@ export const Group = ({ courseGroupBB, courseGroupGit, bbGitConnection }) => {
                     xs={12}
                     md={3}
                   >
-                    <Typography>
+                    <Typography
+                      style={{
+                        padding: "0rem 0rem 0rem 2rem",
+                      }}
+                    >
                   Pull requests: {groupsStats.averageMergeRequests}
                     </Typography>
-                    <Typography>
+                    <Typography
+                      style={{
+                        padding: "0rem 0rem 0rem 2rem",
+                      }}
+                    >
                   Pull requests open: {groupsStats.averageMergeRequestsOpen}
                     </Typography>
-                    <Typography>
+                    <Typography
+                      style={{
+                        padding: "0rem 0rem 0rem 2rem",
+                      }}
+                    >
                   Pull requests closed: {groupsStats.averageMergeRequestsClosed}
                     </Typography>
                   </Grid>
@@ -672,13 +769,25 @@ export const Group = ({ courseGroupBB, courseGroupGit, bbGitConnection }) => {
                     xs={12}
                     md={3}
                   >
-                    <Typography>
+                    <Typography
+                      style={{
+                        padding: "0rem 0rem 0rem 2rem",
+                      }}
+                    >
                   Last activity: {formatDate(groupsStats.lastActivity)}
                     </Typography>
-                    <Typography>
+                    <Typography
+                      style={{
+                        padding: "0rem 0rem 0rem 2rem",
+                      }}
+                    >
                   Additions: {groupsStats.averageAdditions}
                     </Typography>
-                    <Typography>
+                    <Typography
+                      style={{
+                        padding: "0rem 0rem 0rem 2rem",
+                      }}
+                    >
                   Deletions: {groupsStats.averageDeletions}
                     </Typography>
                   </Grid>
@@ -693,7 +802,9 @@ export const Group = ({ courseGroupBB, courseGroupGit, bbGitConnection }) => {
                 item
                 xs={12}
                 md={3}
-
+                style={{
+                  padding: "0rem 0rem 1rem 0rem",
+                }}
               >
                 <Grid
                   container
@@ -758,12 +869,15 @@ export const Group = ({ courseGroupBB, courseGroupGit, bbGitConnection }) => {
                 item
                 xs={12}
                 md={3}
+                style={{
+                  padding: "0rem 0rem 1rem 0rem",
+                }}
               >
                 <Typography>
                   Members of this group
                 </Typography>
               </Grid>
-              <StudentList elements={courseGroup.members} expandAll={expandAll} />
+              <StudentList elements={courseGroup.members} expandAll={expandAll} groupStats={courseGroup.groupKeyStats} />
             </>}
           </Grid>
         </Grid>
