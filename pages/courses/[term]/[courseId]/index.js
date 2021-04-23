@@ -318,21 +318,21 @@ const CourseDashboard = ({ session, courseGroupsBB, courseGroupsGit, bbGitConnec
                   padding: "0rem 0rem 0rem 2rem",
                 }}
               >
-                  Pull requests: {stats.mergeRequests ? stats.mergeRequests.length : 0}
+                  Merge requests: {stats.mergeRequests ? stats.mergeRequests.length : 0}
               </Typography>
               <Typography
                 style={{
                   padding: "0rem 0rem 0rem 2rem",
                 }}
               >
-                  Average Pull requests: {stats.averageMergeRequests}
+                  Average Merge requests: {stats.averageMergeRequests}
               </Typography>
               <Typography
                 style={{
                   padding: "0rem 0rem 0rem 2rem",
                 }}
               >
-                  Average Open PR's: {stats.averageOpenMergeRequests}
+                  Average Open MR's: {stats.averageOpenMergeRequests}
               </Typography>
             </Grid>
             <Grid

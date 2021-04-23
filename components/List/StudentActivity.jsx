@@ -6,7 +6,7 @@ import { Button } from "@material-ui/core"
 
 const StudentActivity = ({ userName, activity }) => {
   const data1 = { title: "Commits", amount: activity.commits || 294 }
-  const data2 = { title: "Pull requests", amount: activity.pullRequests || 50 }
+  const data2 = { title: "Merge requests", amount: activity.pullRequests || 50 }
   const data3 = { title: "Wiki edits", amount: activity.wikiEdits || 17 }
 
   return (
