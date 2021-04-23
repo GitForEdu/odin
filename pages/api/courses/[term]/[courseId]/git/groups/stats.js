@@ -49,6 +49,18 @@ export async function getGroupsStats(req, params) {
       let projects = 0
       let milestones = 0
       let lastActivity
+      let groupMostCommitsCount = null
+      let groupMostCommits = ""
+      let groupFewestCommits = ""
+      let groupFewestCommitsCount = null
+      let groupMostIssuesCount = null
+      let groupMostIssues = ""
+      let groupFewestIssues = ""
+      let groupFewestIssuesCount = null
+      let groupMostMergeRequestsCount = null
+      let groupMostMergeRequests = ""
+      let groupFewestMergeRequests = ""
+      let groupFewestMergeRequestsCount = null
 
       groupsStatsResponse.forEach(groupStats => {
         if (!lastActivity || lastActivity > groupStats.projectStats.lastActivity) {
@@ -67,6 +79,31 @@ export async function getGroupsStats(req, params) {
         branches = branches + groupStats.branches.length
         projects = projects + groupStats.projects.length
         milestones = milestones + groupStats.milestones.length
+
+        if ((groupStats.commits.length > groupMostCommitsCount) || (groupStats.commits.length && !groupFewestCommitsCount)) {
+          groupMostCommitsCount = groupStats.commits.length
+          groupMostCommits = groupStats.name
+        }
+        if ((groupStats.commits.length < groupFewestCommitsCount) || (groupStats.commits.length && !groupFewestCommitsCount)) {
+          groupFewestCommitsCount = groupStats.commits.length
+          groupFewestCommits = groupStats.name
+        }
+        if ((groupStats.issues.length > groupMostIssuesCount) || (groupStats.issues.length && !groupFewestIssuesCount)) {
+          groupMostIssuesCount = groupStats.issues.length
+          groupMostIssues = groupStats.name
+        }
+        if ((groupStats.issues.length < groupFewestIssuesCount) || (groupStats.issues.length && !groupFewestIssuesCount)) {
+          groupFewestIssuesCount = groupStats.issues.length
+          groupFewestIssues = groupStats.name
+        }
+        if ((groupStats.mergeRequests.length > groupMostMergeRequestsCount) || (groupStats.mergeRequests.length && !groupFewestMergeRequestsCount)) {
+          groupMostMergeRequestsCount = groupStats.mergeRequests.length
+          groupMostMergeRequests = groupStats.name
+        }
+        if ((groupStats.mergeRequests.length < groupFewestIssuesCount) || (groupStats.mergeRequests.length && !groupFewestMergeRequestsCount)) {
+          groupFewestMergeRequestsCount = groupStats.mergeRequests.length
+          groupFewestMergeRequests = groupStats.name
+        }
       })
 
       const numberOfGroups = groupsStatsResponse.length
@@ -99,6 +136,18 @@ export async function getGroupsStats(req, params) {
         averageProjects: averageProjects.toFixed(2),
         averageMilestones: averageMilestones.toFixed(2),
         lastActivity: lastActivity,
+        groupFewestCommits: groupFewestCommits,
+        groupFewestCommitsCount: groupFewestCommitsCount,
+        groupMostCommits: groupMostCommits,
+        groupMostCommitsCount: groupMostCommitsCount,
+        groupFewestIssues: groupFewestIssues,
+        groupFewestIssuesCount: groupFewestIssuesCount,
+        groupMostIssues: groupMostIssues,
+        groupMostIssuesCount: groupMostMergeRequestsCount,
+        groupFewestMergeRequests: groupFewestMergeRequests,
+        groupFewestMergeRequestsCount: groupFewestMergeRequestsCount,
+        groupMostMergeRequests: groupMostMergeRequests,
+        groupMostMergeRequestsCount: groupMostMergeRequestsCount,
       }
     }
   }

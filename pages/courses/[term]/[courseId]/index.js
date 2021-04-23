@@ -139,7 +139,7 @@ const CourseDashboard = ({ session, courseGroupsBB, courseGroupsGit, bbGitConnec
 
   useEffect(() => {
     if(courseGroupsGit.length > 0) {
-      calcultateGitStats(term, courseId, courseGroupsBB, courseGroupsGit, false).then(data => {
+      calcultateGitStats(term, courseId, courseGroupsBB, courseGroupsGit).then(data => {
         setStats(data)
       })
     }
