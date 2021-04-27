@@ -1,4 +1,5 @@
 // Helpers
+import cachedFetch from "utils/cachedFetch"
 
 const remapUserObjectToFitBlackboard = (user) => {
   const { name, username, ...memberExploded } = user
@@ -27,13 +28,13 @@ const remapUserObjectToFitBlackboard = (user) => {
 * A user object. Contains id, name,
 */
 const getUserGit = async (path, pat, userName) => {
-  const response = fetch(`${path}/api/v4/users?username=${userName}`, {
+  const response = cachedFetch(`${path}/api/v4/users?username=${userName}`, {
     method: "GET",
     headers: {
       "Content-Type": "application/json",
       "PRIVATE-TOKEN": pat,
     },
-  }).then(r => r.json()).then(searchResultUser => {
+  }).then(r => r.json).then(searchResultUser => {
     let user = undefined
     searchResultUser.forEach(usersFoundInSearch => {
       if (usersFoundInSearch.username === userName) {
@@ -60,13 +61,13 @@ const getUserGit = async (path, pat, userName) => {
 * A list of user objects. Contains id, name,
 */
 const getCourseUsersGit = async (path, groupId, pat) => {
-  const members = await fetch(`${path}/api/v4/groups/${groupId}/members`, {
+  const members = await cachedFetch(`${path}/api/v4/groups/${groupId}/members`, {
     method: "GET",
     headers: {
       "Content-Type": "application/json",
       "PRIVATE-TOKEN": pat,
     },
-  }).then(r => r.json())
+  }).then(r => r.json)
 
   if (!members.message) {
     const listOfMembers = members.map(member => {
@@ -129,14 +130,14 @@ const addUserToGroupGit = async (path, groupId, pat, userName, access_level) => 
     access_level: access_level,
   }
 
-  const response = fetch(`${path}/api/v4/groups/${groupId}/members`, {
+  const response = cachedFetch(`${path}/api/v4/groups/${groupId}/members`, {
     method: "POST",
     headers: {
       "Content-Type": "application/json",
       "PRIVATE-TOKEN": pat,
     },
     body: JSON.stringify(payload),
-  }).then(r => r.json())
+  }).then(r => r.json)
 
   return response
 }
@@ -161,14 +162,14 @@ const addUsersToGroupGit = async (path, groupId, pat, userNames, access_level) =
       access_level: access_level,
     }
 
-    const response = fetch(`${path}/api/v4/groups/${groupId}/members`, {
+    const response = cachedFetch(`${path}/api/v4/groups/${groupId}/members`, {
       method: "POST",
       headers: {
         "Content-Type": "application/json",
         "PRIVATE-TOKEN": pat,
       },
       body: JSON.stringify(payload),
-    }).then(r => r.json())
+    }).then(r => r.json)
 
     return response
   }

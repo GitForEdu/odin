@@ -1,4 +1,5 @@
 import { remapUserObjectToFitBlackboard } from "./student"
+import cachedFetch from "utils/cachedFetch"
 
 // GET stuff for gitlab group
 
@@ -12,15 +13,15 @@ import { remapUserObjectToFitBlackboard } from "./student"
 * A group object. Contains id, name, path with more
 */
 const getGroupGit = async (path, groupId, pat) => {
-  const response = fetch(`${path}/api/v4/groups/${groupId}`, {
+  const response = await cachedFetch(`${path}/api/v4/groups/${groupId}`, {
     method: "GET",
     headers: {
       "Content-Type": "application/json",
       "PRIVATE-TOKEN": pat,
     },
-  }).then(r => r.json())
+  })
 
-  return response
+  return response.json
 }
 
 /*
@@ -39,13 +40,13 @@ const getGroupGit = async (path, groupId, pat) => {
 const getGroupWithStudentsGit = async (path, groupId, pat) => {
   const group = await getGroupGit(path, groupId, pat)
 
-  const groupMembers = await fetch(`${path}/api/v4/groups/${group.id}/members`, {
+  const groupMembers = await cachedFetch(`${path}/api/v4/groups/${group.id}/members`, {
     method: "GET",
     headers: {
       "Content-Type": "application/json",
       "PRIVATE-TOKEN": pat,
     },
-  }).then(rr => rr.json())
+  }).then(rr => rr.json)
 
   const fixedGroupMembers = groupMembers.filter(member => member.access_level !== 50).map(member_2 => {
     return remapUserObjectToFitBlackboard(member_2)
@@ -73,7 +74,7 @@ const getGroupWithStudentsGit = async (path, groupId, pat) => {
 const getGroupsGit = async (path, courseNameGit, pat, page) => {
   const parentGroup = await getGroupGit(path, courseNameGit, pat)
 
-  const response = await fetch(`${path}/api/v4/groups/${parentGroup.id}/subgroups?per_page=100&page=${page}`, {
+  const response = await cachedFetch(`${path}/api/v4/groups/${parentGroup.id}/subgroups?per_page=100&page=${page}`, {
     method: "GET",
     headers: {
       "Content-Type": "application/json",
@@ -81,7 +82,7 @@ const getGroupsGit = async (path, courseNameGit, pat, page) => {
     },
   })
 
-  let subGroups = await response.json()
+  let subGroups = await response.json
 
   if (/<([^>]+)>; rel="next"/g.test(response.headers.get("link"))) {
     page = new URL(/<([^>]+)>; rel="next"/g.exec(response.headers.get("link"))[1]).searchParams.get("page")
@@ -104,7 +105,7 @@ const getGroupsGit = async (path, courseNameGit, pat, page) => {
 const getGroupsWithStudentsGit = async (path, courseNameGit, pat, page) => {
   const parentGroup = await getGroupGit(path, courseNameGit, pat)
 
-  const response = await fetch(`${path}/api/v4/groups/${parentGroup.id}/subgroups?per_page=100&page=${page}`, {
+  const response = await cachedFetch(`${path}/api/v4/groups/${parentGroup.id}/subgroups?per_page=100&page=${page}`, {
     method: "GET",
     headers: {
       "Content-Type": "application/json",
@@ -112,7 +113,7 @@ const getGroupsWithStudentsGit = async (path, courseNameGit, pat, page) => {
     },
   })
 
-  let subGroups = await response.json()
+  let subGroups = await response.json
 
   if (/<([^>]+)>; rel="next"/g.test(response.headers.get("link"))) {
     page = new URL(/<([^>]+)>; rel="next"/g.exec(response.headers.get("link"))[1]).searchParams.get("page")
@@ -121,13 +122,13 @@ const getGroupsWithStudentsGit = async (path, courseNameGit, pat, page) => {
 
   if (!parentGroup.message) {
     const subGroupsWithMembers = subGroups.map(group => {
-      return fetch(`${path}/api/v4/groups/${group.id}/members`, {
+      return cachedFetch(`${path}/api/v4/groups/${group.id}/members`, {
         method: "GET",
         headers: {
           "Content-Type": "application/json",
           "PRIVATE-TOKEN": pat,
         },
-      }).then(r => r.json()).then(groupMembers => {
+      }).then(r => r.json).then(groupMembers => {
         const fixedGroupMembers = groupMembers.filter(member => member.access_level !== 50).map(member_2 => {
           return remapUserObjectToFitBlackboard(member_2)
         })
@@ -177,14 +178,14 @@ const createGroupGit = async (path, courseNameGit, pat, parentId) => {
     }
   }
 
-  const response = await fetch(`${path}/api/v4/groups/`, {
+  const response = await cachedFetch(`${path}/api/v4/groups/`, {
     method: "POST",
     headers: {
       "Content-Type": "application/json",
       "PRIVATE-TOKEN": pat,
     },
     body: JSON.stringify(payload),
-  }).then(r => r.json())
+  }).then(r => r.json)
 
   return response
 }
@@ -203,13 +204,13 @@ const createGroupGit = async (path, courseNameGit, pat, parentId) => {
 * 200?
 */
 const deleteGroupGit = async (path, pat, groupId) => {
-  const response = await fetch(`${path}/api/v4/groups/${groupId}`, {
+  const response = await cachedFetch(`${path}/api/v4/groups/${groupId}`, {
     method: "DELETE",
     headers: {
       "Content-Type": "application/json",
       "PRIVATE-TOKEN": pat,
     },
-  }).then(r => r.json())
+  }).then(r => r.json)
 
   return response
 }

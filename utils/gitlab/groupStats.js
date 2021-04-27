@@ -1,4 +1,5 @@
 // Helpers
+import cachedFetch from "utils/cachedFetch"
 
 const mergeContributorDicts = (dictEmail, dictUserName) => {
   const arrayEmail = Object.values(dictEmail)
@@ -54,13 +55,13 @@ const mergeContributorDicts = (dictEmail, dictUserName) => {
 // Stats
 
 const getGroupProjects = async (path, courseNameGit, groupId, pat) => {
-  const projects = await fetch(`${path}/api/v4/groups/${courseNameGit}/projects`, {
+  const projects = await cachedFetch(`${path}/api/v4/groups/${courseNameGit}/projects`, {
     method: "GET",
     headers: {
       "Content-Type": "application/json",
       "PRIVATE-TOKEN": pat,
     },
-  }).then(r => r.json())
+  }).then(r => r.json)
   console.log("projects", projects)
 
   return projects
@@ -74,7 +75,7 @@ const getProjectCommits = async (path, projectId, pat, since, until, page) => {
   if (until) {
     fetchUrl = fetchUrl + `&until="${until}"`
   }
-  const response = await fetch(fetchUrl, {
+  const response = await cachedFetch(fetchUrl, {
     method: "GET",
     headers: {
       "Content-Type": "application/json",
@@ -82,7 +83,7 @@ const getProjectCommits = async (path, projectId, pat, since, until, page) => {
     },
   })
 
-  let commits = await response.json()
+  let commits = await response.json
 
   if (/<([^>]+)>; rel="next"/g.test(response.headers.get("link"))) {
     page = new URL(/<([^>]+)>; rel="next"/g.exec(response.headers.get("link"))[1]).searchParams.get("page")
@@ -94,14 +95,14 @@ const getProjectCommits = async (path, projectId, pat, since, until, page) => {
 
 const getProjectBranches = async (path, projectId, pat) => {
   let fetchUrl = `${path}/api/v4/projects/${projectId}/repository/branches`
-  const branches = await fetch(fetchUrl, {
+  const branches = await cachedFetch(fetchUrl, {
     method: "GET",
     headers: {
       "Content-Type": "application/json",
       "PRIVATE-TOKEN": pat,
     },
   }).then(r => {
-    return r.json()
+    return r.json
   })
 
   return branches
@@ -109,14 +110,14 @@ const getProjectBranches = async (path, projectId, pat) => {
 
 const getProjectWikiPages = async (path, projectId, pat) => {
   let fetchUrl = `${path}/api/v4/projects/${projectId}/wikis`
-  const wikiPages = await fetch(fetchUrl, {
+  const wikiPages = await cachedFetch(fetchUrl, {
     method: "GET",
     headers: {
       "Content-Type": "application/json",
       "PRIVATE-TOKEN": pat,
     },
   }).then(r => {
-    return r.json()
+    return r.json
   })
 
   return wikiPages
@@ -124,7 +125,7 @@ const getProjectWikiPages = async (path, projectId, pat) => {
 
 const getProjectFiles = async (path, projectId, pat, fileBlame, page) => {
   let fetchUrl = `${path}/api/v4/projects/${projectId}/repository/tree?recursive=true&per_page=100&page=${page}`
-  const response = await fetch(fetchUrl, {
+  const response = await cachedFetch(fetchUrl, {
     method: "GET",
     headers: {
       "Content-Type": "application/json",
@@ -132,7 +133,7 @@ const getProjectFiles = async (path, projectId, pat, fileBlame, page) => {
     },
   })
 
-  let files = await response.json()
+  let files = await response.json
 
   if (/<([^>]+)>; rel="next"/g.test(response.headers.get("link"))) {
     page = new URL(/<([^>]+)>; rel="next"/g.exec(response.headers.get("link"))[1]).searchParams.get("page")
@@ -141,7 +142,7 @@ const getProjectFiles = async (path, projectId, pat, fileBlame, page) => {
 
   files = files.filter(file => file.type === "blob")
   if (fileBlame) {
-    files = await Promise.all(files.map(file => {
+    files = Promise.all(files.map(file => {
       return getFileBlameData(path, pat, projectId, file.path).then(r => {
         return { ...file, blameData: r }
       })
@@ -153,14 +154,14 @@ const getProjectFiles = async (path, projectId, pat, fileBlame, page) => {
 
 const getFileBlameData = async (path, pat, projectId, pathToFile ) => {
   let fetchUrl = `${path}/api/v4/projects/${projectId}/repository/files/${encodeURIComponent(pathToFile)}/blame?ref=master`
-  const fileBlame = await fetch(fetchUrl, {
+  const fileBlame = await cachedFetch(fetchUrl, {
     method: "GET",
     headers: {
       "Content-Type": "application/json",
       "PRIVATE-TOKEN": pat,
     },
   }).then(r => {
-    return r.json()
+    return r.json
   })
 
   return fileBlame
@@ -232,14 +233,14 @@ const getGroupKeyStats = async (path, pat, fullPathGit, since, until, fileBlame)
   }
   `
 
-  const groupStats = await fetch(`${path}/api/graphql`, {
+  const groupStats = await cachedFetch(`${path}/api/graphql`, {
     method: "POST",
     headers: {
       "Content-Type": "application/json",
       "PRIVATE-TOKEN": pat,
     },
     body: JSON.stringify({ query }),
-  }).then(r => r.json()).then(d => {
+  }).then(r => r.json).then(d => {
     const groupInfo = d.data.group
 
     const projects = groupInfo.projects.nodes

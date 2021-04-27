@@ -61,8 +61,8 @@ async function getServerSideAccessToken() {
     }
   }
 
-  throw {
+  throw new Error({
     message: "AccessTokenError",
     accessToken,
-  }
+  })
 }
