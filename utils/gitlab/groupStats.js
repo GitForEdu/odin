@@ -136,7 +136,7 @@ const getProjectFiles = async (path, projectId, pat, fileBlame, page) => {
 
   if (/<([^>]+)>; rel="next"/g.test(response.headers.get("link"))) {
     page = new URL(/<([^>]+)>; rel="next"/g.exec(response.headers.get("link"))[1]).searchParams.get("page")
-    files = files.concat(await getProjectFiles(path, projectId, pat, page))
+    files = files.concat(await getProjectFiles(path, projectId, pat, fileBlame, page))
   }
 
   files = files.filter(file => file.type === "blob")
@@ -199,6 +199,7 @@ const getGroupKeyStats = async (path, pat, fullPathGit, since, until, fileBlame)
           assignees {
             nodes {
               username
+              name
             }
           }
         }
@@ -323,7 +324,7 @@ const getGroupKeyStats = async (path, pat, fullPathGit, since, until, fileBlame)
     const commiterName = mergeRequest.author.name
 
     if (contributorStatsUserName[commiterUsername]) {
-      contributorStatsUserName[commiterUsername].mergeRequests = contributorStatsUserName[commiterUsername].mergeRequests.push(mergeRequest)
+      contributorStatsUserName[commiterUsername].mergeRequests = [...contributorStatsUserName[commiterUsername].mergeRequests, mergeRequest]
     }
     else {
       contributorStatsUserName[commiterUsername] = {
@@ -350,6 +351,7 @@ const getGroupKeyStats = async (path, pat, fullPathGit, since, until, fileBlame)
           name: assigneName,
           userName: assigneUsername,
           issues: [{ createdAt: issue.createdAt, state: issue.state }],
+          mergeRequests: [],
         }
       }
     })
@@ -385,6 +387,7 @@ const getGroupKeyStats = async (path, pat, fullPathGit, since, until, fileBlame)
         lines: 0,
         additions: additions,
         deletions: deletions,
+        mergeRequests: [],
       }
     }
   })
@@ -409,6 +412,7 @@ const getGroupKeyStats = async (path, pat, fullPathGit, since, until, fileBlame)
             lines: lines,
             additions: 0,
             deletions: 0,
+            mergeRequests: [],
           }
         }
       })

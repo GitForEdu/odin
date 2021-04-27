@@ -239,11 +239,16 @@ const getDateFound = (stats) => {
 
   const contributors = {}
 
-  Object.keys(stats.contributorStats).map((k) => stats.contributorStats[k]).forEach(contributor => {
+  const contributorList = Object.keys(stats.contributorStats).map((k) => stats.contributorStats[k])
+
+  contributorList.forEach(contributor => {
     contributors[contributor.name] = 0
   })
 
-  const commits = stats.commits.reverse()
+  const commits = stats.commits.sort(function(a, b){
+    return new Date(a.created_at) - new Date(b.created_at)
+  })
+
   commits.forEach(commit => {
     const date = new Date(commit.created_at)
     const dateKey = `${date.getFullYear()}-${date.getMonth() + 1}-${date.getDate()}`
@@ -252,11 +257,13 @@ const getDateFound = (stats) => {
       dateFound[dateKey][commit.author_name] = contributors[commit.author_name]
     }
     else {
-      dateFound[dateKey] = {}
+      const tmpObject = {}
       contributors[commit.author_name] = contributors[commit.author_name] + 1
-      Object.keys(stats.contributorStats).map((k) => stats.contributorStats[k]).forEach(contributor => {
-        dateFound[dateKey][contributor.name] = contributors[contributor.name]
+      contributorList.forEach(contributor => {
+        tmpObject[contributor.name] = contributors[contributor.name]
       })
+      console.log(tmpObject)
+      dateFound[dateKey] = tmpObject
     }
   })
 
@@ -266,8 +273,11 @@ const getDateFound = (stats) => {
 const getSeries = (dateFound) => {
   const seriesTmp = {}
 
-  Object.keys(dateFound).map((k) => dateFound[k]).forEach(date => {
-    Object.keys(date).map((j) => j).forEach(person => {
+  const dateFoundInCommitsList = Object.keys(dateFound).map((k) => dateFound[k])
+
+  dateFoundInCommitsList.forEach(date => {
+    const personsInDateList = Object.keys(date).map((j) => j)
+    personsInDateList.forEach(person => {
       if(!seriesTmp[person]) {
         seriesTmp[person] = {
           name: person,
@@ -284,7 +294,7 @@ const getSeries = (dateFound) => {
 }
 
 const getCategories = (dateFound) => {
-  return Object.keys(dateFound).map((k) => k)
+  return Object.keys(dateFound).map((date) => date)
 }
 
 const optionsCommitsArea = (series, categories) => {
