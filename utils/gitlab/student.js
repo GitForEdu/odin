@@ -130,14 +130,14 @@ const addUserToGroupGit = async (path, groupId, pat, userName, access_level) => 
     access_level: access_level,
   }
 
-  const response = cachedFetch(`${path}/api/v4/groups/${groupId}/members`, {
+  const response = fetch(`${path}/api/v4/groups/${groupId}/members`, {
     method: "POST",
     headers: {
       "Content-Type": "application/json",
       "PRIVATE-TOKEN": pat,
     },
     body: JSON.stringify(payload),
-  }).then(r => r.json)
+  }).then(r => r.json())
 
   return response
 }
@@ -162,14 +162,14 @@ const addUsersToGroupGit = async (path, groupId, pat, userNames, access_level) =
       access_level: access_level,
     }
 
-    const response = cachedFetch(`${path}/api/v4/groups/${groupId}/members`, {
+    const response = fetch(`${path}/api/v4/groups/${groupId}/members`, {
       method: "POST",
       headers: {
         "Content-Type": "application/json",
         "PRIVATE-TOKEN": pat,
       },
       body: JSON.stringify(payload),
-    }).then(r => r.json)
+    }).then(r => r.json())
 
     return response
   }

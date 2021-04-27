@@ -9,8 +9,9 @@ export default async function cachedFetch(url, init) {
   try {
     const key = `${url}_token=${init.headers["PRIVATE-TOKEN"]}`
     const cachedResponse = cacheFetches.get(key)
+
     // Try returning the cached response
-    if (cachedResponse && init.method === "GET") {
+    if (cachedResponse) {
       return cachedResponse
     }
 
@@ -21,9 +22,8 @@ export default async function cachedFetch(url, init) {
     const res = { headers, json }
 
     // Update the cache with a time-to-live
-    if (init.method === "GET") {
-      cacheFetches.set(key, res, 3600)
-    }
+    cacheFetches.set(key, res, 3600)
+
     return res
   } catch (error) {
     throw error

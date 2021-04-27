@@ -178,14 +178,14 @@ const createGroupGit = async (path, courseNameGit, pat, parentId) => {
     }
   }
 
-  const response = await cachedFetch(`${path}/api/v4/groups/`, {
+  const response = await fetch(`${path}/api/v4/groups/`, {
     method: "POST",
     headers: {
       "Content-Type": "application/json",
       "PRIVATE-TOKEN": pat,
     },
     body: JSON.stringify(payload),
-  }).then(r => r.json)
+  }).then(r => r.json())
 
   return response
 }
@@ -204,13 +204,13 @@ const createGroupGit = async (path, courseNameGit, pat, parentId) => {
 * 200?
 */
 const deleteGroupGit = async (path, pat, groupId) => {
-  const response = await cachedFetch(`${path}/api/v4/groups/${groupId}`, {
+  const response = await fetch(`${path}/api/v4/groups/${groupId}`, {
     method: "DELETE",
     headers: {
       "Content-Type": "application/json",
       "PRIVATE-TOKEN": pat,
     },
-  }).then(r => r.json)
+  }).then(r => r.json())
 
   return response
 }
