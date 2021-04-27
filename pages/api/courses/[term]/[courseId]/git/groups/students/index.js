@@ -28,7 +28,7 @@ async function RemoveStudentsInGroup (req, params) {
       where: { userName_gitURL: { userName: userName, gitURL: connection.gitURL } },
     })
     if (userConnection) {
-      const parentGroupInfoWithSubGroups = await getGroupsGit(connection.gitURL, connection.repoName, userConnection.pat)
+      const parentGroupInfoWithSubGroups = await getGroupsGit(connection.gitURL, encodeURIComponent(connection.repoName), userConnection.pat, 0)
       if (parentGroupInfoWithSubGroups.id) {
         const addedStudents = studentsToRemove.map(student => {
           const studentsGroup = parentGroupInfoWithSubGroups.subGroups.find(subGroup => subGroup.name === student.groupName)
@@ -85,7 +85,7 @@ async function AddStudentsToGroup(req, params) {
       where: { userName_gitURL: { userName: userName, gitURL: connection.gitURL } },
     })
     if (userConnection) {
-      const parentGroupInfoWithSubGroups = await getGroupsGit(connection.gitURL, connection.repoName, userConnection.pat)
+      const parentGroupInfoWithSubGroups = await getGroupsGit(connection.gitURL, encodeURIComponent(connection.repoName), userConnection.pat, 0)
       if (parentGroupInfoWithSubGroups.id) {
         const addedStudents = studentsToAdd.map(student => {
           const studentsGroup = parentGroupInfoWithSubGroups.subGroups.find(subGroup => subGroup.name === student.groupName)

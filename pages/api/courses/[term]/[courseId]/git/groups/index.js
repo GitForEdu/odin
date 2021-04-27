@@ -25,7 +25,7 @@ export async function GetGroups (req, params) {
       where: { userName_gitURL: { userName: userName, gitURL: connection.gitURL } },
     })
     if (userConnection) {
-      const groupsGit = await getGroupsGit(connection.gitURL, connection.repoName, userConnection.pat)
+      const groupsGit = await getGroupsGit(connection.gitURL, encodeURIComponent(connection.repoName), userConnection.pat, 0)
       // console.log(groupsGit)
       if (!groupsGit.message) {
         return groupsGit
@@ -55,7 +55,7 @@ export async function GetGroupsWithMembers (req, params) {
       where: { userName_gitURL: { userName: userName, gitURL: connection.gitURL } },
     })
     if (userConnection) {
-      const response = await getGroupsWithStudentsGit(connection.gitURL, connection.repoName, userConnection.pat)
+      const response = await getGroupsWithStudentsGit(connection.gitURL, connection.repoName, userConnection.pat, 0)
       if (!response.message) {
         return await Promise.all(response).then(groupsGit => groupsGit)
       }

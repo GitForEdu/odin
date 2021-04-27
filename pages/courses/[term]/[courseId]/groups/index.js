@@ -27,7 +27,7 @@ const useStyles = makeStyles((theme) => ({
 
 const mergeBBGitKeyStats = async (term, courseId, courseGroupsBB, courseGroupsGit, sinceTime, untilTime) => {
   const groupKeyStats = await fetcher(
-    `/api/courses/${term}/${courseId}/git/groups/getGroupsKeyStats?since=${sinceTime.toISOString()}&until=${untilTime.toISOString()}&groupPaths=${courseGroupsGit.map(group => group.full_path).join(",")}`,
+    `/api/courses/${term}/${courseId}/git/groups/getGroupsKeyStats?since=${sinceTime.toISOString()}&until=${untilTime.toISOString()}&groupPaths=${courseGroupsGit.map(group => encodeURIComponent(group.full_path)).join(",")}`,
     {},
     "GET"
   )
@@ -226,7 +226,7 @@ export const Group = ({ courseGroupsBB, courseGroupsGit, bbGitConnection }) => {
                   Create groups on GitLab
                   </Button>}
               </>
-              : courseGroupsBB.length !== courseGroupsGit.length
+              : courseGroupsBB.length === courseGroupsGit.length
                 ? <>
                   <h1>Amount of groups on BB and Blackboard does not match</h1>
                   {bbGitConnection.pat
@@ -439,11 +439,11 @@ export const getServerSideProps = (async (context) => {
 
   const courseGroupsBB = await getCourseGroups(context.req, params)
 
-  console.log(courseGroupsBB)
+  console.log(courseGroupsBB.length)
 
   const courseGroupsGit = (await GetGroups(context.req, params)).subGroups
 
-  console.log(courseGroupsGit)
+  console.log(courseGroupsGit.length)
 
   const bbGitConnection = await getBBGitConnection(context.req, params)
 

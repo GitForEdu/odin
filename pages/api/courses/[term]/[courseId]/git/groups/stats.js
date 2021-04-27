@@ -26,7 +26,7 @@ export async function getGroupsStats(req, params) {
       where: { userName_gitURL: { userName: userName, gitURL: connection.gitURL } },
     })
     if (userConnection) {
-      const groups = (await getGroupsGit(connection.gitURL, connection.repoName, userConnection.pat)).subGroups
+      const groups = (await getGroupsGit(connection.gitURL, encodeURIComponent(connection.repoName), userConnection.pat, 0)).subGroups
       const groupPaths = groups.map(group => group.full_path)
 
       const groupsStatsPromises = groupPaths.map(groupPath => {

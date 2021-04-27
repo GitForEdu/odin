@@ -30,7 +30,7 @@ const getButtonStyle = bigScreen => {
 
 const calcultateGitStats = async (term, courseId, courseGroupsBB, courseGroupsGit) => {
   const groupKeyStats = await fetcher(
-    `/api/courses/${term}/${courseId}/git/groups/getGroupsKeyStats?groupPaths=${courseGroupsGit.map(group => group.full_path).join(",")}`,
+    `/api/courses/${term}/${courseId}/git/groups/getGroupsKeyStats?groupPaths=${courseGroupsGit.map(group => encodeURIComponent(group.full_path)).join(",")}`,
     {},
     "GET"
   )

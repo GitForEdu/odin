@@ -409,7 +409,11 @@ export const getServerSideProps = (async (context) => {
   // groupsGit[2].members.push({ name: { given: "Tore", family: "Stensaker" }, userName: "toretef" })
   // groupsGit[3].members.push({ name: { given: "Petter", family: "Rein" }, userName: "pettegre" })
 
-  const groupDiff = calculateGroupDiff(groupsGit, groupsBB)
+  const groupDiff = (calculateGroupDiff(groupsGit, groupsBB)).sort((a, b) => a.name.localeCompare(b.name, undefined, {
+    numeric: true,
+    sensitivity: "base",
+  }))
+
   const usersInNoGroup = checkIfUserInAGroup(courseStudents, checkGroupStatus(groupDiff)[1])
   // usersInNoGroup.push({ name: { given: "Petter", family: "Rein" }, userName: "test", found: "Blackboard" })
 
@@ -422,7 +426,6 @@ export const getServerSideProps = (async (context) => {
     props: { groupDiff },
   }
 })
-
 
 const checkGroupStatus = (groups) => {
   let studentsGroup = {}

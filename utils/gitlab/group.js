@@ -70,16 +70,23 @@ const getGroupWithStudentsGit = async (path, groupId, pat) => {
 * rename username into userName
 * split name into object with given and family namee
 */
-const getGroupsGit = async (path, courseNameGit, pat) => {
+const getGroupsGit = async (path, courseNameGit, pat, page) => {
   const parentGroup = await getGroupGit(path, courseNameGit, pat)
 
-  const subGroups = await fetch(`${path}/api/v4/groups/${parentGroup.id}/subgroups`, {
+  const response = await fetch(`${path}/api/v4/groups/${parentGroup.id}/subgroups?per_page=100&page=${page}`, {
     method: "GET",
     headers: {
       "Content-Type": "application/json",
       "PRIVATE-TOKEN": pat,
     },
-  }).then(r => r.json())
+  })
+
+  let subGroups = await response.json()
+
+  if (/<([^>]+)>; rel="next"/g.test(response.headers.get("link"))) {
+    page = new URL(/<([^>]+)>; rel="next"/g.exec(response.headers.get("link"))[1]).searchParams.get("page")
+    subGroups = subGroups.concat(await getGroupsGit(path, courseNameGit, pat, page))
+  }
 
   return { ...parentGroup, subGroups: subGroups }
 }
@@ -94,16 +101,23 @@ const getGroupsGit = async (path, courseNameGit, pat) => {
 * Return
 * A list of group objects. Contains id, name, path with more
 */
-const getGroupsWithStudentsGit = async (path, courseNameGit, pat) => {
+const getGroupsWithStudentsGit = async (path, courseNameGit, pat, page) => {
   const parentGroup = await getGroupGit(path, courseNameGit, pat)
 
-  const subGroups = await fetch(`${path}/api/v4/groups/${parentGroup.id}/subgroups`, {
+  const response = await fetch(`${path}/api/v4/groups/${parentGroup.id}/subgroups?per_page=100&page=${page}`, {
     method: "GET",
     headers: {
       "Content-Type": "application/json",
       "PRIVATE-TOKEN": pat,
     },
-  }).then(r => r.json())
+  })
+
+  let subGroups = await response.json()
+
+  if (/<([^>]+)>; rel="next"/g.test(response.headers.get("link"))) {
+    page = new URL(/<([^>]+)>; rel="next"/g.exec(response.headers.get("link"))[1]).searchParams.get("page")
+    subGroups = subGroups.concat(await getGroupsGit(path, courseNameGit, pat, page))
+  }
 
   if (!parentGroup.message) {
     const subGroupsWithMembers = subGroups.map(group => {
