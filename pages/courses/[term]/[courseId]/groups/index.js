@@ -32,12 +32,12 @@ const mergeBBGitKeyStats = async (term, courseId, courseGroupsBB, courseGroupsGi
     "GET"
   )
 
-  const courseGroups = courseGroupsBB.map(group => {
-    const groupGitInfo = groupKeyStats.find(groupGit => groupGit.name === group.name)
-    return { ...groupGitInfo, ...group }
-  })
+  // const courseGroups = courseGroupsBB.map(group => {
+  //   const groupGitInfo = groupKeyStats.find(groupGit => groupGit.name === group.name)
+  //   return { ...groupGitInfo, ...group }
+  // })
 
-  return courseGroups
+  return groupKeyStats
 }
 
 const cellList = [
