@@ -1544,7 +1544,9 @@ export const Group = ({ courseGroupBB, courseGroupGit, bbGitConnection }) => {
 export const getServerSideProps = (async (context) => {
   const params = context.params
 
-  const courseGroupBB = await getCourseGroup(context.req, params)
+  // TODO fix this:
+  const courseGroupBB = {}//await getCourseGroup(context.req, params)
+  courseGroupBB.members = []
 
   const courseGroupGit = await getGroupWithMembersGit(context.req, params)
 
