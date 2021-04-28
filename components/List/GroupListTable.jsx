@@ -1,52 +1,59 @@
-import React, { useEffect, useState } from "react"
-import PropTypes from "prop-types"
+import { useEffect, useState } from "react"
 import clsx from "clsx"
-import { alpha, makeStyles } from "@material-ui/core/styles"
+import { makeStyles } from "@material-ui/core/styles"
 import Table from "@material-ui/core/Table"
 import TableBody from "@material-ui/core/TableBody"
 import TableCell from "@material-ui/core/TableCell"
 import TableContainer from "@material-ui/core/TableContainer"
 import TableHead from "@material-ui/core/TableHead"
-import TablePagination from "@material-ui/core/TablePagination"
 import TableRow from "@material-ui/core/TableRow"
 import TableSortLabel from "@material-ui/core/TableSortLabel"
 import Toolbar from "@material-ui/core/Toolbar"
-import Typography from "@material-ui/core/Typography"
 import Paper from "@material-ui/core/Paper"
 import Checkbox from "@material-ui/core/Checkbox"
 import IconButton from "@material-ui/core/IconButton"
 import Tooltip from "@material-ui/core/Tooltip"
 import FormControlLabel from "@material-ui/core/FormControlLabel"
-import Switch from "@material-ui/core/Switch"
-import DeleteIcon from "@material-ui/icons/Delete"
 import FilterListIcon from "@material-ui/icons/FilterList"
 import { visuallyHidden } from "@material-ui/utils"
-import Link from "next/link"
 import { useRouter } from "next/router"
 import TextField from "@material-ui/core/TextField"
-import { Grid } from "@material-ui/core"
+import { Button, Grid, Modal, Skeleton } from "@material-ui/core"
 import { formatDate } from "utils/format"
+import CloseIcon from "@material-ui/icons/Close"
+import calcultateGitStats from "../Stats/getCourseOverviewStats"
 
+const useStyles = makeStyles((theme) => ({
+  root: {
+    width: "100%",
+  },
+  paperTable: {
+    width: "100%",
+    marginBottom: theme.spacing(2),
+  },
+  table: {
+    minWidth: 750,
+  },
+  sortSpan: visuallyHidden,
+  paper: {
+    position: "absolute",
+    width: 400,
+    backgroundColor: theme.palette.background.paper,
+    border: "2px solid #000",
+    boxShadow: theme.shadows[5],
+    padding: theme.spacing(2, 4, 3),
+  },
+}))
 
-const tableCells = (row, cells) => {
-  return (
-    <>
-      {cells.map((cell, index) => {
-        return (
-          <TableCell key={index} align={cell.type === "numeric" ? "right" : "left"}>{row[cell.dataLabel]}</TableCell>
-        )
-      })}
-    </>
-  )
-}
-
-const headCells = (cells) => {
-  const cellList = [{ id: "name", numeric: false, disablePadding: true, label: "Group name" }]
-  cells.forEach(cell => (
-    cellList.push({ id: cell.dataLabel, numeric: cell.type === "numeric", disablePadding: false, label: cell.label })
-  ))
-  return (cellList)
-}
+const useToolbarStyles = makeStyles((theme) => ({
+  root: {
+    paddingLeft: theme.spacing(2),
+    paddingRight: theme.spacing(1),
+  },
+  title: {
+    flex: "1 1 100%",
+  },
+}))
 
 const createData = (group) => {
   return {
@@ -102,19 +109,25 @@ const stableSort = (array, comparator) => {
   return stabilizedThis.map((el) => el[0])
 }
 
-const useStyles = makeStyles((theme) => ({
-  root: {
-    width: "100%",
-  },
-  paper: {
-    width: "100%",
-    marginBottom: theme.spacing(2),
-  },
-  table: {
-    minWidth: 750,
-  },
-  sortSpan: visuallyHidden,
-}))
+const tableCells = (row, cells) => {
+  return (
+    <>
+      {cells.map((cell, index) => {
+        return (
+          <TableCell key={index} align={cell.type === "numeric" ? "right" : "left"}>{row[cell.dataLabel]}</TableCell>
+        )
+      })}
+    </>
+  )
+}
+
+const headCells = (cells) => {
+  const cellList = [{ id: "name", numeric: false, disablePadding: true, label: "Group name" }]
+  cells.forEach(cell => (
+    cellList.push({ id: cell.dataLabel, numeric: cell.type === "numeric", disablePadding: false, label: cell.label })
+  ))
+  return (cellList)
+}
 
 const EnhancedTableHead = (props) => {
   const { classes, order, orderBy, onRequestSort, cells } = props
@@ -152,16 +165,6 @@ const EnhancedTableHead = (props) => {
   )
 }
 
-const useToolbarStyles = makeStyles((theme) => ({
-  root: {
-    paddingLeft: theme.spacing(2),
-    paddingRight: theme.spacing(1),
-  },
-  title: {
-    flex: "1 1 100%",
-  },
-}))
-
 const EnhancedTableToolbar = ({ searchVal, handleSearch, handleModal }) => {
   const classes = useToolbarStyles()
 
@@ -175,8 +178,6 @@ const EnhancedTableToolbar = ({ searchVal, handleSearch, handleModal }) => {
         justifyContent="space-between"
         alignItems="baseline"
       >
-
-
         <Grid
           item
         >
@@ -191,7 +192,6 @@ const EnhancedTableToolbar = ({ searchVal, handleSearch, handleModal }) => {
               margin: "0",
             }}
           />
-
         </Grid>
         <Grid
           container
@@ -212,7 +212,7 @@ const EnhancedTableToolbar = ({ searchVal, handleSearch, handleModal }) => {
   )
 }
 
-export default function EnhancedTable({ groups, cells, handleModal }) {
+function EnhancedTable({ groups, cells, handleModal }) {
   const router = useRouter()
   const { courseId, term } = router.query
   const classes = useStyles()
@@ -245,7 +245,7 @@ export default function EnhancedTable({ groups, cells, handleModal }) {
 
   return (
     <div className={classes.root}>
-      <Paper className={classes.paper}>
+      <Paper className={classes.paperTable}>
         <EnhancedTableToolbar searchVal={searched} handleSearch={handleSearch} handleModal={handleModal}/>
         <TableContainer>
           <Table
@@ -282,3 +282,181 @@ export default function EnhancedTable({ groups, cells, handleModal }) {
     </div>
   )
 }
+
+const ModalColumns = ({ classes, columnSelectors, handleModal }) => (
+  <div
+    className={classes.paper}
+  >
+    <Grid
+      container
+      direction="row"
+      justifyContent="center"
+      alignItems="center"
+    >
+      <Grid
+        container
+        direction="row"
+        justifyContent="flex-end"
+        alignItems="flex-start"
+      >
+        <Button
+          variant="contained"
+          color="primary"
+          onClick={handleModal}
+        >
+          <CloseIcon />
+        </Button>
+      </Grid>
+      <Grid
+        container
+        direction="row"
+        justifyContent="flex-start"
+        alignItems="flex-start"
+      >
+        {columnSelectors}
+      </Grid>
+      <Grid
+        container
+        direction="row"
+        justifyContent="flex-end"
+        alignItems="flex-end"
+      >
+        <Button
+          variant="contained"
+          color="primary"
+          onClick={handleModal}
+        >
+          Set filters
+        </Button>
+      </Grid>
+    </Grid>
+  </div>
+)
+
+const cellList = [
+  { label: "Issues", type: "numeric", dataLabel: "issues" },
+  { label: "Commits", type: "numeric", dataLabel: "commits" },
+  { label: "Members", type: "numeric", dataLabel: "members" },
+  { label: "Branches", type: "numeric", dataLabel: "branches" },
+  { label: "Merge Requests", type: "numeric", dataLabel: "mergeRequests" },
+  { label: "Projects", type: "numeric", dataLabel: "projects" },
+  { label: "Milestones", type: "numeric", dataLabel: "milestones" },
+  { label: "Wiki Pages", type: "numeric", dataLabel: "wikiPages" },
+  { label: "Wiki Size", type: "numeric", dataLabel: "wikiSize" },
+  { label: "Unassgined Issues", type: "numeric", dataLabel: "unassginedIssues" },
+  { label: "Time of first commit", type: "date", dataLabel: "firstCommit" },
+  { label: "Time of last commit", type: "date", dataLabel: "lastCommit" },
+  { label: "Last Activity in a project", type: "date", dataLabel: "lastActivity" },
+  { label: "Lines of code", type: "numeric", dataLabel: "linesOfCode" },
+  { label: "Number of files", type: "numeric", dataLabel: "numberOfFiles" },
+  { label: "Additions", type: "numeric", dataLabel: "additions" },
+  { label: "Deletions", type: "numeric", dataLabel: "deletions" },
+]
+
+const GroupsStatsList = ({ courseGroupsBB, courseGroupsGit, courseId, sinceTime, term, untilTime }) => {
+  const [cells, setCells] = useState([
+    { label: "Commits", type: "numeric", dataLabel: "commits" },
+    { label: "Issues", type: "numeric", dataLabel: "issues" },
+    { label: "Members", type: "numeric", dataLabel: "members" },
+  ])
+  const [modalState, setModalState] = useState(false)
+  const [courseGroups, setCourseGroups] = useState([])
+  const [loading, setLoading] = useState(false)
+
+  const classes = useStyles()
+
+  useEffect(() => {
+    setLoading(true)
+    if(courseGroupsGit.length > 0) {
+      calcultateGitStats(term, courseId, courseGroupsBB, courseGroupsGit, sinceTime, untilTime).then(data => {
+        setCourseGroups(data.groups)
+        setLoading(false)
+      })
+    }
+  }, [courseGroupsBB, courseGroupsGit, courseId, sinceTime, term, untilTime])
+
+  const handleModal = () => {
+    setModalState(!modalState)
+  }
+
+  const handleChangeCheckbox = (event) => {
+    const tmpCells = [...cells]
+    const findIndex = cells.findIndex(cell => cell.label === event.target.name)
+    if (findIndex >= 0) {
+      tmpCells.splice(findIndex, 1)
+    }
+    else {
+      tmpCells.push(cellList.find(cell => cell.label === event.target.name))
+    }
+    setCells(tmpCells)
+  }
+
+  const columnSelectors
+     = cellList.map((cellElement, index) => (
+       <Grid
+         key={index}
+         container
+         direction="row"
+         justifyContent="flex-start"
+         alignItems="flex-start"
+
+         item
+         xs={6}
+       >
+         <FormControlLabel
+           control={
+             <Checkbox
+               checked={cells.findIndex(cell => cell.label === cellElement.label) >= 0}
+               onChange={handleChangeCheckbox}
+               name={cellElement.label}
+               color="selected"
+             />
+           }
+           label={cellElement.label}
+         />
+       </Grid>
+     ))
+
+  return (
+    <>
+      { !loading
+        ? <Grid
+          container
+          item
+        >
+          <Modal
+            style={{ display:"flex", alignItems:"center", justifyContent:"center" }}
+            open={modalState}
+            onClose={handleModal}
+            aria-labelledby="simple-modal-title"
+            aria-describedby="simple-modal-description"
+          >
+            <ModalColumns classes={classes} columnSelectors={columnSelectors} handleModal={handleModal}/>
+          </Modal>
+          <EnhancedTable groups={courseGroups} cells={cells} handleModal={handleModal}/>
+        </Grid>
+        : <>
+          <Grid
+            item
+            xs={12}
+            md={12}
+            spacing={0}
+            style={{
+              height: "30rem",
+            }}
+          >
+            <Skeleton
+              style={{
+                width: "100%",
+                height: "100%",
+                transformOrigin: "0 0.1%",
+              }}
+            />
+          </Grid>
+        </>
+      }
+    </>
+  )
+}
+
+export default GroupsStatsList
