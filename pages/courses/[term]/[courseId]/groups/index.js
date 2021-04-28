@@ -12,6 +12,7 @@ import { GetGroups } from "pages/api/courses/[term]/[courseId]/git/groups"
 import DatePicker from "@material-ui/lab/DatePicker"
 import EnhancedTable from "components/List/GroupListTable"
 import CloseIcon from "@material-ui/icons/Close"
+import DatePickerBar from "components/DatePickerBar"
 
 
 const useStyles = makeStyles((theme) => ({
@@ -201,7 +202,7 @@ export const Group = ({ courseGroupsBB, courseGroupsGit, bbGitConnection }) => {
         alignItems="center"
       >
         <Grid item xs={10} md={10}>
-          {courseGroupsBB.length === 0
+          {courseGroupsBB.length === -1
             ? <>
               <h1>No groups found on Blackboard</h1>
               <Link href={`/courses/${term}/${courseId}/groups/create`} passHref>
@@ -253,138 +254,7 @@ export const Group = ({ courseGroupsBB, courseGroupsGit, bbGitConnection }) => {
               alignContent="center"
               item
             >
-              <Grid
-                container
-                direction="row"
-                justifyContent="center"
-                alignContent="center"
-                item
-              >
-                <Grid
-                  item
-                  xs={6}
-                  md={3}
-                >
-                  <DatePicker
-                    renderInput={(props) =>
-                      <TextField
-                        {...props}
-                        margin="normal"
-                        helperText=""
-                      />}
-                    label="DatePicker"
-                    value={sinceTime}
-                    onChange={(newValue) => {
-                      setSinceTime(newValue)
-                    }}
-                  />
-                </Grid>
-                <Grid
-                  item
-                  xs={6}
-                  md={3}
-                >
-                  <DatePicker
-                    renderInput={(props) =>
-                      <TextField
-                        {...props}
-                        margin="normal"
-                        helperText=""
-                      />}
-                    label="DatePicker"
-                    value={untilTime}
-                    onChange={(newValue) => {
-                      setUntilTime(newValue)
-                    }}
-                  />
-                </Grid>
-              </Grid>
-              <Grid
-                container
-                direction="row"
-                justifyContent="center"
-                alignContent="center"
-                item
-              >
-                <Grid
-                  item
-                  xs={3}
-                  md={3}
-                >
-                </Grid>
-                <Grid
-                  container
-                  direction="row"
-                  justifyContent="center"
-                  alignContent="center"
-                  item
-                  xs={12}
-                  md={6}
-                >
-                  <Grid
-                    item
-                    xs={3}
-                    md={4}
-                  >
-                    <Button
-                      variant="contained"
-                      color="primary"
-                      onClick={() => {
-                        const date = new Date()
-                        date.setDate(date.getDate()-1)
-                        setSinceTime(date)
-                        const dateUntil = new Date()
-                        setUntilTime(dateUntil)
-                      }}
-                    >
-                Last day
-                    </Button>
-                  </Grid>
-                  <Grid
-                    item
-                    xs={3}
-                    md={4}
-                  >
-                    <Button
-                      variant="contained"
-                      color="primary"
-                      onClick={() => {
-                        const date = new Date()
-                        date.setDate(date.getDate()-7)
-                        setSinceTime(date)
-                        const dateUntil = new Date()
-                        setUntilTime(dateUntil)
-                      }}
-                    >
-                Last week
-                    </Button>
-                  </Grid>
-                  <Grid
-                    item
-                    xs={3}
-                    md={4}
-                  >
-                    <Button
-                      variant="contained"
-                      color="primary"
-                      onClick={() => {
-                        const date = new Date()
-                        date.setMonth(date.getMonth()-1)
-                        setSinceTime(date)
-                        const dateUntil = new Date()
-                        setUntilTime(dateUntil)
-                      }}
-                    >
-                Last month
-                    </Button>
-                  </Grid>
-                </Grid>
-                <Grid
-                  item
-                  xs={3}
-                  md={3}
-                ></Grid>
-              </Grid>
+              <DatePickerBar sinceTime={sinceTime} untilTime={untilTime} setSinceTime={setSinceTime} setUntilTime={setUntilTime}/>
               <Grid
                 container
                 item
@@ -437,7 +307,7 @@ export const Group = ({ courseGroupsBB, courseGroupsGit, bbGitConnection }) => {
 export const getServerSideProps = (async (context) => {
   const params = context.params
 
-  const courseGroupsBB = await getCourseGroups(context.req, params)
+  const courseGroupsBB = []//await getCourseGroups(context.req, params)
 
   console.log(courseGroupsBB.length)
 
