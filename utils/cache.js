@@ -7,7 +7,11 @@ const cacheOwnCalls = new NodeCache()
 
 export async function cachedFetch(url, init) {
   try {
-    const key = `${url}_token=${init.headers["PRIVATE-TOKEN"]}`
+    let key = `${url}_token=${init.headers["PRIVATE-TOKEN"]}`
+    if(init.method === "POST") {
+      // cache the graphqø call
+      key = key + `_body=${init.body}`
+    }
     const cachedResponse = cacheFetches.get(key)
 
     // Try returning the cached response
@@ -32,7 +36,7 @@ export async function cachedFetch(url, init) {
 }
 
 export async function cacheCalls(req, userName, func, funcParams) {
-  const key = `${req.url}_userName=${userName}`
+  const key = `${req.url}_userName=${userName}_params=${funcParams.join(",")}`
   const cachedResponse = cacheOwnCalls.get(key)
 
   // Try returning the cached response

@@ -15,7 +15,7 @@ export const Students = ({ initialUsers }) => {
   const router = useRouter()
   const { courseId, term } = router.query
   const [users, setUsers] = useState(initialUsers)
-  const [sinceTime, setSinceTime] = useState(new Date("2020-01-01T00:00:00.000Z"))
+  const [sinceTime, setSinceTime] = useState(new Date((new Date()).valueOf() - 31536000000))
   const [untilTime, setUntilTime] = useState(new Date((new Date()).valueOf() + 86400000))
 
   return (

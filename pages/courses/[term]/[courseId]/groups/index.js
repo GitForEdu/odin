@@ -113,7 +113,7 @@ const ModalColumns = ({ classes, columnSelectors, handleModal }) => (
 export const Group = ({ courseGroupsBB, courseGroupsGit, bbGitConnection }) => {
   const router = useRouter()
   const { courseId, term } = router.query
-  const [sinceTime, setSinceTime] = useState(new Date("2020-01-01T00:00:00.000Z"))
+  const [sinceTime, setSinceTime] = useState(new Date((new Date()).valueOf() - 31536000000))
   const [untilTime, setUntilTime] = useState(new Date((new Date()).valueOf() + 86400000))
   const [loadingCreateSubGroups, setLoadingCreateSubGroups] = useState(false)
   const [courseGroups, setCourseGroups] = useState([])
