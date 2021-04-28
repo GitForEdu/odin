@@ -15,10 +15,19 @@ export async function GetGroupsKeyStats(req, params) {
   const courseId = params.courseId
   const term = params.term
   const groupPaths = params.groupPaths.split(",")
-  const since = (params.since).split(".")
-  const sinceTime = new Date(since[0], since[1], since[2])
-  const until = (params.until).split(".")
-  const untilTime = new Date(until[0], until[1], until[2])
+  const since = params.since
+  let sinceTime = ""
+  if (since) {
+    const splitSince = since.split(".")
+    sinceTime = new Date(splitSince[0], splitSince[1], splitSince[2])
+  }
+  const until = params.until
+  let untilTime = ""
+  if (until) {
+    const splitUntil = until.split(".")
+    untilTime = new Date(splitUntil[0], splitUntil[1], splitUntil[2])
+  }
+
   const fileBlame = params.fileBlame
   const courseFull = `${courseId}-${term}`
 

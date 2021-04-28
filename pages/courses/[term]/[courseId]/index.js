@@ -2,7 +2,7 @@ import React, { useEffect, useState } from "react"
 import Tile from "components/Tile"
 import Navbar from "components/Navbar"
 import withAuth from "components/withAuth"
-import { Button, Grid, Typography, useMediaQuery } from "@material-ui/core"
+import { Button, Grid, TextField, Typography, useMediaQuery } from "@material-ui/core"
 import { useRouter } from "next/router"
 import Link from "next/link"
 import { getBBGitConnection } from "pages/api/courses/[term]/[courseId]/git/createConnection"
@@ -10,6 +10,7 @@ import { CreateGitConnectionLink, CreatePatConnectionLink } from "components/Git
 import fetcher from "utils/fetcher"
 import { getCourseGroups } from "pages/api/courses/[term]/[courseId]/groups"
 import { GetGroups } from "pages/api/courses/[term]/[courseId]/git/groups"
+import DatePicker from "@material-ui/lab/DatePicker"
 
 const getButtonStyle = bigScreen => {
   const baseStyle = {
@@ -28,9 +29,9 @@ const getButtonStyle = bigScreen => {
   }
 }
 
-const calcultateGitStats = async (term, courseId, courseGroupsBB, courseGroupsGit) => {
+const calcultateGitStats = async (term, courseId, courseGroupsBB, courseGroupsGit, sinceTime, untilTime) => {
   const groupKeyStats = await fetcher(
-    `/api/courses/${term}/${courseId}/git/groups/getGroupsKeyStats?groupPaths=${courseGroupsGit.map(group => encodeURIComponent(group.full_path)).join(",")}`,
+    `/api/courses/${term}/${courseId}/git/groups/getGroupsKeyStats?since=${sinceTime.getFullYear()}.${sinceTime.getMonth()}.${sinceTime.getDate()}&until=${untilTime.getFullYear()}.${untilTime.getMonth()}.${untilTime.getDate() + 1}&groupPaths=${courseGroupsGit.map(group => encodeURIComponent(group.full_path)).join(",")}`,
     {},
     "GET"
   )
@@ -134,12 +135,14 @@ const CourseDashboard = ({ session, courseGroupsBB, courseGroupsGit, bbGitConnec
   const matches = useMediaQuery("(max-width:400px)")
   const router = useRouter()
   const { term, courseId } = router.query
+  const [sinceTime, setSinceTime] = useState(new Date((new Date()).valueOf() - 31536000000))
+  const [untilTime, setUntilTime] = useState(new Date((new Date()).valueOf() + 86400000))
   const sessionCourse = session.bbUserCourses.find(course => course.id === courseId)
   const [stats, setStats] = useState({})
 
   useEffect(() => {
     if(courseGroupsGit.length > 0) {
-      calcultateGitStats(term, courseId, courseGroupsBB, courseGroupsGit).then(data => {
+      calcultateGitStats(term, courseId, courseGroupsBB, courseGroupsGit, sinceTime, untilTime).then(data => {
         setStats(data)
       })
     }
@@ -201,6 +204,146 @@ const CourseDashboard = ({ session, courseGroupsBB, courseGroupsGit, bbGitConnec
                 ? <CreatePatConnectionLink />
                 : undefined
             }
+          </Grid>
+          <Grid
+            container
+            direction="row"
+            justifyContent="center"
+            alignContent="center"
+            item
+          >
+            <Grid
+              container
+              direction="row"
+              justifyContent="center"
+              alignContent="center"
+              item
+            >
+              <Grid
+                item
+                xs={6}
+                md={3}
+              >
+                <DatePicker
+                  renderInput={(props) =>
+                    <TextField
+                      {...props}
+                      margin="normal"
+                      helperText=""
+                    />}
+                  label="DatePicker"
+                  value={sinceTime}
+                  onChange={(newValue) => {
+                    setSinceTime(newValue)
+                  }}
+                />
+              </Grid>
+              <Grid
+                item
+                xs={6}
+                md={3}
+              >
+                <DatePicker
+                  renderInput={(props) =>
+                    <TextField
+                      {...props}
+                      margin="normal"
+                      helperText=""
+                    />}
+                  label="DatePicker"
+                  value={untilTime}
+                  onChange={(newValue) => {
+                    setUntilTime(newValue)
+                  }}
+                />
+              </Grid>
+            </Grid>
+            <Grid
+              container
+              direction="row"
+              justifyContent="center"
+              alignContent="center"
+              item
+            >
+              <Grid
+                item
+                xs={3}
+                md={3}
+              >
+              </Grid>
+              <Grid
+                container
+                direction="row"
+                justifyContent="center"
+                alignContent="center"
+                item
+                xs={12}
+                md={6}
+              >
+                <Grid
+                  item
+                  xs={3}
+                  md={4}
+                >
+                  <Button
+                    variant="contained"
+                    color="primary"
+                    onClick={() => {
+                      const date = new Date()
+                      date.setDate(date.getDate()-1)
+                      setSinceTime(date)
+                      const dateUntil = new Date()
+                      setUntilTime(dateUntil)
+                    }}
+                  >
+                Last day
+                  </Button>
+                </Grid>
+                <Grid
+                  item
+                  xs={3}
+                  md={4}
+                >
+                  <Button
+                    variant="contained"
+                    color="primary"
+                    onClick={() => {
+                      const date = new Date()
+                      date.setDate(date.getDate()-7)
+                      setSinceTime(date)
+                      const dateUntil = new Date()
+                      setUntilTime(dateUntil)
+                    }}
+                  >
+                Last week
+                  </Button>
+                </Grid>
+                <Grid
+                  item
+                  xs={3}
+                  md={4}
+                >
+                  <Button
+                    variant="contained"
+                    color="primary"
+                    onClick={() => {
+                      const date = new Date()
+                      date.setMonth(date.getMonth()-1)
+                      setSinceTime(date)
+                      const dateUntil = new Date()
+                      setUntilTime(dateUntil)
+                    }}
+                  >
+                Last month
+                  </Button>
+                </Grid>
+              </Grid>
+              <Grid
+                item
+                xs={3}
+                md={3}
+              ></Grid>
+            </Grid>
           </Grid>
           <Grid
             container
