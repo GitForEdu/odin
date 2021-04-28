@@ -1,5 +1,5 @@
 import { remapUserObjectToFitBlackboard } from "./student"
-import cachedFetch from "utils/cachedFetch"
+import { cachedFetch } from "utils/cache"
 
 // GET stuff for gitlab group
 

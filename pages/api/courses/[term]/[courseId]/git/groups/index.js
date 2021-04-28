@@ -2,6 +2,7 @@ import { PrismaClient } from "@prisma/client"
 import { getSession } from "next-auth/client"
 import { createGroupGit, deleteGroupGit, getGroupGit, getGroupsGit, getGroupsWithStudentsGit } from "utils/gitlab"
 import isAuthorized from "middelwares/authorized"
+import { cacheCalls } from "utils/cache"
 
 const prisma = new PrismaClient()
 
@@ -25,7 +26,7 @@ export async function GetGroups (req, params) {
       where: { userName_gitURL: { userName: userName, gitURL: connection.gitURL } },
     })
     if (userConnection) {
-      const groupsGit = await getGroupsGit(connection.gitURL, encodeURIComponent(connection.repoName), userConnection.pat, 0)
+      const groupsGit = await cacheCalls(req, userName, getGroupsGit, [connection.gitURL, encodeURIComponent(connection.repoName), userConnection.pat, 0])
       // console.log(groupsGit)
       if (!groupsGit.message) {
         return groupsGit

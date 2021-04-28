@@ -1,5 +1,5 @@
 // Helpers
-import cachedFetch from "utils/cachedFetch"
+import { cachedFetch } from "utils/cache"
 
 const remapUserObjectToFitBlackboard = (user) => {
   const { name, username, ...memberExploded } = user

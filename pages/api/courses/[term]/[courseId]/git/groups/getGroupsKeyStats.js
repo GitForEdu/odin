@@ -2,6 +2,7 @@ import { PrismaClient } from "@prisma/client"
 import { getSession } from "next-auth/client"
 import { getGroupKeyStats } from "utils/gitlab"
 import isAuthorized from "middelwares/authorized"
+import { cacheCalls } from "utils/cache"
 
 
 const prisma = new PrismaClient()
@@ -14,8 +15,10 @@ export async function GetGroupsKeyStats(req, params) {
   const courseId = params.courseId
   const term = params.term
   const groupPaths = params.groupPaths.split(",")
-  const since = params.since
-  const until = params.until
+  const since = (params.since).split(".")
+  const sinceTime = new Date(since[0], since[1], since[2])
+  const until = (params.until).split(".")
+  const untilTime = new Date(until[0], until[1], until[2])
   const fileBlame = params.fileBlame
   const courseFull = `${courseId}-${term}`
 
@@ -28,7 +31,7 @@ export async function GetGroupsKeyStats(req, params) {
     })
     if (userConnection) {
       const deleteGroupsResponse = groupPaths.map(groupPath => {
-        return getGroupKeyStats(connection.gitURL, userConnection.pat, groupPath, since, until, fileBlame)
+        return cacheCalls(req, userName, getGroupKeyStats, [connection.gitURL, userConnection.pat, groupPath, sinceTime, untilTime, fileBlame])
       })
       return Promise.all(deleteGroupsResponse)
     }

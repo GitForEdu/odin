@@ -753,7 +753,7 @@ const mergeUsersAndStats = (group, courseGroupGit) => {
 
 const mergeBBGitKeyStats = async (term, courseId, groupId, courseGroupsBB, courseGroupGit, sinceTime, untilTime) => {
   const groupKeyStats = await fetcher(
-    `/api/courses/${term}/${courseId}/git/groups/${groupId}/getGroupKeyStats?since=${sinceTime.toISOString()}&until=${untilTime.toISOString()}&groupPath=${courseGroupGit.full_path}&fileBlame=true`,
+    `/api/courses/${term}/${courseId}/git/groups/${groupId}/getGroupKeyStats?since=${sinceTime.getFullYear()}.${sinceTime.getMonth()}.${sinceTime.getDate()}&until=${untilTime.getFullYear()}.${untilTime.getMonth()}.${untilTime.getDate() + 1}&groupPath=${courseGroupGit.full_path}&fileBlame=true`,
     {},
     "GET"
   )
@@ -762,7 +762,7 @@ const mergeBBGitKeyStats = async (term, courseId, groupId, courseGroupsBB, cours
 
 const getGroupsstats = async (term, courseId, sinceTime, untilTime) => {
   const groupsStats = await fetcher(
-    `/api/courses/${term}/${courseId}/git/groups/stats?since=${sinceTime.toISOString()}&until=${untilTime.toISOString()}&fileBlame=false`,
+    `/api/courses/${term}/${courseId}/git/groups/stats?since=${sinceTime.getFullYear()}.${sinceTime.getMonth()}.${sinceTime.getDate()}&until=${untilTime.getFullYear()}.${untilTime.getMonth()}.${untilTime.getDate() + 1}&fileBlame=false`,
     {},
     "GET"
   )
@@ -773,7 +773,9 @@ export const Group = ({ courseGroupBB, courseGroupGit, bbGitConnection }) => {
   const matches = useMediaQuery("(max-width:400px)")
   const router = useRouter()
   const { courseId, term, groupId } = router.query
-  const [sinceTime, setSinceTime] = useState(new Date("2020-01-01T00:00:00.000Z"))
+  // 1 year back
+  const [sinceTime, setSinceTime] = useState(new Date((new Date()).valueOf() - 31536000000))
+  // 1 day forward
   const [untilTime, setUntilTime] = useState(new Date((new Date()).valueOf() + 86400000))
   const [courseGroup, setCourseGroups] = useState()
   const [compareGroupSwitch, setCompareGroupSwitch] = useState(false)

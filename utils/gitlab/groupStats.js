@@ -1,5 +1,5 @@
 // Helpers
-import cachedFetch from "utils/cachedFetch"
+import { cachedFetch } from "utils/cache"
 
 const mergeContributorDicts = (dictEmail, dictUserName) => {
   const arrayEmail = Object.values(dictEmail)
@@ -247,16 +247,41 @@ const getGroupKeyStats = async (path, pat, fullPathGit, since, until, fileBlame)
     let milestones = groupInfo.milestones.nodes
     let mergeRequests = groupInfo.mergeRequests.nodes
     if (until && since) {
-      milestones = groupInfo.milestones.nodes.filter(milestone => milestone.createdAt <= until && milestone.createdAt >= since)
-      mergeRequests = groupInfo.mergeRequests.nodes.filter(mergeRequest => mergeRequest.createdAt <= until && mergeRequest.createdAt >= since)
+      const sinceTime = since.valueOf()
+      const untilTime = until.valueOf()
+      milestones = groupInfo.milestones.nodes.filter(milestone => {
+        const date = new Date(milestone.createdAt).valueOf()
+        return date <= untilTime && date >= sinceTime
+      })
+      mergeRequests = groupInfo.mergeRequests.nodes.filter(mergeRequest => {
+        const date = new Date(mergeRequest.createdAt.valueOf())
+        return date <= untilTime && date >= sinceTime
+
+      })
     }
     else if (until) {
-      milestones = groupInfo.milestones.nodes.filter(milestone => milestone.createdAt <= until)
-      mergeRequests = groupInfo.mergeRequests.nodes.filter(mergeRequest => mergeRequest.createdAt <= until)
+      const untilTime = until.valueOf()
+      milestones = groupInfo.milestones.nodes.filter(milestone => {
+        const date = new Date(milestone.createdAt).valueOf()
+        return date <= untilTime
+      })
+      mergeRequests = groupInfo.mergeRequests.nodes.filter(mergeRequest => {
+        const date = new Date(mergeRequest.createdAt.valueOf())
+        return date <= untilTime
+
+      })
     }
     else if (since) {
-      milestones = groupInfo.milestones.nodes.filter(milestone => milestone.createdAt >= since)
-      mergeRequests = groupInfo.mergeRequests.nodes.filter(mergeRequest => mergeRequest.createdAt >= since)
+      const sinceTime = since.valueOf()
+      milestones = groupInfo.milestones.nodes.filter(milestone => {
+        const date = new Date(milestone.createdAt).valueOf()
+        return date >= sinceTime
+      })
+      mergeRequests = groupInfo.mergeRequests.nodes.filter(mergeRequest => {
+        const date = new Date(mergeRequest.createdAt.valueOf())
+        return date >= sinceTime
+
+      })
     }
     const issues = groupInfo.issues.nodes
     const issuesCount = issues.length

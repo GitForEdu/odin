@@ -27,7 +27,7 @@ const useStyles = makeStyles((theme) => ({
 
 const mergeBBGitKeyStats = async (term, courseId, courseGroupsBB, courseGroupsGit, sinceTime, untilTime) => {
   const groupKeyStats = await fetcher(
-    `/api/courses/${term}/${courseId}/git/groups/getGroupsKeyStats?since=${sinceTime.toISOString()}&until=${untilTime.toISOString()}&groupPaths=${courseGroupsGit.map(group => encodeURIComponent(group.full_path)).join(",")}`,
+    `/api/courses/${term}/${courseId}/git/groups/getGroupsKeyStats?since=${sinceTime.getFullYear()}.${sinceTime.getMonth()}.${sinceTime.getDate()}&until=${untilTime.getFullYear()}.${untilTime.getMonth()}.${untilTime.getDate() + 1}&groupPaths=${courseGroupsGit.map(group => encodeURIComponent(group.full_path)).join(",")}`,
     {},
     "GET"
   )
