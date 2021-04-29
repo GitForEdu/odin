@@ -17,6 +17,7 @@ const getNTNULogoStyle = () => ({
 
 export const Navbar = props => {
   const rootPageCheck = useRouter().pathname === "/"
+  const coursesPageCheck = useRouter().pathname === "/courses"
   const classes = useStyles()
   const { pageTitle, courseId, term } = props
   const [drawer, setDrawer] = useState(false)
@@ -42,70 +43,74 @@ export const Navbar = props => {
         justifyContent="flex-start"
         alignItems="flex-start"
       >
-        <Grid
-          item
-          xs={12}
-        >
-          <Link href={"/courses"} passHref>
-            <Button
-              variant="contained"
-              color="primary"
-            >
-        Back to courses
-            </Button>
-          </Link>
-        </Grid>
-        <Grid
-          item
-          xs={12}
-        >
-          <Button
-            variant="contained"
-            color="primary"
+        { !coursesPageCheck
+        && <>
+          <Grid
+            item
+            xs={12}
           >
-              Edit your pat for this course
-          </Button>
-        </Grid>
-        <Grid
-          item
-          xs={12}
-        >
-          <Button
-            variant="contained"
-            color="primary"
-          >
-              Edit git hosting instance for this course
-          </Button>
-        </Grid>
-        <Grid
-          item
-          xs={12}
-        >
-          <Link href={`/courses/${term}/${courseId}/groups/diff`} passHref>
-            <Button
-              variant="contained"
-              color="primary"
-            >
-              Check status or edit groups
-            </Button>
-          </Link>
-        </Grid>
-        <Grid
-          item
-          xs={12}
-        >
-          <FormControlLabel
-            labelPlacement="top"
-            control={
-              <Switch
-                checked={true}
-                name="changeColorTheme"
+            <Link href={"/courses"} passHref>
+              <Button
+                variant="contained"
                 color="primary"
-              />
-            }
-            label="Not working theme switch"
-          />
-        </Grid>
+              >
+        Back to courses
+              </Button>
+            </Link>
+          </Grid>
+          <Grid
+            item
+            xs={12}
+          >
+            <Button
+              variant="contained"
+              color="primary"
+            >
+              Edit your pat for this course
+            </Button>
+          </Grid>
+          <Grid
+            item
+            xs={12}
+          >
+            <Button
+              variant="contained"
+              color="primary"
+            >
+              Edit git hosting instance for this course
+            </Button>
+          </Grid>
+          <Grid
+            item
+            xs={12}
+          >
+            <Link href={`/courses/${term}/${courseId}/groups/diff`} passHref>
+              <Button
+                variant="contained"
+                color="primary"
+              >
+              Check status or edit groups
+              </Button>
+            </Link>
+          </Grid>
+          <Grid
+            item
+            xs={12}
+          >
+            <FormControlLabel
+              labelPlacement="top"
+              control={
+                <Switch
+                  checked={true}
+                  name="changeColorTheme"
+                  color="primary"
+                />
+              }
+              label="Not working theme switch"
+            />
+          </Grid>
+        </>
+        }
       </Grid>
       <Grid
         style={{ height: "20%", width: "100%" }}
