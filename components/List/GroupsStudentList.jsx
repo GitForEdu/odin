@@ -4,7 +4,7 @@ import Accordion from "@material-ui/core/Accordion"
 import AccordionSummary from "@material-ui/core/AccordionSummary"
 import AccordionDetails from "@material-ui/core/AccordionDetails"
 import Typography from "@material-ui/core/Typography"
-import { Grid } from "@material-ui/core"
+import { Grid, Skeleton } from "@material-ui/core"
 import ExpandMoreIcon from "@material-ui/icons/ExpandMore"
 import clsx from "clsx"
 
@@ -38,6 +38,11 @@ const useStyles = makeStyles(theme => ({
     },
   },
   expanded: {},
+  skeleton: {
+    width: "100%",
+    height: "3.75rem",
+    margin: "0rem 0rem 1rem 0rem",
+  },
 }))
 
 
@@ -168,12 +173,65 @@ const Student = ({ student, expandAll, groupStats }) => {
 }
 
 
-const StudentList = ({ elements, expandAll, groupStats }) => {
+const StudentList = ({ group, expandAll, loading }) => {
+  const theme = useTheme()
+  const classes = useStyles(theme)
 
-  const studentList = elements.map((elem, index) => {
+  if (loading) {
 
     return (
-      <Student key={index} student={elem} expandAll={expandAll} groupStats={groupStats}/>
+      <Grid
+        container
+        direction="row"
+        justifyContent="center"
+        alignContent="center"
+        item
+        spacing={2}
+      >
+        <Grid
+          item
+          xs={12}
+        >
+          <Skeleton
+            className={classes.skeleton}
+            variant="rect"
+          />
+        </Grid>
+        <Grid
+          item
+          xs={12}
+        >
+          <Skeleton
+            className={classes.skeleton}
+            variant="rect"
+          />
+        </Grid>
+        <Grid
+          item
+          xs={12}
+        >
+          <Skeleton
+            className={classes.skeleton}
+            variant="rect"
+          />
+        </Grid>
+        <Grid
+          item
+          xs={12}
+        >
+          <Skeleton
+            className={classes.skeleton}
+            variant="rect"
+          />
+        </Grid>
+      </Grid>
+    )
+  }
+
+  const studentList = (group.members).map((elem, index) => {
+
+    return (
+      <Student key={index} student={elem} expandAll={expandAll} groupStats={group.groupKeyStats}/>
     )
   })
 
