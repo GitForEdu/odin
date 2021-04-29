@@ -90,6 +90,7 @@ const getProjectCommits = async (path, projectId, pat, since, until, page) => {
     commits = commits.concat(await getProjectCommits(path, projectId, pat, since, until, page))
   }
 
+  // remove mergeCommits
   return commits.filter(commit => commit.parent_ids.length < 2)
 }
 
@@ -141,7 +142,7 @@ const getProjectFiles = async (path, projectId, pat, fileBlame, page) => {
   }
 
   files = files.filter(file => file.type === "blob")
-  if (fileBlame) {
+  if (fileBlame === "true") {
     files = Promise.all(files.map(file => {
       return getFileBlameData(path, pat, projectId, file.path).then(r => {
         return { ...file, blameData: r }
@@ -418,7 +419,7 @@ const getGroupKeyStats = async (path, pat, fullPathGit, since, until, fileBlame)
     }
   })
 
-  if (fileBlame) {
+  if (fileBlame === "true") {
     projectFiles.forEach(file => {
       file.blameData.forEach(bData => {
         const committerEmail = bData.commit.committer_email
