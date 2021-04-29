@@ -58,7 +58,7 @@ const Student = ({ student, expandAll, groupStats }) => {
   // Gitlab provides full name as student.name, Blackboard provides student.name.given and student.name.family
   const name = student.user ? `${student.user.name.given} ${student.user.name.family}` : `${student.name.given} ${student.name.family}`
 
-  const precCommits = ((student.commits / groupStats.issues.length) * 100).toFixed(0)
+  const precCommits = ((student.commits / groupStats.commits.length) * 100).toFixed(0)
   const checkedPrecCommits = isNaN(precCommits) ? 0 : precCommits
 
   const precAdditions = ((student.additions / groupStats.projectStats.additions) * 100).toFixed(0)
