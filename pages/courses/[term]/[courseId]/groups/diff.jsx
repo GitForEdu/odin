@@ -180,13 +180,13 @@ const Dropable = (group, index, students, studentsGroup, onClickListTop) => {
                       {...provided.dragHandleProps}
                       container
                       direction="row"
-                      justifyContent="center"
+                      justifyContent="flex-start"
                       alignItems="center"
                       style={getItemStyle(studentsGroup[student.userName]?.group.length > 1 ? "Multiple" : student.found, snapshot.isDragging, provided.draggableProps.style)}
                     >
                       <Grid
                         item
-                        xs={2}
+                        xs={1}
                       >
                         <DragIndicatorIcon />
                       </Grid>
