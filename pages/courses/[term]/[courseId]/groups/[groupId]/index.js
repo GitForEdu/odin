@@ -133,7 +133,7 @@ export const Group = ({ courseGroupBB, courseGroupGit, bbGitConnection }) => {
 
   return (
     <>
-      <Navbar pageTitle={`Information - ${courseGroupBB.name}` || "Group information"} courseId={courseId} term={term} />
+      <Navbar pageTitle={`Information - ${courseGroupGit.name}` || "Group information"} courseId={courseId} term={term} />
       <Grid
         container
         direction="row"
