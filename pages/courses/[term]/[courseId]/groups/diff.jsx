@@ -41,7 +41,7 @@ const getListMemberStyle = (collapsed) => ({
 
 const getItemStyle = (found, isDragging, draggableStyle) => ({
   userSelect: "none",
-  padding: "1rem",
+  padding: "1rem 2rem 1rem 0rem",
   margin: "0 0 0.5rem 0",
 
   background: found === "Multiple" ? "#8b0000" : found === "Both" ? "green" : found === "Blackboard" ? "#0e7c7b" : "#380d75",
@@ -65,7 +65,8 @@ const Dropable = (group, index, students, studentsGroup, onClickListTop) => {
       alignItems="center"
       item
       xs={12}
-      md={4}
+      sm={6}
+      md={3}
     >
       <Droppable droppableId={`${index}`}>
         {(provided, snapshot) => (
@@ -187,13 +188,16 @@ const Dropable = (group, index, students, studentsGroup, onClickListTop) => {
                       <Grid
                         item
                         xs={1}
+                        style={{
+                          marginRight: "0.5rem",
+                          marginLeft: "0.5rem",
+                        }}
                       >
                         <DragIndicatorIcon />
                       </Grid>
                       <Grid
                         item
                         xs={7}
-
                       >
                         <Typography align="left">
                           {`${student.name.given} ${student.name.family}`}
@@ -353,7 +357,7 @@ export const GroupDiff = ({ groupDiff }) => {
         <Grid
           container
           direction="row"
-          justifyContent="center"
+          justifyContent="flex-start"
           alignItems="flex-start"
           item
           xs={12}
