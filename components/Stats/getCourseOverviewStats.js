@@ -3,8 +3,8 @@ import fetcher from "utils/fetcher"
 
 const calcultateGitStats = async (term, courseId, courseGroupsBB, courseGroupsGit, sinceTime, untilTime) => {
   console.log(term, courseId, courseGroupsBB, courseGroupsGit, sinceTime, untilTime)
-  const groupKeyStats = await fetcher(
-    `/api/courses/${term}/${courseId}/git/groups/getGroupsKeyStats?since=${sinceTime.getFullYear()}.${sinceTime.getMonth()}.${sinceTime.getDate()}&until=${untilTime.getFullYear()}.${untilTime.getMonth()}.${untilTime.getDate() + 1}&groupPaths=${courseGroupsGit.map(group => encodeURIComponent(group.full_path)).join(",")}`,
+  const stats = await fetcher(
+    `/api/courses/${term}/${courseId}/git/groups/stats?since=${sinceTime.getFullYear()}.${sinceTime.getMonth()}.${sinceTime.getDate()}&until=${untilTime.getFullYear()}.${untilTime.getMonth()}.${untilTime.getDate() + 1}&fileBlame=false`,
     {},
     "GET"
   )
@@ -33,7 +33,7 @@ const calcultateGitStats = async (term, courseId, courseGroupsBB, courseGroupsGi
   let groupFewestIssues = ""
   let groupFewestIssuesCount = null
 
-  groupKeyStats.forEach(groupStats => {
+  stats.groupsStats.forEach(groupStats => {
     commits = commits + groupStats.commits.length
     issues = [...issues, ...groupStats.issues]
     mergeRequests = [...mergeRequests, ...groupStats.mergeRequests]
@@ -61,7 +61,7 @@ const calcultateGitStats = async (term, courseId, courseGroupsBB, courseGroupsGi
     }
   })
 
-  const groups = groupKeyStats.length
+  const groups = stats.groupsStats.length
   const averageCommits = commits / groups
   const averageIssues = issues.length / groups
   const averageMergeRequests = mergeRequests.length / groups
@@ -100,7 +100,7 @@ const calcultateGitStats = async (term, courseId, courseGroupsBB, courseGroupsGi
     groupMostIssuesCount: groupMostIssuesCount,
     averageOpenIssues: averageOpenIssues.toFixed(2),
     averageOpenMergeRequests: averageOpenMergeRequests.toFixed(2),
-    groups: groupKeyStats,
+    groups: stats.groupsStats,
   }
 }
 

@@ -2,6 +2,7 @@ import { PrismaClient } from "@prisma/client"
 import { getSession } from "next-auth/client"
 import { getGroupKeyStats, getGroupsGit } from "utils/gitlab"
 import isAuthorized from "middelwares/authorized"
+import { cacheCalls } from "utils/cache"
 
 
 const prisma = new PrismaClient()
@@ -14,7 +15,17 @@ export async function getGroupsStats(req, params) {
   const courseId = params.courseId
   const term = params.term
   const since = params.since
+  let sinceTime = ""
+  if (since) {
+    const splitSince = since.split(".")
+    sinceTime = new Date(splitSince[0], splitSince[1], splitSince[2])
+  }
   const until = params.until
+  let untilTime = ""
+  if (until) {
+    const splitUntil = until.split(".")
+    untilTime = new Date(splitUntil[0], splitUntil[1], splitUntil[2])
+  }
   const fileBlame = params.fileBlame
   const courseFull = `${courseId}-${term}`
 
@@ -30,7 +41,7 @@ export async function getGroupsStats(req, params) {
       const groupPaths = groups.map(group => group.full_path)
 
       const groupsStatsPromises = groupPaths.map(groupPath => {
-        return getGroupKeyStats(connection.gitURL, userConnection.pat, groupPath, since, until, fileBlame)
+        return cacheCalls(req, userName, getGroupKeyStats, [connection.gitURL, userConnection.pat, groupPath, sinceTime, untilTime, fileBlame])
       })
 
       const groupsStatsResponse = await Promise.all(groupsStatsPromises)
@@ -148,6 +159,7 @@ export async function getGroupsStats(req, params) {
         groupFewestMergeRequestsCount: groupFewestMergeRequestsCount,
         groupMostMergeRequests: groupMostMergeRequests,
         groupMostMergeRequestsCount: groupMostMergeRequestsCount,
+        groupsStats: groupsStatsResponse,
       }
     }
   }
