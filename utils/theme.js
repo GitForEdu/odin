@@ -37,6 +37,9 @@ theme.components = {
       },
       contained: {
       },
+      label: {
+        color: "#FFF8DC",
+      },
     },
   },
   MuiInputBase: { // Cursor

@@ -33,10 +33,10 @@ export const useStyles = makeStyles(theme => ({
   courseIdText: {
     margin: "0.25em",
     fontSize: "0.75em",
-    color: "white",
+    color: "#FFF8DC",
   },
   hamburgerButton: {
-    color: "white",
+    color: "#FFF8DC",
   },
   list: {
     width: 250,

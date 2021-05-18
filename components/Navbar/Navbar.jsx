@@ -146,7 +146,7 @@ export const Navbar = props => {
         </div>
       </Link>
       <div className={classes.middle}>
-        <p>{pageTitle}</p>
+        <p style={{ color: "#FFF8DC" }}>{pageTitle}</p> {/** cornsilk */}
       </div>
       {!rootPageCheck
       && <>
