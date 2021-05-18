@@ -91,21 +91,28 @@ const GroupStatsBoard = ({ courseGroup, loading }) => {
                   padding: "0rem 0rem 0rem 2rem",
                 }}
               >
-                  Issues: {courseGroup.groupKeyStats.issues.length}
+                  Issues:
               </Typography>
               <Typography
                 style={{
                   padding: "0rem 0rem 0rem 2rem",
                 }}
               >
-                  Issues open: {courseGroup.groupKeyStats.issues.filter(issue => issue.state === "opened").length}
+                  - Total: {courseGroup.groupKeyStats.issues.length}
               </Typography>
               <Typography
                 style={{
                   padding: "0rem 0rem 0rem 2rem",
                 }}
               >
-                  Issues closed: {courseGroup.groupKeyStats.issues.filter(issue => issue.state === "closed").length}
+                  - Open: {courseGroup.groupKeyStats.issues.filter(issue => issue.state === "opened").length}
+              </Typography>
+              <Typography
+                style={{
+                  padding: "0rem 0rem 0rem 2rem",
+                }}
+              >
+                  - Closed: {courseGroup.groupKeyStats.issues.filter(issue => issue.state === "closed").length}
               </Typography>
             </Grid>
             <Grid
@@ -122,21 +129,28 @@ const GroupStatsBoard = ({ courseGroup, loading }) => {
                   padding: "0rem 0rem 0rem 2rem",
                 }}
               >
-                  Merge requests: {courseGroup.groupKeyStats.mergeRequests.length}
+                  Merge requests:
               </Typography>
               <Typography
                 style={{
                   padding: "0rem 0rem 0rem 2rem",
                 }}
               >
-                  Merge requests open: {courseGroup.groupKeyStats.mergeRequests.filter(mr => mr.state === "opened").length}
+                  - Total: {courseGroup.groupKeyStats.mergeRequests.length}
               </Typography>
               <Typography
                 style={{
                   padding: "0rem 0rem 0rem 2rem",
                 }}
               >
-                  Merge requests closed: {courseGroup.groupKeyStats.mergeRequests.filter(mr => mr.state === "closed").length}
+                  - Open: {courseGroup.groupKeyStats.mergeRequests.filter(mr => mr.state === "opened").length}
+              </Typography>
+              <Typography
+                style={{
+                  padding: "0rem 0rem 0rem 2rem",
+                }}
+              >
+                  - Closed: {courseGroup.groupKeyStats.mergeRequests.filter(mr => mr.state === "closed").length}
               </Typography>
             </Grid>
             <Grid

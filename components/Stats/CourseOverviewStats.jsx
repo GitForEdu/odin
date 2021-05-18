@@ -1,11 +1,20 @@
-import { Grid, Skeleton, Typography } from "@material-ui/core"
+import { Grid, makeStyles, Skeleton, Typography, useTheme } from "@material-ui/core"
 import { useEffect, useState } from "react"
 import calcultateGitStats from "./getCourseOverviewStats"
 
+const useStyles = makeStyles(theme => ({
+  skeleton: {
+    width: "100%",
+    height: "18rem",
+    margin: "0rem 0rem 1rem 0rem",
+  },
+}))
 
 const CourseOverviewStats = ({ courseGroupsBB, courseGroupsGit, courseId, term, sinceTime, untilTime }) => {
   const [stats, setStats] = useState({})
   const [loading, setLoading] = useState(true)
+  const theme = useTheme()
+  const classes = useStyles(theme)
 
   useEffect(() => {
     setLoading(true)
@@ -102,21 +111,28 @@ const CourseOverviewStats = ({ courseGroupsBB, courseGroupsGit, courseId, term, 
                   padding: "0rem 0rem 0rem 2rem",
                 }}
               >
-                  Issues: {stats.issues ? stats.issues.length : 0}
+                  Issues:
               </Typography>
               <Typography
                 style={{
                   padding: "0rem 0rem 0rem 2rem",
                 }}
               >
-                  Average Issues: {stats.averageIssues}
+                  - Total: {stats.issues ? stats.issues.length : 0}
               </Typography>
               <Typography
                 style={{
                   padding: "0rem 0rem 0rem 2rem",
                 }}
               >
-                  Average open Issues: {stats.averageOpenIssues}
+                  - Average: {stats.averageIssues}
+              </Typography>
+              <Typography
+                style={{
+                  padding: "0rem 0rem 0rem 2rem",
+                }}
+              >
+                  - Average open: {stats.averageOpenIssues}
               </Typography>
             </Grid>
             <Grid
@@ -137,21 +153,28 @@ const CourseOverviewStats = ({ courseGroupsBB, courseGroupsGit, courseId, term, 
                   padding: "0rem 0rem 0rem 2rem",
                 }}
               >
-                  Merge requests: {stats.mergeRequests ? stats.mergeRequests.length : 0}
+                  Merge requests:
               </Typography>
               <Typography
                 style={{
                   padding: "0rem 0rem 0rem 2rem",
                 }}
               >
-                  Average Merge requests: {stats.averageMergeRequests}
+                  - Total: {stats.mergeRequests ? stats.mergeRequests.length : 0}
               </Typography>
               <Typography
                 style={{
                   padding: "0rem 0rem 0rem 2rem",
                 }}
               >
-                  Average Open MR's: {stats.averageOpenMergeRequests}
+                  - Average: {stats.averageMergeRequests}
+              </Typography>
+              <Typography
+                style={{
+                  padding: "0rem 0rem 0rem 2rem",
+                }}
+              >
+                  - Average Open: {stats.averageOpenMergeRequests}
               </Typography>
             </Grid>
             <Grid
@@ -342,11 +365,8 @@ const CourseOverviewStats = ({ courseGroupsBB, courseGroupsGit, courseId, term, 
             }}
           >
             <Skeleton
-              style={{
-                width: "100%",
-                height: "100%",
-                transformOrigin: "0 0.1%",
-              }}
+              className={classes.skeleton}
+              variant="rect"
             />
           </Grid>
         </>

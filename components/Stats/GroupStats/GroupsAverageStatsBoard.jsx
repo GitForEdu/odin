@@ -91,21 +91,28 @@ const GroupsAverageStatsBoard = ({ groupsStats, loading }) => {
                   padding: "0rem 0rem 0rem 2rem",
                 }}
               >
-                  Issues: {groupsStats.averageIssues}
+                  Issues:
               </Typography>
               <Typography
                 style={{
                   padding: "0rem 0rem 0rem 2rem",
                 }}
               >
-                  Issues open: {groupsStats.averageIssuesOpen}
+                  - Total: {groupsStats.averageIssues}
               </Typography>
               <Typography
                 style={{
                   padding: "0rem 0rem 0rem 2rem",
                 }}
               >
-                  Issues closed: {groupsStats.averageIssuesClosed}
+                  - Open: {groupsStats.averageIssuesOpen}
+              </Typography>
+              <Typography
+                style={{
+                  padding: "0rem 0rem 0rem 2rem",
+                }}
+              >
+                  - Closed: {groupsStats.averageIssuesClosed}
               </Typography>
             </Grid>
             <Grid
@@ -122,21 +129,28 @@ const GroupsAverageStatsBoard = ({ groupsStats, loading }) => {
                   padding: "0rem 0rem 0rem 2rem",
                 }}
               >
-                  Merge requests: {groupsStats.averageMergeRequests}
+                  Merge requests:
               </Typography>
               <Typography
                 style={{
                   padding: "0rem 0rem 0rem 2rem",
                 }}
               >
-                  Merge requests open: {groupsStats.averageMergeRequestsOpen}
+                  - Total: {groupsStats.averageMergeRequests}
               </Typography>
               <Typography
                 style={{
                   padding: "0rem 0rem 0rem 2rem",
                 }}
               >
-                  Merge requests closed: {groupsStats.averageMergeRequestsClosed}
+                  - Open: {groupsStats.averageMergeRequestsOpen}
+              </Typography>
+              <Typography
+                style={{
+                  padding: "0rem 0rem 0rem 2rem",
+                }}
+              >
+                  - Closed: {groupsStats.averageMergeRequestsClosed}
               </Typography>
             </Grid>
             <Grid
