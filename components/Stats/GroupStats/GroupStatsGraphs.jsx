@@ -1,15 +1,16 @@
 import Highcharts from "highcharts"
 import HighchartsExporting from "highcharts/modules/exporting"
 import HighchartsReact from "highcharts-react-official"
-import DarkUnica from "highcharts/themes/dark-unica"
 import HighchartsStreamGraph from "highcharts/modules/streamgraph"
 import HighchartsSolidGauge from "highcharts/modules/solid-gauge"
 import HighchartsMore from "highcharts/highcharts-more.js"
 import { Grid, makeStyles, Skeleton, useTheme } from "@material-ui/core"
+import { HighchartsTheme } from "utils/theme"
 
 if (typeof Highcharts === "object") {
+  Highcharts.theme = HighchartsTheme()
+  Highcharts.setOptions(Highcharts.theme)
   HighchartsExporting(Highcharts)
-  DarkUnica(Highcharts)
   HighchartsStreamGraph(Highcharts)
   HighchartsMore(Highcharts)
   HighchartsSolidGauge(Highcharts)
