@@ -56,7 +56,7 @@ export async function GetGroupsWithMembers (req, params) {
       where: { userName_gitURL: { userName: userName, gitURL: connection.gitURL } },
     })
     if (userConnection) {
-      const response = await getGroupsWithStudentsGit(connection.gitURL, connection.repoName, userConnection.pat, 0)
+      const response = await getGroupsWithStudentsGit(connection.gitURL, encodeURIComponent(connection.repoName), userConnection.pat, 0)
       if (!response.message) {
         return await Promise.all(response).then(groupsGit => groupsGit)
       }

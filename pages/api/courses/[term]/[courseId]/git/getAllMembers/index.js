@@ -32,7 +32,7 @@ export async function getAllMembersFromGitlab (req, params) {
       where: { userName_gitURL: { userName: userName, gitURL: connection.gitURL } },
     })
     if (userConnection) {
-      const courseMembers = await getCourseUsersGit(connection.gitURL, connection.repoName, userConnection.pat)
+      const courseMembers = await getCourseUsersGit(connection.gitURL, encodeURIComponent(connection.repoName), userConnection.pat)
       // console.log(courseMembers)
       return courseMembers
     }
