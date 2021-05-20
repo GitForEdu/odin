@@ -123,7 +123,7 @@ async function CreateGroups(req, params) {
       where: { userName_gitURL: { userName: userName, gitURL: connection.gitURL } },
     })
     if (userConnection) {
-      const parentGroupInfo = await getGroupGit(connection.gitURL, connection.repoName, userConnection.pat)
+      const parentGroupInfo = await getGroupGit(connection.gitURL, encodeURIComponent(connection.repoName), userConnection.pat)
       if (parentGroupInfo.id) {
         const createdGroups = groupNames.map(groupName => {
           return createGroupGit(connection.gitURL, groupName, userConnection.pat, parentGroupInfo.id)

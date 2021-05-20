@@ -9,6 +9,7 @@ import Link from "next/link"
 import { GetGroups } from "pages/api/courses/[term]/[courseId]/git/groups"
 import DatePickerBar from "components/DatePickerBar"
 import GroupsStatsList from "components/List/GroupListTable"
+import { getCourseGroups } from "pages/api/courses/[term]/[courseId]/groups"
 
 
 export const Group = ({ courseGroupsBB, courseGroupsGit, bbGitConnection }) => {
@@ -46,7 +47,7 @@ export const Group = ({ courseGroupsBB, courseGroupsGit, bbGitConnection }) => {
         alignItems="center"
       >
         <Grid item xs={10} md={10}>
-          {courseGroupsBB.length === -1
+          {courseGroupsBB.length === 0
             ? <>
               <h1>No groups found on Blackboard</h1>
               <Link href={`/courses/${term}/${courseId}/groups/create`} passHref>
@@ -142,7 +143,7 @@ export const Group = ({ courseGroupsBB, courseGroupsGit, bbGitConnection }) => {
 export const getServerSideProps = (async (context) => {
   const params = context.params
 
-  const courseGroupsBB = []//await getCourseGroups(context.req, params)
+  const courseGroupsBB = await getCourseGroups(context.req, params)
 
   console.log(courseGroupsBB.length)
 

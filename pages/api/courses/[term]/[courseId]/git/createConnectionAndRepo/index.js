@@ -78,12 +78,12 @@ export async function createBBGitRepoConnection(req, params) {
         addUsersToGroupGit(body.gitURL, group.id, body.pat, members.filter(member => !member.message).map(member => member.id), 50)
       })
 
-      return createConn(body, courseFull, courseId, legalGitName, bbToken, userName, group)
+      return createConn(body, courseFull, legalGitName, userName)
     }
     if (group.message) {
       // TODO: Check if it was because group allready exsits, and maybe we have access to it and we still can create conn?
       // Cannot create parent group on GitLab
-      return createConn(body, courseFull, courseId, legalGitName, bbToken, userName, group)
+      return createConn(body, courseFull, legalGitName, userName)
     }
   }
   else {

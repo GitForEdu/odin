@@ -76,7 +76,7 @@ export async function createSubGroupsWithMembersInit(req, params) {
     })
     if (userConnection) {
       if (platform === "GitLab") {
-        const parentGroupInfo = await getGroupGit(connection.gitURL, connection.repoName, userConnection.pat)
+        const parentGroupInfo = await getGroupGit(connection.gitURL, encodeURIComponent(connection.repoName), userConnection.pat)
         if (parentGroupInfo.id) {
           return createSubGroupsWithMembers(connection, userConnection, groupsToCreate, parentGroupInfo)
         }
