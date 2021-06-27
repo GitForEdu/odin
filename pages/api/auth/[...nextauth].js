@@ -70,8 +70,8 @@ const auth = (req, res) => NextAuth(req, res, {
           image: profile.picture,
         }
       },
-      clientId: process.env.CLIENT_ID,
-      clientSecret: process.env.CLIENT_SECRET,
+      clientId: process.env.DATAPORTEN_CLIENT_ID,
+      clientSecret: process.env.DATAPORTEN_CLIENT_SECRET,
     },
   ],
 })

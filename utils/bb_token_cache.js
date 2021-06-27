@@ -38,7 +38,7 @@ export default async function getAccessToken() {
 async function getServerSideAccessToken() {
   const url = `${process.env.BB_API}/learn/api/public/v1/oauth2/token`
 
-  const credentialsBase64 = Buffer.from(`${process.env.BB_CLIENT_ID}:${process.env.BB_CLIENT_SECRET}`, "binary").toString("base64")
+  const credentialsBase64 = Buffer.from(`${process.env.BB_APPLICATION_KEY}:${process.env.BB_SECRET}`, "binary").toString("base64")
 
   const response = await fetch(url, {
     body: encodeToUrl({
