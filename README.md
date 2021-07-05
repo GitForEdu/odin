@@ -4,6 +4,8 @@ Odin is a [Next.js](https://nextjs.org/) project bootstrapped with [`create-next
 
 Odin has been designed and developed by [Petter Grø Rein](https://www.ntnu.edu/employees/pettegre) and [Tore Stensaker Tefre](https://www.ntnu.edu/employees/torestef) as part of a master thesis project supervised by [George Adrian Stoica](https://www.ntnu.edu/employees/stoica) at [The Department of Computer Science (IDI)](https://www.ntnu.edu/idi) at [The Norwegian University of Science and Technology](https://www.ntnu.edu) in Trondheim, Norway.
 
+Why the name Odin? Because we wanted a cool codename for the project. We thought maybe to use the name of a god, and found out that Odin was the god of knowledge and wisdom, very fitting for the context of the project.
+
 ## Getting Started
 
 After cloning the project, please install necessary packages:
