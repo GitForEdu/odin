@@ -21,11 +21,11 @@ yarn dbinit
 ```
 
 Then you need to register a Blackboard app, get it approved to retrieve data from a running instance over the api of the instance. This means for NTNU you have to contact NTNU IT and give them the application ID of your application.  [Registration portal for Blackboard applications](https://developer.blackboard.com/portal/applications/create)  
-[Picture of Blackboard settings of application can be seen here](https://github.com/GitForEdu/odin/blob/master/documentation/assets/blackboard_settings_odin.png)  
+[Picture of Blackboard settings of application can be seen here](https://github.com/GitForEdu/odin/blob/main/documentation/assets/blackboard_settings_odin.png)  
 
 You also need to create an application on Dataporten. Input the redirect url of this app, client_type should be confidential, scopes/rights should be: email, openid, profile, userid and userid-feide. [Registration portal for Dataporten](https://dashboard.dataporten.no/#!/_)  
-[Picture or Dataporten settings of application can be seen here](https://github.com/GitForEdu/odin/blob/master/documentation/assets/screenshot_of_settings_dataporten_odin.png)  
-[Picture of required scopes for application can be seen here](https://github.com/GitForEdu/odin/blob/master/documentation/assets/scopes_of_odin_dataporten.png)
+[Picture or Dataporten settings of application can be seen here](https://github.com/GitForEdu/odin/blob/main/documentation/assets/screenshot_of_settings_dataporten_odin.png)  
+[Picture of required scopes for application can be seen here](https://github.com/GitForEdu/odin/blob/main/documentation/assets/scopes_of_odin_dataporten.png)
 
 The last you will need is access to a GitLab instance. This is for later when the application will ask you where to want to host the Git repositories of the course.
 
@@ -46,7 +46,7 @@ Open [http://localhost:3000](http://localhost:3000) with your browser to see the
 
 ## Learn More
 
-To learn more about the application read the thesis. [Creating a Web Application Supporting Git in Software Development Courses in Higher Education](https://github.com/GitForEdu/odin/blob/master/documentation/FinalThesis.pdf?raw=true).
+To learn more about the application read the thesis. [Creating a Web Application Supporting Git in Software Development Courses in Higher Education](https://github.com/GitForEdu/odin/blob/main/documentation/FinalThesis.pdf?raw=true).
 
 We will probably create a wiki and add additional information there when we have time.
 
