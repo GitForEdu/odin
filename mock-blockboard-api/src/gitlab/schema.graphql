@@ -1,0 +1,88 @@
+type User {
+  givenName: String
+  familyName: String
+}
+
+type Stats {
+  wikiSize: Int!
+}
+
+type Project {
+  id: String
+  lastActivityAt: String
+  createdAt: String
+  statistics: Stats
+}
+
+type ProjectWrapped {
+  nodes: [Project]
+}
+
+type Assigne {
+  username: String
+  name: String
+}
+
+type AssigneWrapped {
+  nodes: [Assigne]
+}
+
+type Issue {
+  createdAt: String
+  state: String
+  assignees: AssigneWrapped
+}
+
+type IssueWrapped {
+  nodes: [Issue]
+}
+
+type Author {
+  username: String
+  publicEmail: String
+  name: String
+}
+
+type MergeRequest {
+  createdAt: String
+  state: String
+  commitCount: Int
+  author: Author
+}
+
+type MergeRequestWrapped {
+  nodes: [MergeRequest]
+  totalTimeToMerge: Int
+}
+
+type Milestone {
+  createdAt: String
+  state: String
+}
+
+type MilestoneWrapped {
+  nodes: [Milestone]
+}
+
+type Member {
+  id: Int!
+}
+
+type MemberWrapped {
+  nodes: [Member]
+}
+
+type Group {
+  id: Int!
+  name: String
+  fullPath: String
+  projects(includeSubgroups: Boolean): ProjectWrapped
+  issues(createdAfter: String, createdBefore: String): IssueWrapped
+  mergeRequests: MergeRequestWrapped
+  milestones: MilestoneWrapped
+  groupMembers: MemberWrapped
+}
+
+type Query {
+  group(fullPath: String): Group
+}

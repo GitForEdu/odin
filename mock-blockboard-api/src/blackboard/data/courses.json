@@ -1,0 +1,92 @@
+{
+  "courses": [
+    {
+      "id": "_5949_1",
+      "courseId": "194_TDT4137_1_2017_H_1",
+      "name": "TDT4137 Kognitive arkitekturer (2017 HØST)",
+      "termId": "_28_1",
+      "groups": [
+        {
+          "uuid": "1",
+          "name": "Gruppe 1",
+          "id": 1,
+          "groupSetId": 1,
+          "users": [
+            {
+              "userId": 102
+            },
+            {
+              "userId": 105
+            }
+          ]
+        },
+        {
+          "uuid": "2",
+          "name": "Gruppe 2",
+          "id": "2",
+          "groupSetId": "1",
+          "users": [
+            {
+              "userId": 106
+            },
+            {
+              "userId": 107
+            }
+          ]
+        }
+      ],
+      "users": [
+        {
+          "id": "1",
+          "courseId": "_5949_1",
+          "courseRoleId": "Instructor",
+          "dataSourceId": "_2_1",
+          "userId": 101,
+          "user": {
+            "userName": "unverviser1"
+          }
+        },
+        {
+          "id": "2",
+          "courseId": "_5949_1",
+          "courseRoleId": "Student",
+          "dataSourceId": "_2_1",
+          "userId": 102,
+          "user": {
+            "userName": "karso"
+          }
+        },
+        {
+          "id": "3",
+          "courseId": "_5949_1",
+          "courseRoleId": "Student",
+          "dataSourceId": "_2_1",
+          "userId": 105,
+          "user": {
+            "userName": "karnv"
+          }
+        },
+        {
+          "id": "4",
+          "courseId": "_5949_1",
+          "courseRoleId": "Student",
+          "dataSourceId": "_2_1",
+          "userId": 106,
+          "user": {
+            "userName": "evave"
+          }
+        },
+        {
+          "id": "5",
+          "courseId": "_5949_1",
+          "courseRoleId": "Student",
+          "dataSourceId": "_2_1",
+          "userId": 107,
+          "user": {
+            "userName": "marve"
+          }
+        }
+      ]
+    }
+  ]
+}

@@ -1,0 +1,122 @@
+{
+  "groups": [
+    {
+        "id": 1,
+        "name": "Group 1",
+        "full_path": "_5949_1-V21/Group_1",
+        "issues": [
+          {
+            "state": "Open",
+            "createdAt": "2019-08-24T23:11:02.376Z",
+            "assignees": [
+              {
+                "name": "Per"
+              }
+            ]
+          },
+          {
+            "state": "Open",
+            "createdAt": "2019-08-24T23:11:02.376Z",
+            "assignees": []
+          }
+        ],
+        "projects": [
+          {
+            "id": "gid://gitlab/Project/1",
+            "lastActivityAt": "2019-08-24T23:11:02.376Z",
+            "createdAt": "2019-08-24T23:11:02.376Z",
+            "statistics": {
+              "wikiSize": 1
+            }
+          }
+        ],
+        "mergeRequests": [
+          {
+            "createdAt": "2019-08-24T23:11:02.376Z",
+            "state": "Open",
+            "commitCount": 1,
+            "author": {
+              "username": "per",
+              "publicEmail": "per@ntnu.no",
+              "name": "Per"
+            }
+          }
+        ],
+        "milestones": [
+          {
+            "createdAt": "2019-08-24T23:11:02.376Z",
+            "state": "Open"
+          }
+        ],
+        "members": [
+          {
+            "id": 101,
+            "access_level": 50
+          },
+          {
+            "id": 102,
+            "access_level": 30
+          }
+        ]
+    },
+    {
+      "id": 2,
+      "name": "Group 2",
+      "full_path": "_5949_1-V21/Group_2",
+      "issues": [
+        {
+          "state": "Open",
+          "createdAt": "2019-08-24T23:11:02.376Z",
+          "assignees": [
+            {
+              "name": "Per"
+            }
+          ]
+        },
+        {
+          "state": "Open",
+          "createdAt": "2019-08-24T23:11:02.376Z",
+          "assignees": []
+        }
+      ],
+      "projects": [
+        {
+          "id": "gid://gitlab/Project/2",
+          "lastActivityAt": "2019-08-24T23:11:02.376Z",
+          "createdAt": "2019-08-24T23:11:02.376Z",
+          "statistics": {
+            "wikiSize": 1
+          }
+        }
+      ],
+      "mergeRequests": [
+        {
+          "createdAt": "2019-08-24T23:11:02.376Z",
+          "state": "Open",
+          "commitCount": 1,
+          "author": {
+            "username": "per",
+            "publicEmail": "per@ntnu.no",
+            "name": "Per"
+          }
+        }
+      ],
+      "milestones": [
+        {
+          "createdAt": "2019-08-24T23:11:02.376Z",
+          "state": "Open"
+        }
+      ],
+      "members": [
+        {
+          "id": 101,
+          "access_level": 50
+        },
+        {
+          "id": 102,
+          "access_level": 30
+        }
+      ]
+    }
+  ]
+}

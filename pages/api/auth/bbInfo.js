@@ -3,12 +3,10 @@ import { getCoursesBB, getCourseUsersBB, getUserWithUserNameBB } from "utils/bla
 
 const getbbUserInfo = async (username) => {
   const bbToken = await getAccessToken()
-  const tempUsernameDevelopment = username === "pettegre" ? "underviser1" : (username === "torestef" ? "underviser0" : (username === "stoica" ? "underviser1" : username))
+  const tempUsernameDevelopment = process.env.MOCK_BB ? "underviser1" : username
   const bbUser = await getUserWithUserNameBB(tempUsernameDevelopment, bbToken)
-  let bbUserCourses = []
+  const bbUserCourses = []
   let bbUserId = undefined
-  let bbInstitutionRoleIds = undefined
-  let bbSystemRoleIds = undefined
 
   if(bbUser.id) {
     bbUserId = bbUser.id
@@ -38,6 +36,7 @@ const getbbUserInfo = async (username) => {
               description: course.description,
               name: course.name,
               courseId: course.courseId,
+              // TODO: Fix term
               term: "V21",
             })
           }
