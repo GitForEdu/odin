@@ -68,10 +68,6 @@ export async function createBBGitRepoConnection(req, params) {
       // add rest of ta's to main group
       const courseUsers = (await getCourseUsersExpandedBB(courseId, bbToken)).filter(user => user.courseRoleId !== "Student")
 
-      // TODO_ remove mock data here
-      courseUsers.push({ userName: "pettegre" })
-      courseUsers.push({ userName: "torestef" })
-
       await Promise.all(courseUsers.map(member => {
         return getUserGit(body.gitURL, body.pat, member.userName)
       })).then(members => {

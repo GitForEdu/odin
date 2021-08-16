@@ -1,0 +1,39 @@
+{
+    "users": [
+      {
+        "id": 101,
+        "username": "unverviser1",
+        "name": "Ola Nord"
+      },
+      {
+        "id": 102,
+        "username": "karso",
+        "name": "Kari Sør"
+      },
+      {
+        "id": 103,
+        "username": "olave",
+        "name": "Ola Vest"
+      },
+      {
+        "id": 104,
+        "username": "olaos",
+        "name": "Ola Nord"
+      },
+      {
+        "id": 105,
+        "username": "karnv",
+        "name": "Kari Nordvest"
+      },
+      {
+        "id": 106,
+        "username": "evave",
+        "name": "Eva Vestnord"
+      },
+      {
+        "id": 107,
+        "username": "marve",
+        "name": "Markus Vestnord"
+      }
+    ]
+  }

@@ -1,0 +1,102 @@
+{
+  "users": [
+    {
+      "id": 101,
+      "name": {
+        "family": "Nord",
+        "given": "Ola"
+      },
+      "studentId": "11",
+      "contact": {
+        "email": "ola.nord@ntnu.no"
+      },
+      "institutionRolesIds": ["INSTRUCTOR"],
+      "systemRoleIds": ["User"],
+      "userName": "unverviser1"
+    },
+    {
+      "id": 102,
+      "name": {
+        "family": "Sør",
+        "given": "Kari"
+      },
+      "studentId": "12",
+      "contact": {
+        "email": "kari.sor@ntnu.no"
+      },
+      "institutionRolesIds": ["STUDENT"],
+      "systemRoleIds": ["User"],
+      "userName": "karso"
+    },
+    {
+      "id": 103,
+      "name": {
+        "family": "Vest",
+        "given": "Ola"
+      },
+      "studentId": "13",
+      "contact": {
+        "email": "ola.vest@ntnu.no"
+      },
+      "institutionRolesIds": ["INSTRUCTOR"],
+      "systemRoleIds": ["User"],
+      "userName": "olave"
+    },
+    {
+      "id": 104,
+      "name": {
+        "family": "Nord",
+        "given": "Ola"
+      },
+      "studentId": "14",
+      "contact": {
+        "email": "ola.ost@ntnu.no"
+      },
+      "institutionRolesIds": ["INSTRUCTOR"],
+      "systemRoleIds": ["User"],
+      "userName": "olaos"
+    },
+    {
+      "id": 105,
+      "name": {
+        "family": "Nordvest",
+        "given": "Kari"
+      },
+      "studentId": "15",
+      "contact": {
+        "email": "kari.nordvest@ntnu.no"
+      },
+      "institutionRolesIds": ["STUDENT"],
+      "systemRoleIds": ["User"],
+      "userName": "karnv"
+    },
+    {
+      "id": 106,
+      "name": {
+        "family": "Vestnord",
+        "given": "Eva"
+      },
+      "studentId": "16",
+      "contact": {
+        "email": "eva.vestnord@ntnu.no"
+      },
+      "institutionRolesIds": ["STUDENT"],
+      "systemRoleIds": ["User"],
+      "userName": "evave"
+    },
+    {
+      "id": 107,
+      "name": {
+        "family": "Vestnord",
+        "given": "Markus"
+      },
+      "studentId": "17",
+      "contact": {
+        "email": "markus.vestnord@ntnu.no"
+      },
+      "institutionRolesIds": ["STUDENT"],
+      "systemRoleIds": ["User"],
+      "userName": "marve"
+    }
+  ]
+}

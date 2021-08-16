@@ -9,28 +9,33 @@ const cache = new NodeCache()
  * using client_credentials (client secret) authorization type.
  */
 export default async function getAccessToken() {
-  try {
+  if (process.env.MOCK_BB) {
+    return ""
+  }
+  else {
+    try {
 
-    const cachedAccessToken = cache.get("access_token")
-    // Try returning the cached token
-    if (cachedAccessToken) {
-      return cachedAccessToken
+      const cachedAccessToken = cache.get("access_token")
+      // Try returning the cached token
+      if (cachedAccessToken) {
+        return cachedAccessToken
+      }
+
+      /**
+       * If no access token was present in the cache, fetch a new one
+       * @note Do not need to use refresh tokens, since we are server-side
+       * @see https://tools.ietf.org/html/rfc6749#section-4.4.3
+       */
+
+      const accessToken = await getServerSideAccessToken()
+
+      // Update the cache with a time-to-live
+      cache.set("access_token", accessToken.access_token, accessToken.expires_in)
+
+      return accessToken.access_token
+    } catch (error) {
+      throw error
     }
-
-    /**
-     * If no access token was present in the cache, fetch a new one
-     * @note Do not need to use refresh tokens, since we are server-side
-     * @see https://tools.ietf.org/html/rfc6749#section-4.4.3
-     */
-
-    const accessToken = await getServerSideAccessToken()
-
-    // Update the cache with a time-to-live
-    cache.set("access_token", accessToken.access_token, accessToken.expires_in)
-
-    return accessToken.access_token
-  } catch (error) {
-    throw error
   }
 }
 

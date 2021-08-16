@@ -44,3 +44,5 @@ mock-blockboard-api/node_modules/
 prisma/dev.db
 
 *.Identifier
+
+prisma/dev.db-journal
