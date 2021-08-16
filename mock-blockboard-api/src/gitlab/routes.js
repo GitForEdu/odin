@@ -1,6 +1,8 @@
 import { graphqlHTTP } from "express-graphql"
-import { importSchema } from "graphql-import"
-import { makeExecutableSchema } from "graphql-tools"
+import { loadSchemaSync } from "@graphql-tools/load"
+import { GraphQLFileLoader } from "@graphql-tools/graphql-file-loader"
+import { addResolversToSchema } from "@graphql-tools/schema"
+import { join } from 'path';
 import resolvers from "./resolvers"
 import * as groups from "./data/groups.json"
 import * as users from "./data/users.json"
@@ -8,8 +10,8 @@ import * as courses from "./data/courses.json"
 import * as projects from "./data/projects.json"
 
 
-const typeDefs = importSchema("./src/gitlab/schema.graphql")
-const schema = makeExecutableSchema({ typeDefs, resolvers })
+const schema = loadSchemaSync("./src/gitlab/schema.graphql", { loaders: [new GraphQLFileLoader()] })
+const schemaWithResolvers = addResolversToSchema({ schema, resolvers })
 
 const baseUrl = "/api/v4/"
 
@@ -107,7 +109,7 @@ function gitlabroutes(app) {
   app.use(
     "/api/graphql",
     graphqlHTTP({
-      schema: schema,
+      schema: schemaWithResolvers,
       graphiql: true,
     })
   )
