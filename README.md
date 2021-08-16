@@ -33,7 +33,13 @@ Input all of the keys and URLs in a .env.local to overwrite .env (copy the conte
 
 Because you probably are not registered as an instructor in a course we have created an override in bbinfo.js at line 6. You can input your userName here to get `underviser` status.
 
-Because we want to have an easy development time we will provide and are working on mock/fake instances of GitLab and Blackboard to use with this application.
+Because we want to have an easy development time we have provided mock/fake instances of GitLab and Blackboard to use with this application. The mock project is located in `mock-blackboard-api`. Note that this mock project does not at the moment support all the POST request. So every change or save function does not work. You can create a connection between a Course on Blackboard and GitLab, and you can we a "course" with mocked data. For the connection GitLab URL and PAT the application will ask you for use `http://localhost:5050` for the URL and the PAT can be any string. Also filterting does not work (date filter etc).
+Steps to use the project:
+ - cd into the project folder
+ - type `yarn install`
+ - type `yarn start`
+ - Go back to main project, change BB_API key in .env.local file to `https://localhost:5050`
+ - Change MOCK_BB key to 1
 
 Now you are good to go on with development, and can run the application with:
 
