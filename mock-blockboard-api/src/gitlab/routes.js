@@ -42,6 +42,11 @@ function gitlabroutes(app) {
     res.send(members)
   })
 
+  app.post(baseUrl + "groups/:groupId/members", async (req, res) => {
+    console.log("conn creation, add user to group")
+    res.send({"ok": 200})
+  })
+
   app.get(baseUrl + "users", async (req, res) => {
     const username = req.query.username
     const user = users.users.find(user => user.username === username)
