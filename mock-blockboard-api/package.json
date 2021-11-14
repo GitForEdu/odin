@@ -9,24 +9,24 @@
     "build": "npx babel src --out-dir build"
   },
   "dependencies": {
-    "@graphql-tools/graphql-file-loader": "^7.0.4",
-    "@graphql-tools/load": "^7.1.6",
-    "@graphql-tools/schema": "^8.1.1",
+    "@graphql-tools/graphql-file-loader": "^7.3.3",
+    "@graphql-tools/load": "^7.4.1",
+    "@graphql-tools/schema": "^8.3.1",
     "cors": "^2.8.5",
     "express": "^4.17.1",
     "express-graphql": "^0.12.0",
-    "graphql": "^15.4.0",
-    "graphql-scalars": "^1.10.0"
+    "graphql": "^16.0.1",
+    "graphql-scalars": "^1.13.1"
   },
   "devDependencies": {
-    "@babel/cli": "^7.12.1",
-    "@babel/core": "^7.12.3",
-    "@babel/node": "^7.12.1",
-    "@babel/plugin-transform-runtime": "^7.12.1",
-    "@babel/preset-env": "^7.12.1",
-    "@babel/runtime": "^7.12.1",
-    "mocha": "^8.2.0",
-    "nodemon": "^2.0.6",
-    "supertest": "^5.0.0"
+    "@babel/cli": "^7.16.0",
+    "@babel/core": "^7.16.0",
+    "@babel/node": "^7.16.0",
+    "@babel/plugin-transform-runtime": "^7.16.0",
+    "@babel/preset-env": "^7.16.0",
+    "@babel/runtime": "^7.16.3",
+    "mocha": "^9.1.3",
+    "nodemon": "^2.0.15",
+    "supertest": "^6.1.6"
   }
 }
