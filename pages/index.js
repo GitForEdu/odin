@@ -1,7 +1,7 @@
 import Tile from "components/Tile"
 import Navbar from "components/Navbar"
 import { Button } from "@material-ui/core"
-import { signIn } from "next-auth/client"
+import { signIn } from "next-auth/react"
 
 
 export default function LandingPage() {
@@ -18,6 +18,15 @@ export default function LandingPage() {
         })}
       >
           Log in with Feide
+      </Button>
+      <Button
+        variant="contained"
+        color="primary"
+        onClick={() => signIn("github", {
+          callbackUrl: "/courses",
+        })}
+      >
+          Log in with GitHub
       </Button>
     </>
   )

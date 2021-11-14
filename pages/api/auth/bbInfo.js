@@ -3,7 +3,7 @@ import { getCoursesBB, getCourseUsersBB, getUserWithUserNameBB } from "utils/bla
 
 const getbbUserInfo = async (username) => {
   const bbToken = await getAccessToken()
-  const tempUsernameDevelopment = process.env.MOCK_BB ? "underviser1" : username
+  const tempUsernameDevelopment = process.env.OVERRIDE_LOGIN_USERNAME ? process.env.OVERRIDE_LOGIN_USERNAME : username
   const bbUser = await getUserWithUserNameBB(tempUsernameDevelopment, bbToken)
   const bbUserCourses = []
   let bbUserId = undefined

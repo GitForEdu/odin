@@ -1,6 +1,6 @@
 import isAuthorized from "middelwares/authorized"
 import getAccessToken from "utils/bb_token_cache"
-import { getSession } from "next-auth/client"
+import { getSession } from "next-auth/react"
 import { getCourseGroupsBB, getCourseGroupsWithGroupsetBB, getCourseGroupUsersBB, getUserWithUserIdBB } from "utils/blackboard"
 
 // function createFullCourseId(courseid, term) {

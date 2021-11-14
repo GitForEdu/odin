@@ -1,6 +1,6 @@
 import isAuthorized from "middelwares/authorized"
 import getAccessToken from "utils/bb_token_cache"
-import { getSession } from "next-auth/client"
+import { getSession } from "next-auth/react"
 import { getCourseGroupUsersBB, getUserWithUserIdBB } from "utils/blackboard"
 import { getCourseGroupBB } from "utils/blackboard"
 

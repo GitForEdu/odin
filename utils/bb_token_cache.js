@@ -9,7 +9,7 @@ const cache = new NodeCache()
  * using client_credentials (client secret) authorization type.
  */
 export default async function getAccessToken() {
-  if (process.env.MOCK_BB) {
+  if (process.env.MOCK_ACCESS_TOKEN) {
     return ""
   }
   else {

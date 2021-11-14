@@ -1,6 +1,6 @@
 import { PrismaClient } from "@prisma/client"
 import isAuthorized from "middelwares/authorized"
-import { getSession } from "next-auth/client"
+import { getSession } from "next-auth/react"
 import getAccessToken from "utils/bb_token_cache"
 import { getCourseUsersExpandedBB } from "utils/blackboard"
 import { addUsersToGroupGit, createGroupGit, getUserGit } from "utils/gitlab"

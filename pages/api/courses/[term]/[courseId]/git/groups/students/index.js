@@ -1,5 +1,5 @@
 import { PrismaClient } from "@prisma/client"
-import { getSession } from "next-auth/client"
+import { getSession } from "next-auth/react"
 import { addUserToGroupGit, getGroupsGit, getUserGit, removeUserInGroupGit } from "utils/gitlab"
 import isAuthorized from "middelwares/authorized"
 
