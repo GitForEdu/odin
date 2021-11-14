@@ -1,11 +1,11 @@
 import { useEffect, useState } from "react"
-import { makeStyles, useTheme, withStyles } from "@material-ui/core/styles"
-import Accordion from "@material-ui/core/Accordion"
-import AccordionSummary from "@material-ui/core/AccordionSummary"
-import AccordionDetails from "@material-ui/core/AccordionDetails"
-import Typography from "@material-ui/core/Typography"
-import { Grid, Skeleton } from "@material-ui/core"
-import ExpandMoreIcon from "@material-ui/icons/ExpandMore"
+import { makeStyles, useTheme, withStyles } from "@mui/styles"
+import Accordion from "@mui/material/Accordion"
+import AccordionSummary from "@mui/material/AccordionSummary"
+import AccordionDetails from "@mui/material/AccordionDetails"
+import Typography from "@mui/material/Typography"
+import { Grid, Skeleton } from "@mui/material"
+import ExpandMoreIcon from "@mui/icons-material/ExpandMore"
 import clsx from "clsx"
 
 const useStyles = makeStyles(theme => ({

@@ -7,8 +7,8 @@ import { getAllMembersFromGitlab } from "pages/api/courses/[term]/[courseId]/git
 import { useState, Fragment } from "react"
 import { getBBGitConnection } from "pages/api/courses/[term]/[courseId]/git/createConnection"
 import groups from "pages/api/courses/[term]/[courseId]/groups"
-import { Button, FormControlLabel, Grid, Switch, TextField } from "@material-ui/core"
-import DatePicker from "@material-ui/lab/DatePicker"
+import { Button, FormControlLabel, Grid, Switch, TextField } from "@mui/material"
+import DatePicker from "@mui/lab/DatePicker"
 
 
 export const Students = ({ initialUsers }) => {

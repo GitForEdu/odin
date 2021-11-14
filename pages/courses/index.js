@@ -1,7 +1,7 @@
 import React from "react"
 import Tile from "components/Tile"
 import Navbar from "components/Navbar"
-import { Button, Grid, useMediaQuery } from "@material-ui/core"
+import { Button, Grid, useMediaQuery } from "@mui/material"
 import withAuth from "components/withAuth"
 import Link from "next/link"
 

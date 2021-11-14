@@ -1,7 +1,7 @@
 import { useState } from "react"
 import Navbar from "components/Navbar"
 import withAuth from "components/withAuth"
-import { Button, Grid, useMediaQuery } from "@material-ui/core"
+import { Button, Grid, useMediaQuery } from "@mui/material"
 import { useRouter } from "next/router"
 import Link from "next/link"
 import { getBBGitConnection } from "pages/api/courses/[term]/[courseId]/git/createConnection"

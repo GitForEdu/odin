@@ -1,5 +1,5 @@
-import ListItemText from "@material-ui/core/ListItemText"
-import { Button, Grid } from "@material-ui/core"
+import ListItemText from "@mui/material/ListItemText"
+import { Button, Grid } from "@mui/material"
 
 
 const primaryTextStyling = { style:

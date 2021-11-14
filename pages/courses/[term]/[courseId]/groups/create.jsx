@@ -7,12 +7,12 @@ import { getCourseStudents } from "pages/api/courses/[term]/[courseId]/users"
 import { DragDropContext, Droppable, Draggable } from "react-beautiful-dnd"
 import fetcher from "utils/fetcher"
 import { CSVReader } from "react-papaparse"
-import { Button, TextField, Typography } from "@material-ui/core"
-import { makeStyles, useTheme } from "@material-ui/core/styles"
-import Paper from "@material-ui/core/Paper"
-import Grid from "@material-ui/core/Grid"
+import { Button, TextField, Typography } from "@mui/material"
+import { makeStyles, useTheme } from "@mui/styles"
+import Paper from "@mui/material/Paper"
+import Grid from "@mui/material/Grid"
 import Navbar from "components/Navbar"
-import DragIndicatorIcon from "@material-ui/icons/DragIndicator"
+import DragIndicatorIcon from "@mui/icons-material/DragIndicator"
 
 
 const CSVReaderStyles = (theme) => ({

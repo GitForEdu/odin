@@ -1,5 +1,5 @@
-import Link from "@material-ui/core/Link"
-import { Button } from "@material-ui/core"
+import Link from "@mui/material/Link"
+import { Button } from "@mui/material"
 import { useRouter } from "next/router"
 
 

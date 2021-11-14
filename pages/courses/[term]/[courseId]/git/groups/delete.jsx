@@ -5,7 +5,7 @@ import { ListDelete } from "components/List"
 import { useState } from "react"
 import { useRouter } from "next/router"
 import Navbar from "components/Navbar"
-import { Grid } from "@material-ui/core"
+import { Grid } from "@mui/material"
 
 
 export const Group = ({ parentRepoWithSubGroups }) => {

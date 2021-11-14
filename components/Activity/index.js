@@ -1,4 +1,4 @@
-import { Grid } from "@material-ui/core"
+import { Grid } from "@mui/material"
 
 export const Activity = props => {
   const { data } = props

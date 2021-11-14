@@ -4,7 +4,8 @@ import HighchartsReact from "highcharts-react-official"
 import HighchartsStreamGraph from "highcharts/modules/streamgraph"
 import HighchartsSolidGauge from "highcharts/modules/solid-gauge"
 import HighchartsMore from "highcharts/highcharts-more.js"
-import { Grid, makeStyles, Skeleton, useTheme } from "@material-ui/core"
+import { Grid, Skeleton } from "@mui/material"
+import { makeStyles, useTheme } from "@mui/styles"
 import { HighchartsTheme } from "utils/theme"
 
 if (typeof Highcharts === "object") {

@@ -1,6 +1,6 @@
 import Tile from "components/Tile"
 import Navbar from "components/Navbar"
-import { Button } from "@material-ui/core"
+import { Button } from "@mui/material"
 import { signIn } from "next-auth/react"
 
 

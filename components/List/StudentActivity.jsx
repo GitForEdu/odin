@@ -1,7 +1,7 @@
-import ListItem from "@material-ui/core/ListItem"
-import ListItemText from "@material-ui/core/ListItemText"
+import ListItem from "@mui/material/ListItem"
+import ListItemText from "@mui/material/ListItemText"
 import Activity from "components/Activity"
-import { Button } from "@material-ui/core"
+import { Button } from "@mui/material"
 
 
 const StudentActivity = ({ userName, activity }) => {

@@ -1,4 +1,5 @@
-import { Grid, makeStyles, Skeleton, Typography, useTheme } from "@material-ui/core"
+import { Grid, Skeleton, Typography } from "@mui/material"
+import { makeStyles, useTheme } from "@mui/styles"
 import { useEffect, useState } from "react"
 import calcultateGitStats from "./getCourseOverviewStats"
 

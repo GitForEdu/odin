@@ -2,7 +2,7 @@ import withAuth from "components/withAuth"
 import { useRouter } from "next/router"
 import { useState } from "react"
 import fetcher from "utils/fetcher"
-import { Button, TextField } from "@material-ui/core"
+import { Button, TextField } from "@mui/material"
 import Navbar from "components/Navbar"
 import { getBBGitConnection } from "pages/api/courses/[term]/[courseId]/git/createConnection"
 

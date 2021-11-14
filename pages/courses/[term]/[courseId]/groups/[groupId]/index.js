@@ -1,6 +1,6 @@
 import { useEffect, useState } from "react"
 import { useRouter } from "next/router"
-import { FormControlLabel, Grid, Switch, Typography } from "@material-ui/core"
+import { FormControlLabel, Grid, Switch, Typography } from "@mui/material"
 import Navbar from "components/Navbar"
 import StudentList from "components/List/GroupsStudentList"
 import withAuth from "components/withAuth"

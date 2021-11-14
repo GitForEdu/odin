@@ -5,7 +5,7 @@ import { useRouter } from "next/router"
 import { getCourseUsers } from "pages/api/courses/[term]/[courseId]/users"
 import { useState } from "react"
 import { getBBGitConnection } from "pages/api/courses/[term]/[courseId]/git/createConnection"
-import { Grid } from "@material-ui/core"
+import { Grid } from "@mui/material"
 
 
 export const TAs = ({ initialTAs }) => {

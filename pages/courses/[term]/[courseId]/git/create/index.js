@@ -1,6 +1,6 @@
 import withAuth from "components/withAuth"
 import { useRouter } from "next/router"
-import { Button, TextField } from "@material-ui/core"
+import { Button, TextField } from "@mui/material"
 import { useState } from "react"
 import fetcher from "utils/fetcher"
 import Navbar from "components/Navbar"
