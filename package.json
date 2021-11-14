@@ -24,7 +24,7 @@
     "date-fns": "^2.23.0",
     "highcharts": "^9.1.2",
     "highcharts-react-official": "^3.0.0",
-    "next": "11.1.0",
+    "next": "12.0.3",
     "next-auth": "^4.0.0-beta.6",
     "node-cache": "^5.1.2",
     "nodemailer": "^6.6.3",
